@@ -11,16 +11,16 @@ function Cards() {
           <ul className='cards__items'>
             <CardItem
               src='https://s3.amazonaws.com/coursesity-blog/2020/07/data-structure-algorithm-courses.png'
-              text='Explore the hidden waterfall deep inside the Amazon Jungle'
+              text='A data structure is a particular way of organizing data in a computer so that it can be used effectively.              '
               label='SDD'
-              path='/services'
+              path='/courses'
             />
 
             <CardItem
               src='https://www.jrebel.com/sites/rebel/files/image/2020-05/image-blog-revel-top-java-tools.jpg'
-              text='Travel through the islands of bali in a private cruise'
+              text='Java is one of the most popular and widely used programming language.'
               label='Java'
-              path='/services'
+              path='/courses'
             />
           </ul>
         </div>

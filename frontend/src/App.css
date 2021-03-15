@@ -6,7 +6,7 @@
 }
 
 .home,
-.services,
+.courses,
 .products,
 .sign-up {
   display: flex;
@@ -16,7 +16,7 @@
   font-size: 3rem;
 }
 
-.services {
+.courses {
   background-image: url('https://cdn.hipwallpaper.com/i/66/70/g0q1no.jpg');
   background-position: center;
   background-size: cover;

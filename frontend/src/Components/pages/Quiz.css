@@ -1,0 +1,16 @@
+.quiz__header {
+  color: white;
+  text-align: center;
+}
+
+.quiz {
+  background-color: rgb(37, 190, 83);
+  width: 90%;
+  max-width: 25rem;
+  margin: 7rem auto;
+  text-align: center;
+}
+
+.quiz form {
+  margin-bottom: 1rem;
+}

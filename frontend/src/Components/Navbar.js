@@ -1,11 +1,15 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { Button } from './Button'
+import Popup from './pages/Popup'
 import { Link } from 'react-router-dom'
 import './Navbar.css'
+import { AuthContext } from '../shared/context/auth-context'
 
 function Navbar() {
+  const auth = useContext(AuthContext)
   const [click, setClick] = useState(false)
   const [button, setButton] = useState(true)
+  const [buttonPopup, setButtonPopup] = useState(false)
 
   const handleClick = () => setClick(!click)
   const closeMobileMenu = () => setClick(false)
@@ -24,13 +28,19 @@ function Navbar() {
 
   window.addEventListener('resize', showButton)
 
+  const handleClickMobile = (e) => {
+    e.preventDefault()
+    setButtonPopup(true)
+    closeMobileMenu()
+  }
+
   return (
     <>
       <nav className='navbar'>
         <div className='navbar-container'>
           <Link to='/' className='navbar-logo' onClick={closeMobileMenu}>
             ASE QUIZ
-            <i class='fab fa-typo3' />
+            <i className='fab fa-typo3' />
           </Link>
           <div className='menu-icon' onClick={handleClick}>
             <i className={click ? 'fas fa-times' : 'fas fa-bars'} />
@@ -43,34 +53,55 @@ function Navbar() {
             </li>
             <li className='nav-item'>
               <Link
-                to='/services'
+                to='/courses'
                 className='nav-links'
                 onClick={closeMobileMenu}
               >
-                Services
+                Courses
               </Link>
             </li>
             <li className='nav-item'>
-              <Link
-                to='/products'
-                className='nav-links'
-                onClick={closeMobileMenu}
-              >
-                Products
+              <Link to='/quiz' className='nav-links' onClick={closeMobileMenu}>
+                Quiz
               </Link>
             </li>
 
             <li>
-              <Link
-                to='/sign-up'
-                className='nav-links-mobile'
-                onClick={closeMobileMenu}
-              >
+              <p className='nav-links-mobile' onClick={handleClickMobile}>
                 Auth
-              </Link>
+              </p>
             </li>
           </ul>
-          {button && <Button buttonStyle='btn--outline'>Auth</Button>}
+          {!auth.isLoggedIn && button && (
+            <Button
+              onClick={() => {
+                setButtonPopup(true)
+              }}
+              buttonStyle='btn--outline'
+            >
+              Auth
+            </Button>
+          )}
+          <Popup trigger={buttonPopup} setTrigger={setButtonPopup}>
+            <h3>Authentication needed!</h3>
+            <br></br>
+            <br></br>
+            <Link to='/auth/student'>
+              <Button onClick={() => setButtonPopup(false)}>
+                Student Authentication
+              </Button>
+            </Link>
+            <br></br>
+            <br></br>
+            <Link to='/auth/professor'>
+              <Button onClick={() => setButtonPopup(false)}>Professor Authentication</Button>
+            </Link>
+          </Popup>
+          {auth.isLoggedIn && button && (
+            <Button buttonStyle='btn--outline' onClick={auth.logout}>
+              Logout
+            </Button>
+          )}
         </div>
       </nav>
     </>
