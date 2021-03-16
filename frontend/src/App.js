@@ -14,6 +14,7 @@ import Quiz from './Components/pages/Quiz'
 import Courses from './Components/pages/Courses'
 import { AuthContext } from './shared/context/auth-context'
 import { useAuth } from './shared/hooks/auth-hook'
+import CoursePage from './Components/pages/CoursePage'
 
 function App() {
   const { token, login, logout, userId } = useAuth()
@@ -25,6 +26,9 @@ function App() {
       <Switch>
         <Route path='/' exact>
           <Home />
+        </Route>
+        <Route path='/courses/:title'>
+          <CoursePage />
         </Route>
         <Route path='/courses'>
           <Courses />

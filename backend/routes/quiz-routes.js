@@ -7,6 +7,7 @@ const checkAuth = require('../middleware/check-auth')
 router.use(checkAuth)
 
 router.get('/', quizControllers.getAllQuizzes)
+router.get('/:id', quizControllers.getQuizzesForCourse)
 router.post('/', quizControllers.createQuiz)
 router.delete('/:id', quizControllers.deleteQuiz)
 router.get('/prof', quizControllers.getQuizzesForProf)

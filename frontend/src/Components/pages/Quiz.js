@@ -8,7 +8,7 @@ import Button from '../../shared/components/FormElements/Button'
 
 export default function Quiz() {
   const auth = useContext(AuthContext)
-  const [loadedQuizzes, setLoadedQuizzes] = useState()
+  const [loadedQuestions, setLoadedQuestions] = useState()
   const { isLoading, sendRequest } = useHttpClient()
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [showScore, setShowScore] = useState(false)
@@ -26,7 +26,7 @@ export default function Quiz() {
           }
         )
         console.log(responseData.data[0])
-        setLoadedQuizzes(responseData.data[0])
+        setLoadedQuestions(responseData.data[0])
       } catch (err) {
         console.log(err)
       }
@@ -39,7 +39,7 @@ export default function Quiz() {
       setScore(score + 1)
     }
 
-    if (currentQuestion + 1 < loadedQuizzes.quiz.length)
+    if (currentQuestion + 1 < loadedQuestions.quiz.length)
       setCurrentQuestion(currentQuestion + 1)
     else setShowScore(true)
   }
@@ -51,24 +51,26 @@ export default function Quiz() {
           <LoadingSpinner asOverlay />
         </div>
       )}
-      {!isLoading && loadedQuizzes && (
+      {!isLoading && loadedQuestions && (
         <>
           {showScore ? (
             <div>
-              You scored {score} out of {loadedQuizzes.quiz.length} points
+              You scored {score} out of {loadedQuestions.quiz.length} points
             </div>
           ) : (
             <Cards>
-              <div>{loadedQuizzes.title}</div>
-              <div>{loadedQuizzes.quiz[currentQuestion].question}</div>
+              <div>{loadedQuestions.title}</div>
+              <div>{loadedQuestions.quiz[currentQuestion].question}</div>
               <div>
-                {loadedQuizzes.quiz[currentQuestion].answers.map((answer) => (
-                  <Button onClick={() => handleAnswerButtonClick(answer.isCorrect)}>
+                {loadedQuestions.quiz[currentQuestion].answers.map((answer, index) => 
+                  <Button onClick={() => handleAnswerButtonClick(answer.isCorrect)} key={index}>
                     {answer.text}
                   </Button>
-                ))}
+                )}
               </div>
-              <div>{console.log(loadedQuizzes)}</div>
+              <div>{console.log(loadedQuestions.startDate)}
+                   {console.log(loadedQuestions)}
+              </div>
             </Cards>
           )}
         </>

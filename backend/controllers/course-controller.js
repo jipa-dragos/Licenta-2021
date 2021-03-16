@@ -10,13 +10,12 @@ const getCourses = async (req, res, next) => {
     if (!user) {
       user = await Student.findById(req.userData.userId)
 
-      const courses = await Course.find({ _id: { $in: user.course } })
-      console.log(user)
+      const courses = await Course.find({ year: { $in: user.year } })
       if (courses.length === 0) {
         return res.status(204).json({ success: true, data: courses })
       }
-  
-      res.status(200).json({
+
+      return res.status(200).json({
         success: true,
         count: courses.length,
         data: courses,
@@ -38,6 +37,21 @@ const getCourses = async (req, res, next) => {
   }
 }
 
+const getCourseByTitle = async (req, res, next) => {
+  try {
+    const user = await Student.findById(req.userData.userId)
+
+    const course = await Course.findOne({ title: req.params.title })
+
+    res.status(200).json({
+      success: true,
+      data: course,
+    })
+  } catch (err) {
+    next(err)
+  }
+}
+
 const createCourse = async (req, res, next) => {
   try {
     const errors = validationResult(req)
@@ -46,7 +60,7 @@ const createCourse = async (req, res, next) => {
         new HttpError('Invalid inputs passed, please check your data.', 422)
       )
     }
-    const prof = await Professor.findById(req.userData.userId) 
+    const prof = await Professor.findById(req.userData.userId)
     if (!prof)
       return next(
         new HttpError('No prof found', 403) //// SHOULD BE AN ADMIN LATER ON!
@@ -65,3 +79,4 @@ const createCourse = async (req, res, next) => {
 
 exports.createCourse = createCourse
 exports.getCourses = getCourses
+exports.getCourseByTitle = getCourseByTitle

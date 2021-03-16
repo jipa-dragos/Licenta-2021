@@ -3,6 +3,7 @@ const { validationResult } = require('express-validator')
 const Quiz = require('../models/Quiz')
 const Professor = require('../models/Professor')
 const Student = require('../models/Student')
+const Course = require('../models/Course')
 
 const createQuiz = async (req, res, next) => {
   try {
@@ -16,32 +17,32 @@ const createQuiz = async (req, res, next) => {
     const creator = req.userData.userId
 
     const prof = await Professor.findById(creator)
-    if(!prof) {
+    if (!prof) {
+      return next(new HttpError('Only a professor can create quizzes!', 403))
+    }
+
+    const { title, quiz, startDate, endDate, courseName } = req.body
+
+    const course = await Course.findOne({ title: courseName })
+
+    console.log(course)
+
+    if (!prof.course.includes(course._id)) {
       return next(
         new HttpError(
-          'Only a professor can create quizzes!',
+          'Invalid Course Name. Please select a course that you have access to!',
           403
         )
       )
     }
 
-    const { title, quiz } = req.body
-
-    // const course = await Course.findOne({ title: courseName })
-
-    // if (!prof.course.includes(course._id)) {
-    //   return next(
-    //     new HttpError(
-    //       'Invalid Course Name. Please select a course that you have access to!',
-    //       403
-    //     )
-    //   )
-    // }
-
     const quizz = await Quiz.create({
       title,
       quiz,
-      creator: prof._id
+      creator: prof._id,
+      course,
+      startDate,
+      endDate,
     })
 
     res.status(201).json({
@@ -75,6 +76,16 @@ const deleteQuiz = async (req, res, next) => {
     await Quiz.findByIdAndDelete(req.params.id)
 
     res.status(200).json({ success: true, data: {} })
+  } catch (err) {
+    next(err)
+  }
+}
+
+const getQuizzesForCourse = async (req, res, next) => {
+  try {
+    const quiz = await Quiz.find({ course: req.params.id })
+
+    res.status(200).json({ success: true, count: quiz.length, data: quiz })
   } catch (err) {
     next(err)
   }
@@ -152,9 +163,9 @@ const getAllQuizzes = async (req, res, next) => {
   }
 }
 
-
 exports.createQuiz = createQuiz
 exports.deleteQuiz = deleteQuiz
 exports.getQuizzesForStudent = getQuizzesForStudent
 exports.getQuizzesForProf = getQuizzesForProf
 exports.getAllQuizzes = getAllQuizzes
+exports.getQuizzesForCourse = getQuizzesForCourse

@@ -25,6 +25,9 @@ const QuizSchema = new Schema({
     },
   ],
   creator: { type: mongoose.Types.ObjectId, required: true, ref: 'Professor'},
+  course: { type: mongoose.Types.ObjectId, required: true, ref: 'Course'},
+  startDate: { type: Date, min: Date.now, required: true}, 
+  endDate: { type: Date, min: Date.now, required: true}, 
   createdAt: { type: Date, default: Date.now },
 })
 
