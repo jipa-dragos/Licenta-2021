@@ -39,8 +39,6 @@ const getCourses = async (req, res, next) => {
 
 const getCourseByTitle = async (req, res, next) => {
   try {
-    const user = await Student.findById(req.userData.userId)
-
     const course = await Course.findOne({ title: req.params.title })
 
     res.status(200).json({
