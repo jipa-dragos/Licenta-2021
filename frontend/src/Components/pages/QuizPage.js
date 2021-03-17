@@ -43,16 +43,11 @@ function QuizPage() {
       setCurrentQuestion(currentQuestion + 1)
     else setShowScore(true)
   }
-  const countdown = useRef()
 
   const renderer = ({ completed }) => {
-    if (completed && showScore === false) {
+    if (completed && !showScore) {
       setShowScore(true)
-      return (
-        <div>
-          You scored {score} out of {loadedQuestions.quiz.length} points
-        </div>
-      )
+      return null
     } else {
       return (
         <Countdown
@@ -65,6 +60,7 @@ function QuizPage() {
       )
     }
   }
+
   return (
     <>
       {isLoading && (
@@ -83,8 +79,6 @@ function QuizPage() {
               <div>{loadedQuestions.title}</div>
               <div>Time CountDown</div>
               <Countdown
-                ref={countdown}
-                controlled={false}
                 date={
                   new Date(loadedQuestions.startDate).getTime() +
                   (new Date(loadedQuestions.endDate).getTime() -
