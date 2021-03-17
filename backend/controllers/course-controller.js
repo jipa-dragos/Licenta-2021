@@ -1,6 +1,7 @@
 const HttpError = require('../util/http-error')
 const { validationResult } = require('express-validator')
 const Course = require('../models/Course')
+const Quiz = require('../models/Quiz')
 const Professor = require('../models/Professor')
 const Student = require('../models/Student')
 
@@ -41,9 +42,12 @@ const getCourseByTitle = async (req, res, next) => {
   try {
     const course = await Course.findOne({ title: req.params.title })
 
+    const quiz = await Quiz.find({ course: { $in: course._id }})
+
     res.status(200).json({
       success: true,
       data: course,
+      quiz
     })
   } catch (err) {
     next(err)

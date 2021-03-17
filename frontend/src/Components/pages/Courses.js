@@ -41,13 +41,13 @@ export default function Courses() {
           <div className='cards__container'>
             <div className='cards__wrapper'>
               <ul className='cards__items'>
-                {loadedCourses.data.map((courses, index) => (
+                {loadedCourses.data.map(course => (
                     <CardItem
                       src='https://www.testing-whiz.com/media/3231/is-software-quality-assurance-same-as-software-testing.png'
-                      text={courses.description}
-                      label={courses.title}
-                      path={`/courses/${courses.title}`}
-                      key={index}
+                      text={course.description}
+                      label={course.title}
+                      path={`/courses/${course.title}`}
+                      key={course._id}
                     />
                 ))}
               </ul>

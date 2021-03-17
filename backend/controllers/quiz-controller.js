@@ -163,9 +163,22 @@ const getAllQuizzes = async (req, res, next) => {
   }
 }
 
+const getQuizById = async (req, res, next) => {
+  try {
+    const quiz = await Quiz.findById(req.params.id)
+
+    res.status(200).json({
+      success: true,
+      data: quiz
+    })
+  } catch (err) {
+    next(err)
+  }
+}
 exports.createQuiz = createQuiz
 exports.deleteQuiz = deleteQuiz
 exports.getQuizzesForStudent = getQuizzesForStudent
 exports.getQuizzesForProf = getQuizzesForProf
 exports.getAllQuizzes = getAllQuizzes
 exports.getQuizzesForCourse = getQuizzesForCourse
+exports.getQuizById = getQuizById

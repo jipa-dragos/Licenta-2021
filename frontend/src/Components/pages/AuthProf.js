@@ -39,6 +39,7 @@ export default function SignUp() {
         {
           ...formState.inputs,
           name: undefined,
+          faculty: undefined,
         },
         formState.inputs.email.isValid && formState.inputs.password.isValid
       )
@@ -50,6 +51,10 @@ export default function SignUp() {
             value: '',
             isValid: false,
           },
+          faculty: {
+            value: '',
+            isValid: false
+          }
         },
         false
       )
@@ -125,33 +130,6 @@ export default function SignUp() {
                 label='Faculty'
                 validators={[VALIDATOR_REQUIRE()]}
                 errorText='Please enter a faculty.'
-                onInput={inputHandler}
-              />
-              <Input
-                element='input'
-                id='series'
-                type='series'
-                label='Series'
-                validators={[VALIDATOR_REQUIRE()]}
-                errorText='Please enter a series.'
-                onInput={inputHandler}
-              />
-              <Input
-                element='input'
-                id='year'
-                type='year'
-                label='Year'
-                validators={[VALIDATOR_REQUIRE()]}
-                errorText='Please enter a year.'
-                onInput={inputHandler}
-              />
-              <Input
-                element='input'
-                id='group'
-                type='group'
-                label='Group'
-                validators={[VALIDATOR_REQUIRE()]}
-                errorText='Please enter a group.'
                 onInput={inputHandler}
               />
             </>

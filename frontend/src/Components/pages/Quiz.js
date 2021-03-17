@@ -68,9 +68,8 @@ export default function Quiz() {
                   </Button>
                 )}
               </div>
-              <div>{console.log(loadedQuestions.startDate)}
-                   {console.log(loadedQuestions)}
-              </div>
+              {console.log(loadedQuestions.startDate)}
+              {console.log(loadedQuestions)}
             </Cards>
           )}
         </>

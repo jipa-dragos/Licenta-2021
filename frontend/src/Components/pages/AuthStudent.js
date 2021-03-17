@@ -3,7 +3,6 @@ import '../../App.css'
 import Input from '../../shared/components/FormElements/Input'
 import Card from '../../shared/components/UI/Cards'
 import LoadingSpinner from '../../shared/components/UI/LoadingSpinner'
-// import { Button } from '../Button'
 import Button from '../../shared/components/FormElements/Button'
 import './Auth.css'
 import {
@@ -40,6 +39,10 @@ export default function SignUp() {
         {
           ...formState.inputs,
           name: undefined,
+          faculty: undefined,
+          series: undefined, 
+          year: undefined,
+          group: undefined
         },
         formState.inputs.email.isValid && formState.inputs.password.isValid
       )
@@ -51,6 +54,22 @@ export default function SignUp() {
             value: '',
             isValid: false,
           },
+          faculty: {
+            value: '',
+            isValid: false,
+          },
+          series: {
+            value: '',
+            isValid: false,
+          }, 
+          year: {
+            value: '',
+            isValid: false,
+          },
+          group: {
+            value: '',
+            isValid: false,
+          }
         },
         false
       )
@@ -125,7 +144,7 @@ export default function SignUp() {
               <Input
                 element='input'
                 id='faculty'
-                type='faculty'
+                type='text'
                 label='Faculty'
                 validators={[VALIDATOR_REQUIRE()]}
                 errorText='Please enter a faculty.'
