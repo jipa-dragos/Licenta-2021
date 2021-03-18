@@ -39,9 +39,13 @@ function CoursePage() {
           Description: {loadedCourse.data.description}
           <br />
           {loadedCourse.quiz.map((quiz, index) => (
-            <Link to={`/quiz/${quiz._id}`} key={index}>
-              <h3 key={quiz._id}>{quiz.title}</h3>
-            </Link>
+            <React.Fragment key={index}>
+              {new Date(quiz.startDate).getTime() < Date.now() && (
+                <Link to={`/quiz/${quiz._id}`} key={index}>
+                  <h3 key={quiz._id}>{quiz.title}</h3>
+                </Link>
+              )}
+            </React.Fragment>
           ))}
         </div>
       )}

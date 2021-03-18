@@ -16,6 +16,7 @@ import { AuthContext } from './shared/context/auth-context'
 import { useAuth } from './shared/hooks/auth-hook'
 import CoursePage from './Components/pages/CoursePage'
 import QuizPage from './Components/pages/QuizPage'
+import Result from './Components/pages/Result'
 
 function App() {
   const { token, login, logout, userId } = useAuth()
@@ -33,6 +34,8 @@ function App() {
         </Route>
         <Route path='/courses'>
           <Courses />
+        </Route>
+        <Route path='/quiz/:id/result' render={(props) => <Result {...props}/>}>
         </Route>
         <Route path='/quiz/:id'>
           <QuizPage />

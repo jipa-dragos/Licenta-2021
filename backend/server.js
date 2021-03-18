@@ -14,6 +14,7 @@ connectDB()
 
 // Route files
 const quiz = require('./routes/quiz-routes')
+const answer = require ('./routes/answer-routes')
 const course = require('./routes/course-routes')
 const auth = require('./routes/auth-routes')
 const prof = require('./routes/professor-routes')
@@ -40,6 +41,7 @@ if (process.env.NODE_ENV === 'development') app.use(morgan('dev'))
 app.use('/api/auth', auth)
 app.use('/api/course', course)
 app.use('/api/quiz', quiz)
+app.use('/api/answer', answer)
 app.use('/api/prof', prof)
 
 app.use((req, res, next) => {

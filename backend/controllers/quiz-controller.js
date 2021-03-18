@@ -167,6 +167,24 @@ const getQuizById = async (req, res, next) => {
   try {
     const quiz = await Quiz.findById(req.params.id)
 
+    if(new Date(quiz.startDate).getTime() > Date.now() ) {
+      return next(
+        new HttpError(
+          `User ${req.userData.userId} is too early to start the quiz`,
+          403
+        )
+      )
+    }
+
+    if(new Date(quiz.endDate).getTime() < Date.now() ) {
+      return next(
+        new HttpError(
+          `Time expired for the quiz`,
+          403
+        )
+      )
+    }
+
     res.status(200).json({
       success: true,
       data: quiz

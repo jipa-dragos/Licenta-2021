@@ -1,5 +1,5 @@
-import React, { useContext, useState, useEffect, useRef } from 'react'
-import { useParams } from 'react-router'
+import React, { useContext, useState, useEffect } from 'react'
+import { Redirect, useParams } from 'react-router'
 import Button from '../../shared/components/FormElements/Button'
 import LoadingSpinner from '../../shared/components/UI/LoadingSpinner'
 import { AuthContext } from '../../shared/context/auth-context'
@@ -13,8 +13,10 @@ function QuizPage() {
   const [loadedQuestions, setLoadedQuestions] = useState()
   const { isLoading, sendRequest } = useHttpClient()
   const [currentQuestion, setCurrentQuestion] = useState(0)
-  const [showScore, setShowScore] = useState(false)
-  const [score, setScore] = useState(0)
+  const [lastQuestion, setLastQuestion] = useState(false)
+  const [answers, setAnswers] = useState([])
+  const path = `/quiz/${id}/result`
+
   useEffect(() => {
     const fetchQuiz = async () => {
       try {
@@ -34,31 +36,12 @@ function QuizPage() {
     fetchQuiz()
   }, [sendRequest, auth.token, id])
 
-  const handleAnswerButtonClick = (isCorrect) => {
-    if (isCorrect === true) {
-      setScore(score + 1)
-    }
+  const handleAnswerButtonClick = (buttonText) => {
+    setAnswers([...answers, buttonText])
 
     if (currentQuestion + 1 < loadedQuestions.quiz.length)
       setCurrentQuestion(currentQuestion + 1)
-    else setShowScore(true)
-  }
-
-  const renderer = ({ completed }) => {
-    if (completed && !showScore) {
-      setShowScore(true)
-      return null
-    } else {
-      return (
-        <Countdown
-          date={
-            new Date(loadedQuestions.startDate).getTime() +
-            (new Date(loadedQuestions.endDate).getTime() -
-              new Date(loadedQuestions.startDate).getTime())
-          }
-        />
-      )
-    }
+    else setLastQuestion(true)
   }
 
   return (
@@ -70,35 +53,32 @@ function QuizPage() {
       )}
       {!isLoading && loadedQuestions && (
         <>
-          {showScore ? (
-            <div>
-              You scored {score} out of {loadedQuestions.quiz.length} points
-            </div>
+          {new Date(loadedQuestions.endDate).getTime() < Date.now() ||
+          lastQuestion ? (
+            <Redirect to={{ pathname: path, state: { id: id, answers: answers }}} />
           ) : (
             <Cards>
               <div>{loadedQuestions.title}</div>
-              <div>Time CountDown</div>
-              <Countdown
-                date={
-                  new Date(loadedQuestions.startDate).getTime() +
-                  (new Date(loadedQuestions.endDate).getTime() -
-                    new Date(loadedQuestions.startDate).getTime())
-                }
-                renderer={renderer}
-              />
-
+              <div>
+                Remaining Time
+                <Countdown
+                  date={
+                    new Date(loadedQuestions.startDate).getTime() +
+                    (new Date(loadedQuestions.endDate).getTime() -
+                      new Date(loadedQuestions.startDate).getTime())
+                  }
+                />
+              </div>
               <div>{loadedQuestions.quiz[currentQuestion].question}</div>
               <div>
-                {loadedQuestions.quiz[currentQuestion].answers.map(
-                  (answer, index) => (
-                    <Button
-                      onClick={() => handleAnswerButtonClick(answer.isCorrect)}
-                      key={answer._id}
-                    >
-                      {answer.text}
-                    </Button>
-                  )
-                )}
+                {loadedQuestions.quiz[currentQuestion].answers.map((answer) => (
+                  <Button
+                    onClick={() => handleAnswerButtonClick(answer.text)}
+                    key={answer._id}
+                  >
+                    {answer.text}
+                  </Button>
+                ))}
               </div>
             </Cards>
           )}
