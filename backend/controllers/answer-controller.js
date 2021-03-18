@@ -20,6 +20,16 @@ const sendAnswer = async (req, res, next) => {
       return next(new HttpError('Only a student can send answers!', 403))
     }
 
+    const publishedAnswer = await Answer.findOne({ student: student })
+    if (publishedAnswer) {
+      return next(
+        new HttpError(
+          `The student with the ID ${req.userData.userId} has already sent an answer`,
+          400
+        )
+      )
+    }
+
     const { answers, quiz } = req.body
     let grade = 0
 
@@ -34,10 +44,12 @@ const sendAnswer = async (req, res, next) => {
         }
       })
     })
+
     const answer = await Answer.create({
       answers,
       quiz,
       grade,
+      student,
     })
 
     res.status(201).json({

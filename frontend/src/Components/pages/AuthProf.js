@@ -78,7 +78,8 @@ export default function SignUp() {
             'Content-Type': 'application/json',
           }
         )
-        auth.login(responseData.professorId, responseData.token)
+        console.log(responseData.role)
+        auth.login(responseData.professorId, responseData.token, responseData.role)
       } catch (err) {}
     } else {
       try {
@@ -95,7 +96,7 @@ export default function SignUp() {
             'Content-Type': 'application/json',
           }
         )
-        auth.login(responseData.professorId, responseData.token)
+        auth.login(responseData.professorId, responseData.token, responseData.role)
 
         console.log(responseData)
       } catch (err) {

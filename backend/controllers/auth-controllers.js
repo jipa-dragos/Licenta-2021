@@ -157,7 +157,7 @@ const professorSignup = async (req, res, next) => {
   }
 
   const { name, email, password, faculty } = req.body
-
+  const role = 'prof'
   let existingProfessor
   try {
     existingProfessor = await Professor.findOne({ email: email })
@@ -190,6 +190,7 @@ const professorSignup = async (req, res, next) => {
     email,
     password: hashedPassword,
     faculty,
+    role
   })
 
   let token
@@ -269,7 +270,8 @@ const professorLogin = async (req, res, next) => {
   res.json({
     professorId: existingProfessor.id,
     email: existingProfessor.email,
-    token: token
+    token: token,
+    role: existingProfessor.role
   })
 }
 

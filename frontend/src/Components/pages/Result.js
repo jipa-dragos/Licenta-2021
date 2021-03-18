@@ -1,4 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react'
+import { Redirect } from 'react-router'
 import LoadingSpinner from '../../shared/components/UI/LoadingSpinner'
 import { AuthContext } from '../../shared/context/auth-context'
 import { useHttpClient } from '../../shared/hooks/http-hook'
@@ -9,6 +10,7 @@ function Result(props) {
   const [loadedAnswers, setLoadedAnswers] = useState()
   const id = props.history.location.state.id
   const answers = props.history.location.state.answers
+  const [redirect, setRedirect] = useState(false)
 
   useEffect(() => {
     const sendAnswers = async () => {
@@ -27,7 +29,7 @@ function Result(props) {
         )
         setLoadedAnswers(answersData)
       } catch (err) {
-        console.log(err)
+        setRedirect(true)
       }
     }
     sendAnswers()
@@ -35,6 +37,7 @@ function Result(props) {
 
   return (
     <>
+      {redirect && <Redirect to={{ pathname: props.history.goBack()}} />}
       {isLoading && (
         <div className='center'>
           <LoadingSpinner asOverlay />

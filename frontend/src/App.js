@@ -10,7 +10,7 @@ import {
 } from 'react-router-dom'
 import AuthStudent from './Components/pages/AuthStudent'
 import AuthProf from './Components/pages/AuthProf'
-import Quiz from './Components/pages/Quiz'
+import QuizCreate from './Components/pages/QuizCreate'
 import Courses from './Components/pages/Courses'
 import { AuthContext } from './shared/context/auth-context'
 import { useAuth } from './shared/hooks/auth-hook'
@@ -19,10 +19,9 @@ import QuizPage from './Components/pages/QuizPage'
 import Result from './Components/pages/Result'
 
 function App() {
-  const { token, login, logout, userId } = useAuth()
+  const { token, login, logout, userId, role } = useAuth()
 
   let routes
-
   if (token) {
     routes = (
       <Switch>
@@ -35,13 +34,16 @@ function App() {
         <Route path='/courses'>
           <Courses />
         </Route>
-        <Route path='/quiz/:id/result' render={(props) => <Result {...props}/>}>
-        </Route>
+        <Route
+          path='/quiz/:id/result'
+          render={(props) => <Result {...props} />}
+        ></Route>
         <Route path='/quiz/:id'>
           <QuizPage />
         </Route>
         <Route path='/quiz'>
-          <Quiz />
+          {role && <QuizCreate />}
+          {!role && <h1>salut baiatul</h1>}
         </Route>
         <Redirect to='/' />
       </Switch>
@@ -56,7 +58,6 @@ function App() {
       </Switch>
     )
   }
-
   return (
     <AuthContext.Provider
       value={{
@@ -65,6 +66,7 @@ function App() {
         userId: userId,
         login: login,
         logout: logout,
+        role: role,
       }}
     >
       <Router>

@@ -16,6 +16,7 @@ const ProfessorSchema = new Schema({
   password: { type: String, required: true, minlength: 6 },
   faculty: { type: String, required: true },
   course: { type: [mongoose.Types.ObjectId], ref: 'Course'},
+  role: {type: String, required: true},
   createdAt: { type: Date, default: Date.now }
 })
 

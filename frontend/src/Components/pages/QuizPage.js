@@ -1,5 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react'
 import { Redirect, useParams } from 'react-router'
+import { useHistory } from "react-router-dom";
 import Button from '../../shared/components/FormElements/Button'
 import LoadingSpinner from '../../shared/components/UI/LoadingSpinner'
 import { AuthContext } from '../../shared/context/auth-context'
@@ -15,6 +16,9 @@ function QuizPage() {
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [lastQuestion, setLastQuestion] = useState(false)
   const [answers, setAnswers] = useState([])
+  const [redirect, setRedirect] = useState(false)
+  let history = useHistory();
+
   const path = `/quiz/${id}/result`
 
   useEffect(() => {
@@ -30,7 +34,7 @@ function QuizPage() {
         )
         setLoadedQuestions(responseData.data)
       } catch (err) {
-        console.log(err)
+        setRedirect(true)
       }
     }
     fetchQuiz()
@@ -46,6 +50,7 @@ function QuizPage() {
 
   return (
     <>
+      {redirect && <Redirect to={{ pathname: history.goBack() }} />}
       {isLoading && (
         <div className='center'>
           <LoadingSpinner asOverlay />
@@ -55,7 +60,9 @@ function QuizPage() {
         <>
           {new Date(loadedQuestions.endDate).getTime() < Date.now() ||
           lastQuestion ? (
-            <Redirect to={{ pathname: path, state: { id: id, answers: answers }}} />
+            <Redirect
+              to={{ pathname: path, state: { id: id, answers: answers } }}
+            />
           ) : (
             <Cards>
               <div>{loadedQuestions.title}</div>
