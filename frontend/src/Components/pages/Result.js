@@ -23,8 +23,7 @@ function Result(props) {
             quiz: id,
           }),
           {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${auth.token}`,
+            'Content-Type': 'application/json'
           }
         )
         setLoadedAnswers(answersData)

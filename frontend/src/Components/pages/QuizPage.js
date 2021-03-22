@@ -26,11 +26,6 @@ function QuizPage() {
       try {
         const responseData = await sendRequest(
           'http://localhost:5005/api/quiz/course/' + id,
-          'GET',
-          null,
-          {
-            Authorization: `Bearer ${auth.token}`,
-          }
         )
         setLoadedQuestions(responseData.data)
       } catch (err) {

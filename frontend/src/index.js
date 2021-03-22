@@ -1,5 +1,11 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import App from './App'
+import 'antd/dist/antd.css'
+ReactDOM.render(
+  <>
+    <App />
+  </>,
 
-ReactDOM.render(<App />, document.getElementById('root'))
+  document.getElementById('root')
+)

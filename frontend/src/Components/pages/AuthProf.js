@@ -75,6 +75,7 @@ export default function SignUp() {
             password: formState.inputs.password.value,
           }),
           {
+            'Authorization': `Bearer ${auth.token}`,
             'Content-Type': 'application/json',
           }
         )

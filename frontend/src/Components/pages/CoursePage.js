@@ -13,12 +13,7 @@ function CoursePage() {
     const fetchCourse = async () => {
       try {
         const responseData = await sendRequest(
-          `http://localhost:5005/api/course/${course.title}`,
-          'GET',
-          null,
-          {
-            Authorization: `Bearer ${auth.token}`,
-          }
+          `http://localhost:5005/api/course/${course.title}`
         )
         setLoadedCourse(responseData)
       } catch (err) {

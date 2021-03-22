@@ -14,12 +14,7 @@ export default function Courses() {
     const fetchCourses = async () => {
       try {
         const responseData = await sendRequest(
-          'http://localhost:5005/api/course/',
-          'GET',
-          null,
-          {
-            Authorization: `Bearer ${auth.token}`,
-          }
+          'http://localhost:5005/api/course/'
         )
         setLoadedCourses(responseData)
       } catch (err) {
@@ -41,14 +36,14 @@ export default function Courses() {
           <div className='cards__container'>
             <div className='cards__wrapper'>
               <ul className='cards__items'>
-                {loadedCourses.data.map(course => (
-                    <CardItem
-                      src='https://www.testing-whiz.com/media/3231/is-software-quality-assurance-same-as-software-testing.png'
-                      text={course.description}
-                      label={course.title}
-                      path={`/courses/${course.title}`}
-                      key={course._id}
-                    />
+                {loadedCourses.data.map((course) => (
+                  <CardItem
+                    src='https://www.testing-whiz.com/media/3231/is-software-quality-assurance-same-as-software-testing.png'
+                    text={course.description}
+                    label={course.title}
+                    path={`/courses/${course.title}`}
+                    key={course._id}
+                  />
                 ))}
               </ul>
             </div>
