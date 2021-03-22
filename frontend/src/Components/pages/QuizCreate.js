@@ -72,12 +72,8 @@ export default function QuizCreate() {
               ],
               startDate: '2021-05-22T16:48:09.033+00:00',
               endDate: '2021-05-22T15:48:09.033+00:00',
-              courseName: 'POO',
-            }),
-            {
-              'Authorization': `Bearer ${auth.token}`,
-              'Content-Type': 'application/json',
-            }
+              courseName: loadData.courseName,
+            })
           )
         }
       } catch (err) {

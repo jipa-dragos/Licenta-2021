@@ -19,6 +19,7 @@ const sendAnswer = async (req, res, next) => {
     if (!student) {
       return next(new HttpError('Only a student can send answers!', 403))
     }
+    console.log(student)
 
     const publishedAnswer = await Answer.findOne({ student: student })
     if (publishedAnswer) {

@@ -74,10 +74,6 @@ export default function SignUp() {
             email: formState.inputs.email.value,
             password: formState.inputs.password.value,
           }),
-          {
-            'Authorization': `Bearer ${auth.token}`,
-            'Content-Type': 'application/json',
-          }
         )
         console.log(responseData.role)
         auth.login(responseData.professorId, responseData.token, responseData.role)
@@ -92,10 +88,7 @@ export default function SignUp() {
             email: formState.inputs.email.value,
             password: formState.inputs.password.value,
             faculty: formState.inputs.faculty.value,
-          }),
-          {
-            'Content-Type': 'application/json',
-          }
+          })
         )
         auth.login(responseData.professorId, responseData.token, responseData.role)
 

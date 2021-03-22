@@ -15,16 +15,15 @@ function Result(props) {
   useEffect(() => {
     const sendAnswers = async () => {
       try {
+        console.log(answers)
+        console.log(id)
         const answersData = await sendRequest(
           'http://localhost:5005/api/answer/',
           'POST',
           JSON.stringify({
             answers: answers,
             quiz: id,
-          }),
-          {
-            'Content-Type': 'application/json'
-          }
+          })
         )
         setLoadedAnswers(answersData)
       } catch (err) {
@@ -36,16 +35,14 @@ function Result(props) {
 
   return (
     <>
-      {redirect && <Redirect to={{ pathname: props.history.goBack()}} />}
+      {redirect && <Redirect to={{ pathname: props.history.goBack() }} />}
       {isLoading && (
         <div className='center'>
           <LoadingSpinner asOverlay />
         </div>
       )}
       {!isLoading && loadedAnswers && (
-        <>
-          Grade for this quiz is {loadedAnswers.data.grade}
-        </>
+        <>Grade for this quiz is {loadedAnswers.data.grade}</>
       )}
     </>
   )

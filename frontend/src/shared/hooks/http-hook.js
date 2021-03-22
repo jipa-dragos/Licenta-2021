@@ -12,7 +12,10 @@ export const useHttpClient = () => {
       url,
       method = 'GET',
       body = null,
-      headers = { Authorization: `Bearer ${auth.token}` }
+      headers = {
+        Authorization: `Bearer ${auth.token}`,
+        'Content-Type': 'application/json',
+      }
     ) => {
       setIsLoading(true)
 
@@ -28,7 +31,6 @@ export const useHttpClient = () => {
         })
 
         const responseData = await response.json()
-        
         activeHttpRequest.current = activeHttpRequest.current.filter(
           (reqCtrl) => reqCtrl !== httpAbortCtrll
         )
