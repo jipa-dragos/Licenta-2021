@@ -13,36 +13,65 @@ import {
   Col,
   Space,
   Checkbox,
+  Select,
 } from 'antd'
+import moment from 'moment'
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
 
 const { RangePicker } = DatePicker
+const { TextArea } = Input
+const { Option } = Select
 
-// const formItemLayout = {
-//   labelCol: {
-//     xs: { span: 24 },
-//     sm: { span: 4 },
-//   },
-//   wrapperCol: {
-//     xs: { span: 24 },
-//     sm: { span: 20 },
-//   },
-// }
-const formItemLayoutWithOutLabel = {
-  wrapperCol: {
-    xs: { span: 24, offset: 0 },
-    sm: { span: 20, offset: 4 },
+const formItemLayout = {
+  labelCol: {
+    span: 6,
   },
+  wrapperCol: {
+    span: 14,
+  },
+}
+
+function disabledDate(current) {
+  // Can not select days before today and today
+  return current && current < moment().add(-1, 'days')
 }
 
 export default function QuizCreate() {
   const { isLoading, sendRequest } = useHttpClient()
   const auth = useContext(AuthContext)
   const [loadData, setLoadData] = useState()
+  const [loadedCourses, setLoadedCourses] = useState()
 
   const onFinish = async (values) => {
-    setLoadData(values)
+    let newData = values
+
+    let startDate = values.rangeTime[0]._d.toString()
+    let endDate = values.rangeTime[1]._d.toString()
+
+    delete newData.rangeTime
+
+    newData.startDate = startDate
+    newData.endDate = endDate
+
+    console.log('newData', newData)
+
+    setLoadData(newData)
   }
+
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const responseData = await sendRequest(
+          'http://localhost:5005/api/course/'
+        )
+        setLoadedCourses(responseData)
+        console.log('am rulat doar la inceput sper')
+      } catch (err) {
+        console.log(err)
+      }
+    }
+    fetchCourses()
+  }, [sendRequest])
 
   useEffect(() => {
     const createQuiz = async () => {
@@ -50,30 +79,11 @@ export default function QuizCreate() {
         if (!loadData) {
           console.log('data not loaded')
         } else {
+          console.log(loadData)
           await sendRequest(
             'http://localhost:5005/api/quiz/',
             'POST',
-            JSON.stringify({
-              title: loadData.title,
-              quiz: [
-                {
-                  question: loadData.question[0].question,
-                  answers: [
-                    {
-                      text: loadData.question[0].answer1,
-                      isCorrect: loadData.question[0].isCorrect1,
-                    },
-                    {
-                      text: loadData.question[0].answer2,
-                      isCorrect: loadData.question[0].isCorrect2,
-                    },
-                  ],
-                },
-              ],
-              startDate: '2021-05-22T16:48:09.033+00:00',
-              endDate: '2021-05-22T15:48:09.033+00:00',
-              courseName: loadData.courseName,
-            })
+            JSON.stringify(loadData)
           )
         }
       } catch (err) {
@@ -82,23 +92,24 @@ export default function QuizCreate() {
     }
     createQuiz()
   }, [sendRequest, loadData, auth.token])
+
   const setQuizDate = () => (
     <Row>
       <Col md={{ span: 12, offset: 8 }}>
-        <Form.Item name='range-time-picker'>
+        <Form.Item name='rangeTime'>
           <RangePicker
+            disabledDate={disabledDate}
             showTime={{ format: 'HH:mm' }}
             format='YYYY-MM-DD HH:mm'
             onFinish={onFinish}
             rules={[
               {
                 required: true,
-                message: 'Please input your title!',
+                message: 'Please input your range!',
               },
             ]}
           />
         </Form.Item>
-        <Form.Item label='Quiz'></Form.Item>
       </Col>
     </Row>
   )
@@ -107,6 +118,7 @@ export default function QuizCreate() {
     <Form.Item
       label='Title'
       name='title'
+      hasFeedback
       rules={[
         {
           required: true,
@@ -122,77 +134,36 @@ export default function QuizCreate() {
     <Form.Item
       label='CourseName'
       name='courseName'
+      hasFeedback
       rules={[
         {
           required: true,
-          message: 'Please input your Course!',
+          message: 'Please select your Course!',
         },
       ]}
     >
-      <Input />
+      <Select placeholder='Please select a course'>
+        {loadedCourses.data.map((course) => (
+          <Option key={course._id} value={course.title}>
+            {course.title}
+          </Option>
+        ))}
+      </Select>
     </Form.Item>
   )
 
   const button = () => (
-    <Form.Item>
+    <Form.Item
+      wrapperCol={{
+        span: 12,
+        offset: 6,
+      }}
+    >
       <Button type='primary' htmlType='submit'>
         Submit
       </Button>
     </Form.Item>
   )
-
-  // const formList = () => (
-  //   <Form.List name='questions'>
-  //     {(fields, { add, remove }) => (
-  //       <>
-  //         {fields.map((field) => (
-  //           <Space
-  //             key={field.key}
-  //             style={{
-  //               display: 'flex',
-  //               marginBottom: 8,
-  //               marginLeft: 400,
-  //             }}
-  //             align='baseline'
-  //           >
-  //             <Form.Item
-  //               {...field}
-  //               name={[field.name, 'answer1']}
-  //               fieldKey={[field.fieldKey, 'answer1']}
-  //               rules={[
-  //                 {
-  //                   required: true,
-  //                   message: 'Missing answer1',
-  //                 },
-  //               ]}
-  //             >
-  //               <Input placeholder='answer1' />
-  //             </Form.Item>
-  //             <Form.Item
-  //               name={[field.name, 'isCorrect']}
-  //               valuePropName='checked'
-  //               noStyle
-  //               initialValue={false}
-  //             >
-  //               <Checkbox>Correct</Checkbox>
-  //             </Form.Item>
-  //             <MinusCircleOutlined onClick={() => remove(field.name)} />
-  //           </Space>
-  //         ))}
-  //         <Form.Item>
-  //           <Button
-  //             type='default'
-  //             onClick={() => add()}
-  //             block
-  //             icon={<PlusOutlined />}
-  //           >
-  //             Add answer
-  //           </Button>
-  //         </Form.Item>
-  //       </>
-  //     )}
-  //   </Form.List>
-  // )
 
   return (
     <>
@@ -201,255 +172,137 @@ export default function QuizCreate() {
           <LoadingSpinner asOverlay />
         </div>
       )}
-      {!isLoading && (
-        <Form
-          name='dynamic_form_item'
-          {...formItemLayoutWithOutLabel}
-          onFinish={onFinish}
-        >
+      {!isLoading && loadedCourses && (
+        <Form name='dynamic_form_item' {...formItemLayout} onFinish={onFinish}>
           {quizTitle()}
           {courseName()}
           {setQuizDate()}
-          {/* <Form.List name='users'>
-            {(fields, { add, remove }) => (
-              <>
-                {fields.map((field) => (
-                  <Space
-                    key={field.key}
-                    style={{
-                      display: 'flex',
-                      marginBottom: 8,
-                      marginLeft: 400,
-                    }}
-                    align='baseline'
-                  > */}
 
-          <Form.List name='question'>
+          <Form.List name='quiz'>
             {(fields2, { add, remove }) => (
               <>
                 {fields2.map((field2) => (
-                  <Space
-                    key={field2.key}
-                    style={{
-                      display: 'grid',
-                      marginBottom: 8,
-                    }}
-                    align='baseline'
-                  >
-                    <Form.Item
-                      {...field2}
-                      name={[field2.name, 'question']}
-                      fieldKey={[field2.fieldKey, 'question']}
-                    >
-                      <Input placeholder='q/a' />
-                    </Form.Item>
-                    {/* {formList()} */}
+                  <React.Fragment key={field2.key}>
                     <Space
                       style={{
                         display: 'flex',
-                        marginBottom: 10,
-                        marginLeft: 100,
+                        marginBottom: 8,
+                        marginLeft: 330,
                       }}
                       align='baseline'
                     >
-                      {/* <Form.List name='answer'>
-                        {(fields2, {add, remove}) => (
+                      <Form.Item
+                        {...field2}
+                        hasFeedback
+                        wrapperCol={{
+                          span: 20,
+                          offset: 6,
+                        }}
+                        name={[field2.name, 'question']}
+                        fieldKey={[field2.fieldKey, 'question']}
+                        rules={[
+                          {
+                            required: true,
+                            message: 'Missing question',
+                          },
+                        ]}
+                      >
+                        <TextArea
+                          style={{ width: 1000 }}
+                          rows={1}
+                          size='large'
+                          placeholder='q/a'
+                        />
+                      </Form.Item>
+
+                      <MinusCircleOutlined
+                        style={{ marginLeft: 100 }}
+                        onClick={() => remove(field2.name)}
+                      />
+                    </Space>
+                    <Form.List name={[field2.name, 'answers']}>
+                      {(answers, { add, remove }) => {
+                        return (
                           <>
-                            {fields2.map((field) => (
-                              <React.Fragment key={field.key}>
+                            {answers.map((answer) => (
+                              <Space key={answer.key} align='baseline'>
                                 <Form.Item
-                                  {...field}
-                                  name={[field.name, 'answer1']}
-                                  fieldKey={[field.fieldKey, 'answer1']}
+                                  {...answer}
+                                  wrapperCol={{
+                                    span: 12,
+                                    offset: 11,
+                                  }}
+                                  style={{ width: 1000, marginLeft: 30 }}
+                                  hasFeedback
+                                  name={[answer.name, 'text']}
+                                  fieldKey={[answer.fieldKey, 'text']}
                                   rules={[
                                     {
                                       required: true,
-                                      message: 'Missing answer1',
+                                      message: 'Missing answer',
                                     },
                                   ]}
                                 >
-                                  <Input placeholder='answer1' />
+                                  <Input placeholder='answer' />
                                 </Form.Item>
 
                                 <Form.Item
-                                  name={[field.name, 'isCorrect1']}
+                                  name={[answer.name, 'isCorrect']}
                                   valuePropName='checked'
                                   noStyle
                                   initialValue={false}
                                 >
                                   <Checkbox>Correct</Checkbox>
                                 </Form.Item>
-                              </React.Fragment>
+
+                                <MinusCircleOutlined
+                                  onClick={() => {
+                                    remove(answer.name)
+                                  }}
+                                />
+                              </Space>
                             ))}
-                            <Form.Item>
+
+                            <Form.Item
+                              wrapperCol={{
+                                span: 12,
+                                offset: 6,
+                              }}
+                            >
                               <Button
-                                type='default'
-                                onClick={() => add()}
+                                type='dashed'
+                                onClick={() => {
+                                  add()
+                                }}
                                 block
-                                icon={<PlusOutlined />}
                               >
-                                Add answer
+                                <PlusOutlined /> Add Answer
                               </Button>
                             </Form.Item>
                           </>
-                        )}
-                      </Form.List> */}
-
-                      <Form.Item
-                        {...field2}
-                        name={[field2.name, 'answer1']}
-                        fieldKey={[field2.fieldKey, 'answer1']}
-                        rules={[
-                          {
-                            required: true,
-                            message: 'Missing answer1',
-                          },
-                        ]}
-                      >
-                        <Input placeholder='answer1' />
-                      </Form.Item>
-
-                      <Form.Item
-                        name={[field2.name, 'isCorrect1']}
-                        valuePropName='checked'
-                        noStyle
-                        initialValue={false}
-                      >
-                        <Checkbox>Correct</Checkbox>
-                      </Form.Item>
-                      <Form.Item
-                        {...field2}
-                        name={[field2.name, 'answer2']}
-                        fieldKey={[field2.fieldKey, 'answer2']}
-                        rules={[
-                          {
-                            required: true,
-                            message: 'Missing answer2',
-                          },
-                        ]}
-                      >
-                        <Input placeholder='answer2' />
-                      </Form.Item>
-
-                      <Form.Item
-                        name={[field2.name, 'isCorrect2']}
-                        valuePropName='checked'
-                        noStyle
-                        initialValue={false}
-                      >
-                        <Checkbox>Correct</Checkbox>
-                      </Form.Item>
-                      <Form.Item
-                        {...field2}
-                        name={[field2.name, 'answer3']}
-                        fieldKey={[field2.fieldKey, 'answer3']}
-                      >
-                        <Input placeholder='answer3' />
-                      </Form.Item>
-
-                      <Form.Item
-                        name={[field2.name, 'isCorrect3']}
-                        valuePropName='checked'
-                        noStyle
-                        initialValue={false}
-                      >
-                        <Checkbox>Correct</Checkbox>
-                      </Form.Item>
-
-                      <Form.Item
-                        {...field2}
-                        name={[field2.name, 'answer4']}
-                        fieldKey={[field2.fieldKey, 'answer4']}
-                      >
-                        <Input placeholder='answer4' />
-                      </Form.Item>
-
-                      <Form.Item
-                        name={[field2.name, 'isCorrect4']}
-                        valuePropName='checked'
-                        noStyle
-                        initialValue={false}
-                      >
-                        <Checkbox>Correct</Checkbox>
-                      </Form.Item>
-
-                      <Form.Item
-                        {...field2}
-                        name={[field2.name, 'answer5']}
-                        fieldKey={[field2.fieldKey, 'answer5']}
-                      >
-                        <Input placeholder='answer5' />
-                      </Form.Item>
-
-                      <Form.Item
-                        name={[field2.name, 'isCorrect5']}
-                        valuePropName='checked'
-                        noStyle
-                        initialValue={false}
-                      >
-                        <Checkbox>Correct</Checkbox>
-                      </Form.Item>
-                      <Form.Item
-                        {...field2}
-                        name={[field2.name, 'answer6']}
-                        fieldKey={[field2.fieldKey, 'answer6']}
-                      >
-                        <Input placeholder='answer6' />
-                      </Form.Item>
-
-                      <Form.Item
-                        name={[field2.name, 'isCorrect6']}
-                        valuePropName='checked'
-                        noStyle
-                        initialValue={false}
-                      >
-                        <Checkbox>Correct</Checkbox>
-                      </Form.Item>
-
-                      <MinusCircleOutlined
-                        onClick={() => remove(field2.name)}
-                      />
-                    </Space>
-                  </Space>
+                        )
+                      }}
+                    </Form.List>
+                  </React.Fragment>
                 ))}
-                <Form.Item>
+                <Form.Item
+                  wrapperCol={{
+                    span: 12,
+                    offset: 6,
+                  }}
+                >
                   <Button
                     type='default'
                     onClick={() => add()}
                     block
                     icon={<PlusOutlined />}
                   >
-                    Add field
+                    Add Question
                   </Button>
                 </Form.Item>
               </>
             )}
           </Form.List>
-          {/* <Form.Item
-                      {...field}
-                      name={[field.name, 'question']}
-                      fieldKey={[field.fieldKey, 'question']}
-                      rules={[{ required: true, message: 'Missing qustion' }]}
-                    >
-                      <Input placeholder='Question' />
-                    </Form.Item> */}
-
-          {/* <MinusCircleOutlined onClick={() => remove(field.name)} /> */}
-          {/* </Space>
-                ))}
-                <Form.Item>
-                  <Button
-                    type='dashed'
-                    onClick={() => add()}
-                    block
-                    icon={<PlusOutlined />}
-                  >
-                    Add field
-                  </Button>
-                </Form.Item>
-              </>
-            )}
-          </Form.List> */}
           {button()}
         </Form>
       )}

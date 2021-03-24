@@ -5,7 +5,7 @@ function Footer() {
     <div className='footer-container'>
       <div className='social-media-wrap'>
         <div className='footer-logo'>
-          <p to='/' className='social-logo'>
+          <p to='/' className='social-logo' >
             ASE QUIZ <i className='fab fa-typo3' />
           </p>
         </div>

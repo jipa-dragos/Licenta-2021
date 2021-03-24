@@ -20,3 +20,7 @@
 [data-theme='dark'] .dynamic-delete-button:hover {
   color: rgba(255, 255, 255, 0.65);
 }
+
+.ant-form-item-label label {
+  font-size: 22px;
+}

@@ -19,9 +19,12 @@ const sendAnswer = async (req, res, next) => {
     if (!student) {
       return next(new HttpError('Only a student can send answers!', 403))
     }
-    console.log(student)
+    const { answers, quiz } = req.body
 
-    const publishedAnswer = await Answer.findOne({ student: student })
+    const quizTaken = await Quiz.findById(quiz)
+    
+    console.log(quizTaken._id)
+    const publishedAnswer = await Answer.findOne({ quiz: quizTaken })
     if (publishedAnswer) {
       return next(
         new HttpError(
@@ -31,20 +34,22 @@ const sendAnswer = async (req, res, next) => {
       )
     }
 
-    const { answers, quiz } = req.body
     let grade = 0
 
-    const quizTaken = await Quiz.findById(quiz)
-
-    quizTaken.quiz.forEach((element) => {
-      element.answers.forEach((answer) => {
-        if (answer.isCorrect === true) {
-          answers.forEach((text) => {
-            if (text === answer.text) grade++
-          })
+    for(let i = 0; i < quizTaken.quiz.length; i++) {
+      // console.log('i =', i)
+      for (let j = 0; j < quizTaken.quiz[i].answers.length; j++) {
+        // console.log('j =', j)
+        if(quizTaken.quiz[i].answers[j].isCorrect === true) {
+          // console.log('am gasit un true')
+          for(let k = 0; k < answers.length; k++) {
+            if(quizTaken.quiz[i].answers[j].text === answers[j]){
+              grade++;
+            }
+          }
         }
-      })
-    })
+      }
+    }
 
     const answer = await Answer.create({
       answers,
