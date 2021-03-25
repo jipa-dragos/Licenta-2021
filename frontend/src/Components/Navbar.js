@@ -39,10 +39,6 @@ function Navbar() {
     setIsModalVisible(!click)
   }
 
-  const handleOk = () => {
-    setIsModalVisible(false)
-  }
-
   const handleCancel = () => {
     setIsModalVisible(false)
   }
@@ -97,17 +93,17 @@ function Navbar() {
           <Modal
             title='Authentication needed!'
             visible={isModalVisible}
-            onOk={handleOk}
+            footer={null}
             onCancel={handleCancel}
           >
-            <Link to='/auth/professor' onClick={handleOk}>
+            <Link to='/auth/professor' onClick={handleCancel}>
               <Buttonski type='primary' style={{ marginLeft: '30%', width: 180, color: 'white', backgroundColor: '#7f00ff'}}>
                 Professor Authentication
               </Buttonski>
             </Link>
             <br />
             <br />
-            <Link to='/auth/student' onClick={handleOk}>
+            <Link to='/auth/student' onClick={handleCancel}>
               <Buttonski type='primary' style={{ marginLeft: '30%', width: 180, backgroundColor: '#ff0080' }}>
                 Student Authentication
               </Buttonski>

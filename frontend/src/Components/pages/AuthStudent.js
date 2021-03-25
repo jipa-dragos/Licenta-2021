@@ -1,25 +1,22 @@
 import React, { useState, useContext } from 'react'
 import '../../App.css'
-import Input from '../../shared/components/FormElements/Input'
 import Card from '../../shared/components/UI/Cards'
 import LoadingSpinner from '../../shared/components/UI/LoadingSpinner'
 import Button from '../../shared/components/FormElements/Button'
 import './Auth.css'
-import {
-  VALIDATOR_EMAIL,
-  VALIDATOR_MINLENGTH,
-  VALIDATOR_REQUIRE,
-} from '../../shared/util/validators'
 import { useForm } from '../../shared/hooks/form-hook'
 import { AuthContext } from '../../shared/context/auth-context'
 import { useHttpClient } from '../../shared/hooks/http-hook'
+import { Form, Input as Inp, Button as Buttonski } from 'antd'
+import { UserOutlined, LockOutlined, BankOutlined, AliwangwangOutlined, GroupOutlined, InsertRowAboveOutlined, ItalicOutlined } from '@ant-design/icons'
+import 'antd/dist/antd.css'
 
 export default function SignUp() {
   const auth = useContext(AuthContext)
   const [isLoginMode, setIsLoginMode] = useState(true)
   const { isLoading, sendRequest } = useHttpClient()
 
-  const [formState, inputHandler, setFormData] = useForm(
+  const [formState, setFormData] = useForm(
     {
       email: {
         value: '',
@@ -77,17 +74,15 @@ export default function SignUp() {
     setIsLoginMode((prevMode) => !prevMode)
   }
 
-  const submitHandler = async (event) => {
-    event.preventDefault()
-
+  const onFinish = async (values) => {
     if (isLoginMode) {
       try {
         const responseData = await sendRequest(
           'http://localhost:5005/api/auth/login/student',
           'POST',
           JSON.stringify({
-            email: formState.inputs.email.value,
-            password: formState.inputs.password.value,
+            email: values.email,
+            password: values.password,
           }),
           {
             'Content-Type': 'application/json',
@@ -101,13 +96,13 @@ export default function SignUp() {
           'http://localhost:5005/api/auth/signup/student',
           'POST',
           JSON.stringify({
-            name: formState.inputs.name.value,
-            email: formState.inputs.email.value,
-            password: formState.inputs.password.value,
-            faculty: formState.inputs.faculty.value,
-            series: formState.inputs.series.value,
-            year: formState.inputs.year.value,
-            group: formState.inputs.group.value,
+            name: values.name,
+            email: values.email,
+            password: values.password,
+            faculty: values.faculty,
+            series: values.series,
+            year: values.year,
+            group: values.group,
           }),
           {
             'Content-Type': 'application/json',
@@ -127,82 +122,166 @@ export default function SignUp() {
       <Card className='authentication'>
         {isLoading && <LoadingSpinner asOverlay />}
         <h2>Login Required</h2>
-        <hr />
-        <form onSubmit={submitHandler}>
+        <Form
+          name='normal_login'
+          className='login-form'
+          initialValues={{
+            remember: true,
+          }}
+          onFinish={onFinish}
+        >
           {!isLoginMode && (
             <>
-              <Input
-                element='input'
-                id='name'
-                type='text'
-                label='Your Name'
-                validators={[VALIDATOR_REQUIRE()]}
-                errorText='Please enter a name.'
-                onInput={inputHandler}
-              />
+              <Form.Item
+                wrapperCol={{
+                  offset: 4,
+                }}
+                name='name'
+                hasFeedback
+                rules={[
+                  {
+                    required: true,
+                    message: 'Please input your name!',
+                  },
+                ]}
+              >
+                <Inp
+                  prefix={<AliwangwangOutlined className='site-form-item-icon' />}
+                  placeholder='Your name'
+                />
+              </Form.Item>
 
-              <Input
-                element='input'
-                id='faculty'
-                type='text'
-                label='Faculty'
-                validators={[VALIDATOR_REQUIRE()]}
-                errorText='Please enter a faculty.'
-                onInput={inputHandler}
-              />
-              <Input
-                element='input'
-                id='series'
-                type='series'
-                label='Series'
-                validators={[VALIDATOR_REQUIRE()]}
-                errorText='Please enter a series.'
-                onInput={inputHandler}
-              />
-              <Input
-                element='input'
-                id='year'
-                type='year'
-                label='Year'
-                validators={[VALIDATOR_REQUIRE()]}
-                errorText='Please enter a year.'
-                onInput={inputHandler}
-              />
-              <Input
-                element='input'
-                id='group'
-                type='group'
-                label='Group'
-                validators={[VALIDATOR_REQUIRE()]}
-                errorText='Please enter a group.'
-                onInput={inputHandler}
-              />
+              <Form.Item
+                wrapperCol={{
+                  offset: 4,
+                }}
+                name='faculty'
+                hasFeedback
+                rules={[
+                  {
+                    required: true,
+                    message: 'Please input your faculty!',
+                  },
+                ]}
+              >
+                <Inp
+                  prefix={<BankOutlined className='site-form-item-icon' />}
+                  placeholder='Faculty'
+                />
+              </Form.Item>
+
+              <Form.Item
+                wrapperCol={{
+                  offset: 4,
+                }}
+                name='series'
+                hasFeedback
+                rules={[
+                  {
+                    required: true,
+                    message: 'Please input your series!',
+                  },
+                ]}
+              >
+                <Inp
+                  prefix={<InsertRowAboveOutlined className='site-form-item-icon' />}
+                  placeholder='series'
+                />
+              </Form.Item>
+
+              <Form.Item
+                wrapperCol={{
+                  offset: 4,
+                }}
+                name='year'
+                hasFeedback
+                rules={[
+                  {
+                    required: true,
+                    message: 'Please input your year!',
+                  },
+                ]}
+              >
+                <Inp
+                  prefix={<ItalicOutlined className='site-form-item-icon' />}
+                  placeholder='year'
+                />
+              </Form.Item>
+              
+              <Form.Item
+                wrapperCol={{
+                  offset: 4,
+                }}
+                name='group'
+                hasFeedback
+                rules={[
+                  {
+                    required: true,
+                    message: 'Please input your group!',
+                  },
+                ]}
+              >
+                <Inp
+                  prefix={<GroupOutlined className='site-form-item-icon' />}
+                  placeholder='group'
+                />
+              </Form.Item>
             </>
           )}
 
-          <Input
-            element='input'
-            id='email'
-            type='email'
-            label='E-Mail'
-            validators={[VALIDATOR_EMAIL()]}
-            errorText='Please enter a valid email address.'
-            onInput={inputHandler}
-          />
-          <Input
-            element='input'
-            id='password'
-            type='password'
-            label='Password'
-            validators={[VALIDATOR_MINLENGTH(6)]}
-            errorText='Please enter a valid password, at least 6 characters.'
-            onInput={inputHandler}
-          />
+          <Form.Item
+            name='email'
+            wrapperCol={{
+              offset: 4,
+            }}
+            hasFeedback
+            rules={[
+              {
+                required: true,
+                type: 'email',
+                message: 'Please input your email!',
+              },
+            ]}
+          >
+            <Inp
+              prefix={<UserOutlined className='site-form-item-icon' />}
+              placeholder='Email'
+            />
+          </Form.Item>
+          <Form.Item
+            wrapperCol={{
+              offset: 4,
+            }}
+            name='password'
+            hasFeedback
+            rules={[
+              {
+                required: true,
+                message: 'Please input your Password!',
+              },
+            ]}
+          >
+            <Inp
+              prefix={<LockOutlined className='site-form-item-icon' />}
+              type='password'
+              placeholder='Password'
+            />
+          </Form.Item>
 
-          <Button type='submit' disabled={!formState.isValid}>
-            {isLoginMode ? 'LOGIN' : 'SIGNUP'}
-          </Button>
-        </form>
+          <Form.Item
+            wrapperCol={{
+              offset: 4,
+            }}
+          >
+            <Buttonski
+              type='primary'
+              htmlType='submit'
+              className='login-form-button'
+            >
+              Log in
+            </Buttonski>
+          </Form.Item>
+        </Form>
         <Button inverse onClick={switchModeHandler}>
           SWITCH TO {isLoginMode ? 'SIGNUP' : 'LOGIN'}
         </Button>
