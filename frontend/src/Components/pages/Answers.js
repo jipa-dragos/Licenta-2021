@@ -3,10 +3,6 @@ import LoadingSpinner from '../../shared/components/UI/LoadingSpinner'
 import { AuthContext } from '../../shared/context/auth-context'
 import { useHttpClient } from '../../shared/hooks/http-hook'
 import { List, Avatar, Divider } from 'antd'
-import {
-  BookOutlined,
-  MenuOutlined
-} from '@ant-design/icons';
 import 'antd/dist/antd.css'
 
 function Answers() {
@@ -44,9 +40,9 @@ function Answers() {
               <List.Item>
                 <List.Item.Meta
                   avatar={
-                    <Avatar src='http://cdn.onlinewebfonts.com/svg/img_383124.png' />
+                    <Avatar src='/images/quizicon.png' />
                   }
-                  title={<h2>{item.title}</h2>}
+                  title={<p style={{fontSize: 20}}>{item.title}</p>}
                   description={
                     <>
                       <p>grade: {item.grades}</p>

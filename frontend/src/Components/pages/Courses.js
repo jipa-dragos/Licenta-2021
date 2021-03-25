@@ -38,7 +38,7 @@ export default function Courses() {
               <ul className='cards__items'>
                 {loadedCourses.data.map((course) => (
                   <CardItem
-                    src='https://www.testing-whiz.com/media/3231/is-software-quality-assurance-same-as-software-testing.png'
+                    src='/images/bgcourses.png'
                     text={course.description}
                     label={course.title}
                     path={`/courses/${course.title}`}
