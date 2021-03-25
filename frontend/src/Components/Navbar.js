@@ -1,15 +1,16 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { Button } from './Button'
-import Popup from './pages/Popup'
 import { Link } from 'react-router-dom'
 import './Navbar.css'
 import { AuthContext } from '../shared/context/auth-context'
+import { Modal, Button as Buttonski } from 'antd'
+import 'antd/dist/antd.css'
 
 function Navbar() {
   const auth = useContext(AuthContext)
   const [click, setClick] = useState(false)
   const [button, setButton] = useState(true)
-  const [buttonPopup, setButtonPopup] = useState(false)
+  const [isModalVisible, setIsModalVisible] = useState(false)
 
   const handleClick = () => setClick(!click)
   const closeMobileMenu = () => setClick(false)
@@ -30,8 +31,20 @@ function Navbar() {
 
   const handleClickMobile = (e) => {
     e.preventDefault()
-    setButtonPopup(true)
+    setIsModalVisible(true)
     closeMobileMenu()
+  }
+
+  const showModal = () => {
+    setIsModalVisible(!click)
+  }
+
+  const handleOk = () => {
+    setIsModalVisible(false)
+  }
+
+  const handleCancel = () => {
+    setIsModalVisible(false)
   }
 
   return (
@@ -46,12 +59,12 @@ function Navbar() {
             <i className={click ? 'fas fa-times' : 'fas fa-bars'} />
           </div>
           <ul className={click ? 'nav-menu active' : 'nav-menu'}>
-            <li className='nav-item' style={{marginTop:16}}>
+            <li className='nav-item' style={{ marginTop: 16 }}>
               <Link to='/' className='nav-links' onClick={closeMobileMenu}>
                 Home
               </Link>
             </li>
-            <li className='nav-item' style={{marginTop:16}}>
+            <li className='nav-item' style={{ marginTop: 16 }}>
               <Link
                 to='/courses'
                 className='nav-links'
@@ -60,7 +73,7 @@ function Navbar() {
                 Courses
               </Link>
             </li>
-            <li className='nav-item' style={{marginTop:16}}>
+            <li className='nav-item' style={{ marginTop: 16 }}>
               <Link to='/quiz' className='nav-links' onClick={closeMobileMenu}>
                 Quiz
               </Link>
@@ -74,29 +87,32 @@ function Navbar() {
           </ul>
           {!auth.isLoggedIn && button && (
             <Button
-              onClick={() => {
-                setButtonPopup(true)
-              }}
+              onClick={showModal}
               buttonStyle='btn--outline'
             >
               Auth
             </Button>
           )}
-          <Popup trigger={buttonPopup} setTrigger={setButtonPopup}>
-            <h3>Authentication needed!</h3>
-            <br></br>
-            <br></br>
-            <Link to='/auth/student'>
-              <Button onClick={() => setButtonPopup(false)}>
+
+          <Modal
+            title='Authentication needed!'
+            visible={isModalVisible}
+            onOk={handleOk}
+            onCancel={handleCancel}
+          >
+            <Link to='/auth/professor' onClick={handleOk}>
+              <Buttonski type='primary' style={{ marginLeft: '30%', width: 180, color: 'white', backgroundColor: '#7f00ff'}}>
+                Professor Authentication
+              </Buttonski>
+            </Link>
+            <br />
+            <br />
+            <Link to='/auth/student' onClick={handleOk}>
+              <Buttonski type='primary' style={{ marginLeft: '30%', width: 180, backgroundColor: '#ff0080' }}>
                 Student Authentication
-              </Button>
+              </Buttonski>
             </Link>
-            <br></br>
-            <br></br>
-            <Link to='/auth/professor'>
-              <Button onClick={() => setButtonPopup(false)}>Professor Authentication</Button>
-            </Link>
-          </Popup>
+          </Modal>
           {auth.isLoggedIn && button && (
             <Button buttonStyle='btn--outline' onClick={auth.logout}>
               Logout
