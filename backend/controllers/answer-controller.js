@@ -22,7 +22,7 @@ const sendAnswer = async (req, res, next) => {
     const { answers, quiz } = req.body
 
     const quizTaken = await Quiz.findById(quiz)
-    
+
     console.log(quizTaken._id)
     const publishedAnswer = await Answer.findOne({ quiz: quizTaken })
     if (publishedAnswer) {
@@ -36,15 +36,15 @@ const sendAnswer = async (req, res, next) => {
 
     let grade = 0
 
-    for(let i = 0; i < quizTaken.quiz.length; i++) {
+    for (let i = 0; i < quizTaken.quiz.length; i++) {
       // console.log('i =', i)
       for (let j = 0; j < quizTaken.quiz[i].answers.length; j++) {
         // console.log('j =', j)
-        if(quizTaken.quiz[i].answers[j].isCorrect === true) {
+        if (quizTaken.quiz[i].answers[j].isCorrect === true) {
           // console.log('am gasit un true')
-          for(let k = 0; k < answers.length; k++) {
-            if(quizTaken.quiz[i].answers[j].text === answers[j]){
-              grade++;
+          for (let k = 0; k < answers.length; k++) {
+            if (quizTaken.quiz[i].answers[j].text === answers[j]) {
+              grade++
             }
           }
         }
@@ -67,4 +67,45 @@ const sendAnswer = async (req, res, next) => {
   }
 }
 
+const getAnswers = async (req, res, next) => {
+  try {
+    const student = await Student.findById(req.userData.userId)
+
+    const answers = await Answer.find({ student: student._id })
+
+    let grades = []
+    let quizTitle = []
+    let ans = []
+    answers.forEach((element) => {
+      grades.push(element.grade)
+      ans.push(element.answers)
+    })
+
+    let quiz = []
+    for (let index = 0; index < answers.length; index++) {
+      quiz.push(await Quiz.findById(answers[index].quiz))
+      quizTitle.push(quiz[index].title)
+    }
+
+    let theQuiz = []
+    for (let i = 0; i < answers.length; i++) {
+      let data = {
+        title: quizTitle[i],
+        grades: grades[i],
+        answers: ans[i]
+      }
+      theQuiz.push(data)
+    }
+
+    res.status(200).json({
+      success: true,
+      count: answers.length,
+      data: theQuiz
+    })
+  } catch (err) {
+    next(err)
+  }
+}
+
 exports.sendAnswer = sendAnswer
+exports.getAnswers = getAnswers

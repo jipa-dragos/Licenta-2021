@@ -7,5 +7,6 @@ const checkAuth = require('../middleware/check-auth')
 router.use(checkAuth)
 
 router.post('/', answerController.sendAnswer)
+router.get('/', answerController.getAnswers)
 
 module.exports = router

@@ -17,6 +17,7 @@ import { useAuth } from './shared/hooks/auth-hook'
 import CoursePage from './Components/pages/CoursePage'
 import QuizPage from './Components/pages/QuizPage'
 import Result from './Components/pages/Result'
+import Answers from './Components/pages/Answers'
 
 function App() {
   const { token, login, logout, userId, role } = useAuth()
@@ -43,7 +44,7 @@ function App() {
         </Route>
         <Route path='/quiz'>
           {role && <QuizCreate />}
-          {!role && <h1>salut baiatul</h1>}
+          {!role && <Answers />}
         </Route>
         <Redirect to='/' />
       </Switch>
