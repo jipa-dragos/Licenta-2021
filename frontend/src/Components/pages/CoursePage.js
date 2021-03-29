@@ -25,7 +25,7 @@ function CoursePage() {
 
   return (
     <>
-      {!isLoading && loadedCourse && (
+      {!isLoading && loadedCourse && !auth.role && (
         <div>
           Title: {loadedCourse.data.title}
           <br />

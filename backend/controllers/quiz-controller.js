@@ -4,6 +4,7 @@ const Quiz = require('../models/Quiz')
 const Professor = require('../models/Professor')
 const Student = require('../models/Student')
 const Course = require('../models/Course')
+const { uuid } = require('uuidv4');
 
 const createQuiz = async (req, res, next) => {
   try {
@@ -25,8 +26,6 @@ const createQuiz = async (req, res, next) => {
 
     const course = await Course.findOne({ title: courseName })
 
-    console.log(course)
-
     if (!prof.course.includes(course._id)) {
       return next(
         new HttpError(
@@ -36,14 +35,21 @@ const createQuiz = async (req, res, next) => {
       )
     }
 
+    let uid = uuid()
+    uid = uid.replace("-", "")
+    const accessCode = courseName + '-' + Buffer.from(uid, 'hex').toString('base64')
+
     const quizz = await Quiz.create({
       title,
       quiz,
       creator: prof._id,
       course,
+      accessCode,
       startDate,
       endDate,
     })
+
+    console.log(quizz)
 
     res.status(201).json({
       success: true,
@@ -167,7 +173,7 @@ const getQuizById = async (req, res, next) => {
   try {
     const quiz = await Quiz.findById(req.params.id)
 
-    if(new Date(quiz.startDate).getTime() > Date.now() ) {
+    if (new Date(quiz.startDate).getTime() > Date.now()) {
       return next(
         new HttpError(
           `User ${req.userData.userId} is too early to start the quiz`,
@@ -176,18 +182,13 @@ const getQuizById = async (req, res, next) => {
       )
     }
 
-    if(new Date(quiz.endDate).getTime() < Date.now() ) {
-      return next(
-        new HttpError(
-          `Time expired for the quiz`,
-          403
-        )
-      )
+    if (new Date(quiz.endDate).getTime() < Date.now()) {
+      return next(new HttpError(`Time expired for the quiz`, 403))
     }
 
     res.status(200).json({
       success: true,
-      data: quiz
+      data: quiz,
     })
   } catch (err) {
     next(err)

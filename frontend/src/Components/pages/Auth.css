@@ -27,3 +27,10 @@
 .login-form-button {
   width: 100%;
 }
+
+.code-box-demo p {
+  margin: 0;
+}
+.ant-card {
+  margin-bottom: 30px;
+}

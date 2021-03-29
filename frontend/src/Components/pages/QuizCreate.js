@@ -14,6 +14,7 @@ import {
   Space,
   Checkbox,
   Select,
+  InputNumber
 } from 'antd'
 import moment from 'moment'
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
@@ -215,8 +216,28 @@ export default function QuizCreate() {
                         />
                       </Form.Item>
 
+                      <Form.Item
+                        {...field2}
+                        hasFeedback
+                        wrapperCol={{
+                          span: 23,
+                          offset: 16,
+                        }}
+                        style={{ width: 400, marginLeft: -150 }}
+                        name={[field2.name, 'tag']}
+                        fieldKey={[field2.fieldKey, 'tag']}
+                        rules={[
+                          {
+                            required: true,
+                            message: 'Missing tag',
+                          },
+                        ]}
+                      >
+                        <Input size='small' placeholder='TAG' />
+                      </Form.Item>
+
                       <MinusCircleOutlined
-                        style={{ marginLeft: 100 }}
+                        style={{ marginLeft: 10 }}
                         onClick={() => remove(field2.name)}
                       />
                     </Space>
@@ -255,6 +276,25 @@ export default function QuizCreate() {
                                   <Checkbox>Correct</Checkbox>
                                 </Form.Item>
 
+                                <Form.Item
+                                  {...answer}
+                                  wrapperCol={{
+                                    span: 12,
+                                    offset: 11,
+                                  }}
+                                  
+                                  name={[answer.name, 'points']}
+                                  fieldKey={[answer.fieldKey, 'points']}
+                                  rules={[
+                                    {
+                                      required: true,
+                                      message: 'Missing points',
+                                    },
+                                  ]}
+                                  initialValue={0}
+                                >
+                                  <InputNumber min={0} max={10} />
+                                </Form.Item>
                                 <MinusCircleOutlined
                                   onClick={() => {
                                     remove(answer.name)

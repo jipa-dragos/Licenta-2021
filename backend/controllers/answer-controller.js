@@ -23,7 +23,6 @@ const sendAnswer = async (req, res, next) => {
 
     const quizTaken = await Quiz.findById(quiz)
 
-    console.log(quizTaken._id)
     const publishedAnswer = await Answer.findOne({ quiz: quizTaken })
     if (publishedAnswer) {
       return next(
@@ -34,6 +33,7 @@ const sendAnswer = async (req, res, next) => {
       )
     }
 
+    console.log(quizTaken.quiz[0])
     let grade = 0
 
     for (let i = 0; i < quizTaken.quiz.length; i++) {
@@ -44,7 +44,7 @@ const sendAnswer = async (req, res, next) => {
           // console.log('am gasit un true')
           for (let k = 0; k < answers.length; k++) {
             if (quizTaken.quiz[i].answers[j].text === answers[j]) {
-              grade++
+              grade+=quizTaken.quiz[i].answers[k].points
             }
           }
         }
@@ -57,6 +57,8 @@ const sendAnswer = async (req, res, next) => {
       grade,
       student,
     })
+
+    await Answer.deleteOne(answer)
 
     res.status(201).json({
       success: true,

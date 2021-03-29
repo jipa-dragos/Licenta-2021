@@ -5,10 +5,8 @@ const QuizSchema = new Schema({
   title: { type: String, required: true },
   quiz: [
     {
-      question: {
-        type: String,
-        required: true,
-      },
+      question: { type: String, required: true },
+      tag: { type: String, required: true },
       answers: [
         {
           text: {
@@ -20,14 +18,19 @@ const QuizSchema = new Schema({
             required: true,
             default: false,
           },
+          points: {
+            type: Number,
+            required: false,
+          },
         },
       ],
     },
   ],
-  creator: { type: mongoose.Types.ObjectId, required: true, ref: 'Professor'},
-  course: { type: mongoose.Types.ObjectId, required: true, ref: 'Course'},
-  startDate: { type: Date, min: Date.now, required: true}, 
-  endDate: { type: Date, min: Date.now, required: true}, 
+  accessCode: { type: String, required: true, unique: true },
+  creator: { type: mongoose.Types.ObjectId, required: true, ref: 'Professor' },
+  course: { type: mongoose.Types.ObjectId, required: true, ref: 'Course' },
+  startDate: { type: Date, min: Date.now, required: true },
+  endDate: { type: Date, min: Date.now, required: true },
   createdAt: { type: Date, default: Date.now },
 })
 

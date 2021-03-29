@@ -51,7 +51,7 @@ function QuizPage() {
           <LoadingSpinner asOverlay />
         </div>
       )}
-      {!isLoading && loadedQuestions && (
+      {!isLoading && loadedQuestions && !auth && (
         <>
           {new Date(loadedQuestions.endDate).getTime() < Date.now() ||
           lastQuestion ? (

@@ -1,14 +1,18 @@
 import React, { useState, useContext } from 'react'
 import '../../App.css'
-import Card from '../../shared/components/UI/Cards'
 import LoadingSpinner from '../../shared/components/UI/LoadingSpinner'
 import Button from '../../shared/components/FormElements/Button'
 import './Auth.css'
 import { useForm } from '../../shared/hooks/form-hook'
 import { AuthContext } from '../../shared/context/auth-context'
 import { useHttpClient } from '../../shared/hooks/http-hook'
-import { Form, Input as Inp, Button as Buttonski } from 'antd'
-import { UserOutlined, LockOutlined, AliwangwangOutlined, BankOutlined} from '@ant-design/icons'
+import { Form, Input, Button as Buttonski, Card } from 'antd'
+import {
+  UserOutlined,
+  LockOutlined,
+  AliwangwangOutlined,
+  BankOutlined,
+} from '@ant-design/icons'
 import 'antd/dist/antd.css'
 
 export default function SignUp() {
@@ -104,9 +108,12 @@ export default function SignUp() {
 
   return (
     <>
-      <Card className='authentication'>
+      <Card
+        title='Login Required'
+        type='inner'
+        style={{ width: 300, marginLeft: '40%', marginTop: '10%' }}
+      >
         {isLoading && <LoadingSpinner asOverlay />}
-        <h2>Login Required</h2>
         <Form
           name='normal_login'
           className='login-form'
@@ -118,9 +125,6 @@ export default function SignUp() {
           {!isLoginMode && (
             <>
               <Form.Item
-                wrapperCol={{
-                  offset: 4,
-                }}
                 name='name'
                 hasFeedback
                 rules={[
@@ -130,16 +134,15 @@ export default function SignUp() {
                   },
                 ]}
               >
-                <Inp
-                  prefix={<AliwangwangOutlined className='site-form-item-icon' />}
+                <Input
+                  prefix={
+                    <AliwangwangOutlined className='site-form-item-icon' />
+                  }
                   placeholder='Your name'
                 />
               </Form.Item>
 
               <Form.Item
-                wrapperCol={{
-                  offset: 4,
-                }}
                 name='faculty'
                 hasFeedback
                 rules={[
@@ -149,7 +152,7 @@ export default function SignUp() {
                   },
                 ]}
               >
-                <Inp
+                <Input
                   prefix={<BankOutlined className='site-form-item-icon' />}
                   placeholder='Faculty'
                 />
@@ -159,9 +162,6 @@ export default function SignUp() {
 
           <Form.Item
             name='email'
-            wrapperCol={{
-              offset: 4,
-            }}
             hasFeedback
             rules={[
               {
@@ -171,15 +171,12 @@ export default function SignUp() {
               },
             ]}
           >
-            <Inp
+            <Input
               prefix={<UserOutlined className='site-form-item-icon' />}
               placeholder='Email'
             />
           </Form.Item>
           <Form.Item
-            wrapperCol={{
-              offset: 4,
-            }}
             name='password'
             hasFeedback
             rules={[
@@ -189,18 +186,14 @@ export default function SignUp() {
               },
             ]}
           >
-            <Inp
+            <Input
               prefix={<LockOutlined className='site-form-item-icon' />}
               type='password'
               placeholder='Password'
             />
           </Form.Item>
 
-          <Form.Item
-            wrapperCol={{
-              offset: 4,
-            }}
-          >
+          <Form.Item>
             <Buttonski
               type='primary'
               htmlType='submit'
