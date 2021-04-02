@@ -14,7 +14,7 @@ connectDB()
 
 // Route files
 const quiz = require('./routes/quiz-routes')
-const answer = require ('./routes/answer-routes')
+const answer = require('./routes/answer-routes')
 const course = require('./routes/course-routes')
 const auth = require('./routes/auth-routes')
 const prof = require('./routes/professor-routes')
@@ -23,7 +23,7 @@ const app = express()
 
 // Body parser
 app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: false }))
 
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*')
@@ -64,7 +64,7 @@ const PORT = process.env.PORT || 5005
 const server = app.listen(
   PORT,
   console.log(
-    `Server is running in ${process.env.NODE_ENV} mode on port ${PORT}`.yellow
+    `Server is running in ${process.env.NODE_ENV} mode on port ${PORT}`.red
       .bold
   )
 )

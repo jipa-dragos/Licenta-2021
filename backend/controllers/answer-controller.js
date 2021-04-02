@@ -33,18 +33,15 @@ const sendAnswer = async (req, res, next) => {
       )
     }
 
-    console.log(quizTaken.quiz[0])
     let grade = 0
-
     for (let i = 0; i < quizTaken.quiz.length; i++) {
-      // console.log('i =', i)
       for (let j = 0; j < quizTaken.quiz[i].answers.length; j++) {
-        // console.log('j =', j)
         if (quizTaken.quiz[i].answers[j].isCorrect === true) {
-          // console.log('am gasit un true')
           for (let k = 0; k < answers.length; k++) {
-            if (quizTaken.quiz[i].answers[j].text === answers[j]) {
-              grade+=quizTaken.quiz[i].answers[k].points
+            for (let l = 0; l < answers[k].length; l++) {
+              if (quizTaken.quiz[i].answers[j].text === answers[k][l]) {
+                grade += quizTaken.quiz[i].answers[j].points
+              }
             }
           }
         }
@@ -58,6 +55,51 @@ const sendAnswer = async (req, res, next) => {
       student,
     })
 
+    await Answer.deleteOne(answer)
+
+    res.status(201).json({
+      success: true,
+      data: answer,
+    })
+  } catch (err) {
+    next(err)
+  }
+}
+
+const sendFirstAnswer = async (req, res, next) => {
+  try {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      return next(
+        new HttpError('Invalid inputs passed, please check your data.', 422)
+      )
+    }
+
+    const creator = req.userData.userId
+
+    const student = await Student.findById(creator)
+    if (!student) {
+      return next(new HttpError('Only a student can send answers!', 403))
+    }
+    const { answers, quiz } = req.body
+
+    const quizTaken = await Quiz.findById(quiz)
+
+    const publishedAnswer = await Answer.findOne({ quiz: quizTaken })
+    if (publishedAnswer) {
+      return next(
+        new HttpError(
+          `The student with the ID ${req.userData.userId} has already sent an answer`,
+          400
+        )
+      )
+    }
+
+    const answer = await Answer.create({
+      answers,
+      quiz,
+      student,
+    })
     await Answer.deleteOne(answer)
 
     res.status(201).json({
@@ -94,7 +136,7 @@ const getAnswers = async (req, res, next) => {
       let data = {
         title: quizTitle[i],
         grades: grades[i],
-        answers: ans[i]
+        answers: ans[i],
       }
       theQuiz.push(data)
     }
@@ -102,7 +144,7 @@ const getAnswers = async (req, res, next) => {
     res.status(200).json({
       success: true,
       count: answers.length,
-      data: theQuiz
+      data: theQuiz,
     })
   } catch (err) {
     next(err)
@@ -110,4 +152,5 @@ const getAnswers = async (req, res, next) => {
 }
 
 exports.sendAnswer = sendAnswer
+exports.sendFirstAnswer = sendFirstAnswer
 exports.getAnswers = getAnswers
