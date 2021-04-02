@@ -95,16 +95,81 @@ const sendFirstAnswer = async (req, res, next) => {
       )
     }
 
+    let grade = 0
+    quizTaken.quiz[0].answers.forEach((element) => {
+      if (answers[0].includes(element.text)) grade += element.points
+    })
+
     const answer = await Answer.create({
       answers,
+      grade,
       quiz,
       student,
     })
-    await Answer.deleteOne(answer)
 
     res.status(201).json({
       success: true,
       data: answer,
+    })
+  } catch (err) {
+    next(err)
+  }
+}
+
+const patchAnswer = async (req, res, next) => {
+  try {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      return next(
+        new HttpError('Invalid inputs passed, please check your data.', 422)
+      )
+    }
+
+    const creator = req.userData.userId
+
+    const student = await Student.findById(creator)
+    if (!student) {
+      return next(new HttpError('Only a student can send answers!', 403))
+    }
+    const { answers, quiz } = req.body
+
+    const quizTaken = await Quiz.findById(quiz)
+
+    let publishedAnswer = await Answer.findOne({ quiz: quizTaken })
+
+    let grader = publishedAnswer.grade
+
+    try {
+      quizTaken.quiz[publishedAnswer.answers.length].answers.forEach(
+        (element) => {
+          if (answers[0].includes(element.text)) {
+            grader += element.points
+          }
+        }
+      )
+    } catch (err) {
+      return next(
+        new HttpError('Cannot add answer if the question does not exist.', 400)
+      )
+    }
+
+    const newAnswers = publishedAnswer.answers.concat(answers)
+    const fieldsToUpdate = {
+      answers: newAnswers,
+      grade: grader,
+    }
+
+    const nextAnswer = await Answer.findByIdAndUpdate(
+      publishedAnswer._id,
+      fieldsToUpdate,
+      {
+        new: true,
+      }
+    )
+
+    res.status(200).json({
+      success: true,
+      data: nextAnswer,
     })
   } catch (err) {
     next(err)
@@ -153,4 +218,5 @@ const getAnswers = async (req, res, next) => {
 
 exports.sendAnswer = sendAnswer
 exports.sendFirstAnswer = sendFirstAnswer
+exports.patchAnswer = patchAnswer
 exports.getAnswers = getAnswers
