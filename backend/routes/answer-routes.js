@@ -10,5 +10,6 @@ router.post('/', answerController.sendAnswer)
 router.patch('/', answerController.patchAnswer)
 router.post('/first', answerController.sendFirstAnswer)
 router.get('/', answerController.getAnswers)
+router.get('/:id', answerController.getAnswerById)
 
 module.exports = router

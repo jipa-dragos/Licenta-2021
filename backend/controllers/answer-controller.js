@@ -154,10 +154,12 @@ const patchAnswer = async (req, res, next) => {
     }
 
     const newAnswers = publishedAnswer.answers.concat(answers)
+    console.log(newAnswers)
     const fieldsToUpdate = {
       answers: newAnswers,
       grade: grader,
     }
+
 
     const nextAnswer = await Answer.findByIdAndUpdate(
       publishedAnswer._id,
@@ -216,7 +218,21 @@ const getAnswers = async (req, res, next) => {
   }
 }
 
+const getAnswerById = async (req, res, next) => {
+  try {
+    const answer = await Answer.findOne({ quiz: req.params.id })
+
+    res.status(200).json({
+      success: true,
+      data: answer,
+    })
+  } catch (err) {
+    next(err)
+  }
+}
+
 exports.sendAnswer = sendAnswer
 exports.sendFirstAnswer = sendFirstAnswer
 exports.patchAnswer = patchAnswer
 exports.getAnswers = getAnswers
+exports.getAnswerById = getAnswerById

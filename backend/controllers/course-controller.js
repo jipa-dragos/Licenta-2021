@@ -42,12 +42,15 @@ const getCourseByTitle = async (req, res, next) => {
   try {
     const course = await Course.findOne({ title: req.params.title })
 
-    const quiz = await Quiz.find({ course: { $in: course._id }})
+    const quiz = await Quiz.find({ course: { $in: course._id } })
+      .select('_id')
+      .select('title')
+      .select('startDate')
 
     res.status(200).json({
       success: true,
       data: course,
-      quiz
+      quiz,
     })
   } catch (err) {
     next(err)

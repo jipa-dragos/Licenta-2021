@@ -4,7 +4,7 @@ const Quiz = require('../models/Quiz')
 const Professor = require('../models/Professor')
 const Student = require('../models/Student')
 const Course = require('../models/Course')
-const { uuid } = require('uuidv4');
+const { uuid } = require('uuidv4')
 
 const createQuiz = async (req, res, next) => {
   try {
@@ -36,8 +36,9 @@ const createQuiz = async (req, res, next) => {
     }
 
     let uid = uuid()
-    uid = uid.replace("-", "")
-    const accessCode = courseName + '-' + Buffer.from(uid, 'hex').toString('base64')
+    uid = uid.replace('-', '')
+    const accessCode =
+      courseName + '-' + Buffer.from(uid, 'hex').toString('base64')
 
     const quizz = await Quiz.create({
       title,
@@ -172,6 +173,8 @@ const getAllQuizzes = async (req, res, next) => {
 const getQuizById = async (req, res, next) => {
   try {
     const quiz = await Quiz.findById(req.params.id)
+      .select('-quiz.answers.points')
+      .select('-quiz.answers.isCorrect')
 
     if (new Date(quiz.startDate).getTime() > Date.now()) {
       return next(
