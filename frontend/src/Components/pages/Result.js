@@ -9,21 +9,13 @@ function Result(props) {
   const { isLoading, sendRequest } = useHttpClient()
   const [loadedAnswers, setLoadedAnswers] = useState()
   const id = props.history.location.state.id
-  const answers = props.history.location.state.answers
   const [redirect, setRedirect] = useState(false)
 
   useEffect(() => {
     const sendAnswers = async () => {
       try {
-        console.log(answers)
-        console.log(id)
         const answersData = await sendRequest(
-          'http://localhost:5005/api/answer/',
-          'POST',
-          JSON.stringify({
-            answers: answers,
-            quiz: id,
-          })
+          `http://localhost:5005/api/answer/${id}`
         )
         setLoadedAnswers(answersData)
       } catch (err) {
@@ -31,7 +23,7 @@ function Result(props) {
       }
     }
     sendAnswers()
-  }, [sendRequest, auth.token, id, answers])
+  }, [sendRequest, auth.token, id])
 
   return (
     <>

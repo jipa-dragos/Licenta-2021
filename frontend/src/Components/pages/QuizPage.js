@@ -102,11 +102,9 @@ function QuizPage() {
         <>
           {new Date(loadedQuestions.endDate).getTime() < Date.now() ||
           lastQuestion ? (
-            // <Redirect
-            //   to={{ pathname: path, state: { id: id, answers: answers } }}
-            // />
-            <div>
-              </div>
+            <Redirect
+              to={{ pathname: path, state: { id: id } }}
+            />
           ) : (
             <Cards>
               <div>{loadedQuestions.title}</div>
