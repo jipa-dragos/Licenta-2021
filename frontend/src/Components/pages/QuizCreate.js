@@ -1,8 +1,7 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, {  useEffect, useState } from 'react'
 import '../../App.css'
 import './QuizCreate.css'
 import LoadingSpinner from '../../shared/components/UI/LoadingSpinner'
-import { AuthContext } from '../../shared/context/auth-context'
 import { useHttpClient } from '../../shared/hooks/http-hook'
 import {
   Form,
@@ -39,8 +38,6 @@ function disabledDate(current) {
 
 export default function QuizCreate() {
   const { isLoading, sendRequest } = useHttpClient()
-  const auth = useContext(AuthContext)
-  const [loadData, setLoadData] = useState()
   const [loadedCourses, setLoadedCourses] = useState()
 
   const onFinish = async (values) => {
@@ -56,7 +53,21 @@ export default function QuizCreate() {
 
     console.log('newData', newData)
 
-    setLoadData(newData)
+    const createQuiz = async () => {
+      try {
+ 
+          await sendRequest(
+            'http://localhost:5005/api/quiz/',
+            'POST',
+            JSON.stringify(newData)
+          )
+        
+      } catch (err) {
+        console.log(err)
+      }
+    }
+    createQuiz()
+
   }
 
   useEffect(() => {
@@ -73,26 +84,6 @@ export default function QuizCreate() {
     }
     fetchCourses()
   }, [sendRequest])
-
-  useEffect(() => {
-    const createQuiz = async () => {
-      try {
-        if (!loadData) {
-          console.log('data not loaded')
-        } else {
-          console.log(loadData)
-          await sendRequest(
-            'http://localhost:5005/api/quiz/',
-            'POST',
-            JSON.stringify(loadData)
-          )
-        }
-      } catch (err) {
-        console.log(err)
-      }
-    }
-    createQuiz()
-  }, [sendRequest, loadData, auth.token])
 
   const setQuizDate = () => (
     <Row>
