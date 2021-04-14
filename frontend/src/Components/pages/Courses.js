@@ -3,7 +3,9 @@ import '../../App.css'
 import LoadingSpinner from '../../shared/components/UI/LoadingSpinner'
 import { AuthContext } from '../../shared/context/auth-context'
 import { useHttpClient } from '../../shared/hooks/http-hook'
+import { Button } from 'antd'
 import CardItem from '../CardItem'
+import { Link } from 'react-router-dom'
 
 export default function Courses() {
   const auth = useContext(AuthContext)
@@ -31,24 +33,38 @@ export default function Courses() {
         </div>
       )}
       {!isLoading && loadedCourses && (
-        <div className='cards'>
-          <h1>List of courses</h1>
-          <div className='cards__container'>
-            <div className='cards__wrapper'>
-              <ul className='cards__items'>
-                {loadedCourses.data.map((course) => (
-                  <CardItem
-                    src='/images/bgcourses.png'
-                    text={course.description}
-                    label={course.title}
-                    path={`/courses/${course.title}`}
-                    key={course._id}
-                  />
-                ))}
-              </ul>
+        <>
+          {auth.role && (
+            <Link to='/create/course'>
+              <Button
+                shape='round'
+                type='primary'
+                size='large'
+                style={{ marginLeft: '46%', marginTop: '3%' }}
+              >
+                Create a course
+              </Button>
+            </Link>
+          )}
+          <div className='cards'>
+            <h1>List of courses</h1>
+            <div className='cards__container'>
+              <div className='cards__wrapper'>
+                <ul className='cards__items'>
+                  {loadedCourses.data.map((course) => (
+                    <CardItem
+                      src='/images/bgcourses.png'
+                      text={course.description}
+                      label={course.title}
+                      path={`/courses/${course.title}`}
+                      key={course._id}
+                    />
+                  ))}
+                </ul>
+              </div>
             </div>
           </div>
-        </div>
+        </>
       )}
     </>
   )

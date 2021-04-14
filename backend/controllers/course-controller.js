@@ -72,6 +72,7 @@ const createCourse = async (req, res, next) => {
       )
 
     const course = await Course.create(req.body)
+    await Professor.findByIdAndUpdate({_id: req.userData.userId}, { $addToSet: {course: course.id} }, {new: true} )
 
     res.status(201).json({
       success: true,
