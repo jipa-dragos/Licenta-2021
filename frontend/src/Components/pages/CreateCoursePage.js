@@ -1,8 +1,7 @@
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import LoadingSpinner from '../../shared/components/UI/LoadingSpinner'
 import { Redirect } from 'react-router'
 import { useHistory } from 'react-router-dom'
-import { AuthContext } from '../../shared/context/auth-context'
 import { useHttpClient } from '../../shared/hooks/http-hook'
 import 'antd/dist/antd.css'
 import { Form, Input, Select, Button } from 'antd'
@@ -17,7 +16,6 @@ const layout = {
 }
 
 function CreateCoursePage() {
-  const auth = useContext(AuthContext)
   const { isLoading, sendRequest } = useHttpClient()
   const [redirect, setRedirect] = useState(false)
   let history = useHistory()
