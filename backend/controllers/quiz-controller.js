@@ -64,7 +64,7 @@ const createQuiz = async (req, res, next) => {
 
 const deleteQuiz = async (req, res, next) => {
   try {
-    let quiz = await Quiz.findById(req.params.id)
+    const quiz = await Quiz.findById(req.params.id)
 
     if (!quiz) {
       return next(

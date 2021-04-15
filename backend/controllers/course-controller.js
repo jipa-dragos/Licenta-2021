@@ -4,6 +4,7 @@ const Course = require('../models/Course')
 const Quiz = require('../models/Quiz')
 const Professor = require('../models/Professor')
 const Student = require('../models/Student')
+const Answer = require('../models/Answer')
 
 const getCourses = async (req, res, next) => {
   try {
@@ -22,6 +23,7 @@ const getCourses = async (req, res, next) => {
         data: courses,
       })
     }
+
     const courses = await Course.find({ _id: { $in: user.course } })
 
     if (courses.length === 0) {
@@ -83,6 +85,51 @@ const createCourse = async (req, res, next) => {
   }
 }
 
+const deleteCourse = async (req, res, next) => {
+  try {
+    const course = await Course.findById(req.params.id)
+
+    if (!course) {
+      return next(
+        new HttpError(`course not found with id of ${req.params.id}`, 404)
+      )
+    }
+
+    const prof = await Professor.findById(req.userData.userId)
+    if (!prof) {
+      return next(
+        new HttpError(`The user with the id:  ${req.params.id} is not a professor`, 404)
+      )
+    }
+
+    if (!prof.course.includes(course._id)) {
+      return next(
+        new HttpError(
+          `Professor ${req.userData.userId} is not authorized to delete this quiz`,
+          401
+        )
+      )
+    }
+
+    const quiz = await Quiz.find({ course: req.params.id })
+    let quizIds = []
+    for (let i = 0; i < quiz.length; i++){
+      quizIds.push(quiz[i]._id)
+    }
+
+    await Answer.find({ quiz: { $in: quizIds } }).deleteMany()
+    await Quiz.find({ course: req.params.id }).deleteMany()
+    await Course.findByIdAndDelete(req.params.id)
+    res.status(200).json({
+      success: true,
+      data: {}
+    })
+  } catch (err) {
+    next(err)
+  }
+}
+
 exports.createCourse = createCourse
+exports.deleteCourse = deleteCourse
 exports.getCourses = getCourses
 exports.getCourseByTitle = getCourseByTitle
