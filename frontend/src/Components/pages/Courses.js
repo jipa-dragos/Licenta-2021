@@ -19,6 +19,7 @@ export default function Courses() {
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [disabled, setDisabled] = useState(true)
   const [id, setId] = useState()
+  const [courseTitle, setCourseTitle] = useState()
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -37,10 +38,11 @@ export default function Courses() {
   const showModal = (e) => {
     setIsModalVisible(true)
     setId(e.currentTarget.getAttribute('id'))
+    setCourseTitle(e.currentTarget.getAttribute('title'))
   }
 
   const inputEl = (e) => {
-    e.target.value === 'DELETE' ? setDisabled(false) : setDisabled(true)
+    e.target.value === courseTitle ? setDisabled(false) : setDisabled(true)
   }
 
   const handleCancel = () => {
@@ -58,6 +60,7 @@ export default function Courses() {
         console.log(err)
       }
     }
+        
     deleteCourse()
   }
   return (
@@ -98,6 +101,7 @@ export default function Courses() {
                     >
                       <MinusCircleOutlined
                         id={course._id}
+                        title={course.title}
                         onClick={showModal}
                       />
                       <Link to={`/courses/${course.title}`}>
@@ -136,7 +140,7 @@ export default function Courses() {
               All the quizzes related to this course, and also the respective
               answers will be deleted!
             </h3>
-            <p>To delete the course, type 'DELETE' to confirm.</p>
+            <p>To delete the course, type the course name to confirm.</p>
             <Input onChange={inputEl} />
           </Modal>
         </>
