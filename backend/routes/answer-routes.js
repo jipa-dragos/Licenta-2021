@@ -6,7 +6,6 @@ const checkAuth = require('../middleware/check-auth')
 
 router.use(checkAuth)
 
-router.post('/', answerController.sendAnswer)
 router.patch('/', answerController.patchAnswer)
 router.post('/first', answerController.sendFirstAnswer)
 router.get('/', answerController.getAnswers)

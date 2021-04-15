@@ -67,7 +67,7 @@ const deleteQuiz = async (req, res, next) => {
 
     if (!quiz) {
       return next(
-        new HttpError(`projects not found with id of ${req.params.id}`, 404)
+        new HttpError(`quiz not found with id of ${req.params.id}`, 404)
       )
     }
 

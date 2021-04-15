@@ -4,68 +4,6 @@ const Student = require('../models/Student')
 const Answer = require('../models/Answer')
 const Quiz = require('../models/Quiz')
 
-const sendAnswer = async (req, res, next) => {
-  try {
-    const errors = validationResult(req)
-    if (!errors.isEmpty()) {
-      return next(
-        new HttpError('Invalid inputs passed, please check your data.', 422)
-      )
-    }
-
-    const creator = req.userData.userId
-
-    const student = await Student.findById(creator)
-    if (!student) {
-      return next(new HttpError('Only a student can send answers!', 403))
-    }
-    const { answers, quiz } = req.body
-
-    const quizTaken = await Quiz.findById(quiz)
-
-    const publishedAnswer = await Answer.findOne({ quiz: quizTaken })
-    if (publishedAnswer) {
-      return next(
-        new HttpError(
-          `The student with the ID ${req.userData.userId} has already sent an answer`,
-          400
-        )
-      )
-    }
-
-    let grade = 0
-    for (let i = 0; i < quizTaken.quiz.length; i++) {
-      for (let j = 0; j < quizTaken.quiz[i].answers.length; j++) {
-        if (quizTaken.quiz[i].answers[j].isCorrect === true) {
-          for (let k = 0; k < answers.length; k++) {
-            for (let l = 0; l < answers[k].length; l++) {
-              if (quizTaken.quiz[i].answers[j].text === answers[k][l]) {
-                grade += quizTaken.quiz[i].answers[j].points
-              }
-            }
-          }
-        }
-      }
-    }
-
-    const answer = await Answer.create({
-      answers,
-      quiz,
-      grade,
-      student,
-    })
-
-    await Answer.deleteOne(answer)
-
-    res.status(201).json({
-      success: true,
-      data: answer,
-    })
-  } catch (err) {
-    next(err)
-  }
-}
-
 const sendFirstAnswer = async (req, res, next) => {
   try {
     const errors = validationResult(req)
@@ -231,7 +169,6 @@ const getAnswerById = async (req, res, next) => {
   }
 }
 
-exports.sendAnswer = sendAnswer
 exports.sendFirstAnswer = sendFirstAnswer
 exports.patchAnswer = patchAnswer
 exports.getAnswers = getAnswers
