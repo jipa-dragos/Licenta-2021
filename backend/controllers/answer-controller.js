@@ -23,14 +23,23 @@ const sendFirstAnswer = async (req, res, next) => {
 
     const quizTaken = await Quiz.findById(quiz)
 
-    const publishedAnswer = await Answer.findOne({ quiz: quizTaken })
-    if (publishedAnswer.student === req.userData.userId) {
+    if (!quizTaken) {
       return next(
-        new HttpError(
-          `The student with the ID ${req.userData.userId} has already sent an answer`,
-          400
-        )
+        new HttpError(`The quiz with the ID ${quiz} does not exist`, 400)
       )
+    }
+
+    const publishedAnswer = await Answer.findOne({ quiz: quizTaken })
+
+    if (publishedAnswer) {
+      if (publishedAnswer.student === req.userData.userId) {
+        return next(
+          new HttpError(
+            `The student with the ID ${req.userData.userId} has already sent an answer`,
+            400
+          )
+        )
+      }
     }
 
     let grade = 0
@@ -97,7 +106,6 @@ const patchAnswer = async (req, res, next) => {
       answers: newAnswers,
       grade: grader,
     }
-
 
     const nextAnswer = await Answer.findByIdAndUpdate(
       publishedAnswer._id,
