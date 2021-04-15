@@ -5,6 +5,7 @@ const Professor = require('../models/Professor')
 const Student = require('../models/Student')
 const Course = require('../models/Course')
 const { uuid } = require('uuidv4')
+const Answer = require('../models/Answer')
 
 const createQuiz = async (req, res, next) => {
   try {
@@ -79,8 +80,10 @@ const deleteQuiz = async (req, res, next) => {
         )
       )
     }
-    console.log(req)
-    await Quiz.findByIdAndDelete(req.params.id)
+
+    const answers = await Answer.find({ quiz: req.params.id })
+    console.log(answers)
+    //await Quiz.findByIdAndDelete(req.params.id)
 
     res.status(200).json({ success: true, data: {} })
   } catch (err) {
