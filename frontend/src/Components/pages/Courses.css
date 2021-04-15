@@ -1,0 +1,48 @@
+body {
+  font-size: 16px;
+  line-height: 1.6;
+  color: #333;
+  overflow-x: hidden;
+}
+
+.ant-layout {
+  background: #fff !important;
+}
+
+p {
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.container-fluid {
+  margin: 0 auto;
+  max-width: 1200px;
+  padding: 0 15px;
+}
+
+.container-fluid {
+  display: block !important;
+}
+
+.titleHolder {
+  text-align: center;
+  position: relative;
+  padding: 0 0 20px;
+  margin: 0 0 40px;
+}
+
+.titleHolder:after {
+  transform: translateX(-50%);
+  content: '';
+  background: #1890ff;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  height: 3px;
+  width: 50px;
+}
+
+.titleHolder h2 {
+  font-size: 28px;
+  margin: 0;
+}
