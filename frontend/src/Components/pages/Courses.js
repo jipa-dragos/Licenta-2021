@@ -50,17 +50,24 @@ export default function Courses() {
     console.log(id)
   }
 
+  async function fetchCourse() {
+    const responseData = await sendRequest('http://localhost:5005/api/course/')
+    setLoadedCourses(responseData)
+  }
+
   const handleDelete = () => {
     setIsModalVisible(false)
 
     const deleteCourse = async () => {
       try {
         await sendRequest(`http://localhost:5005/api/course/${id}`, 'DELETE')
+
+        await fetchCourse()
       } catch (err) {
         console.log(err)
       }
     }
-        
+
     deleteCourse()
   }
   return (
