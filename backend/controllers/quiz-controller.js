@@ -81,9 +81,8 @@ const deleteQuiz = async (req, res, next) => {
       )
     }
 
-    const answers = await Answer.find({ quiz: req.params.id })
-    console.log(answers)
-    //await Quiz.findByIdAndDelete(req.params.id)
+    await Answer.find({ quiz: req.params.id }).deleteMany()
+    await Quiz.findByIdAndDelete(req.params.id)
 
     res.status(200).json({ success: true, data: {} })
   } catch (err) {
