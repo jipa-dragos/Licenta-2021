@@ -19,6 +19,7 @@ import QuizPage from './Components/pages/QuizPage'
 import Result from './Components/pages/Result'
 import Answers from './Components/pages/Answers'
 import CreateCoursePage from './Components/pages/CreateCoursePage'
+import Quiz from './Components/pages/Quiz'
 
 function App() {
   const { token, login, logout, userId, role } = useAuth()
@@ -47,6 +48,9 @@ function App() {
           <QuizPage />
         </Route>
         <Route path='/quiz'>
+          <Quiz />
+        </Route>
+        <Route path='/create/quiz'>
           {role && <QuizCreate />}
           {!role && <Answers />}
         </Route>

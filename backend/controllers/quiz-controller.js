@@ -93,7 +93,6 @@ const deleteQuiz = async (req, res, next) => {
 const getQuizzesForCourse = async (req, res, next) => {
   try {
     const quiz = await Quiz.find({ course: req.params.id })
-
     res.status(200).json({ success: true, count: quiz.length, data: quiz })
   } catch (err) {
     next(err)
@@ -160,6 +159,18 @@ const getAllQuizzes = async (req, res, next) => {
 
     if (quizzes.length === 0) {
       return res.status(204).json({ success: true, data: quizzes })
+    }
+
+    let quizCreator = []
+    for (let i = 0; i < quizzes.length; i++) {
+      quizCreator.push(quizzes[i].creator)
+    }
+    
+    console.log(quizCreator)
+    console.log(req.userData.userId)
+
+    if (quizCreator.includes(req.userData.userId)) {
+      console.log('nu e eroare')
     }
 
     res.status(200).json({

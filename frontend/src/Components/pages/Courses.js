@@ -47,7 +47,6 @@ export default function Courses() {
 
   const handleCancel = () => {
     setIsModalVisible(false)
-    console.log(id)
   }
 
   async function fetchCourse() {
