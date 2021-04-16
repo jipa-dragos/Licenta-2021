@@ -25,10 +25,22 @@ function Quiz() {
     fetchQuizzes()
   }, [sendRequest, auth.token])
 
+  async function fetchQuizzes() {
+    const responseData = await sendRequest(
+      'http://localhost:5005/api/quiz/prof'
+    )
+
+    setLoadedQuizzes(responseData)
+  }
+
   const showModal = (e) => {
     const deleteQuiz = async () => {
       try {
-        await sendRequest(`http://localhost:5005/api/quiz/${e.currentTarget.id}`, 'DELETE')
+        await sendRequest(
+          `http://localhost:5005/api/quiz/${e.currentTarget.id}`,
+          'DELETE'
+        )
+        await fetchQuizzes()
       } catch (err) {
         console.log(err)
       }
