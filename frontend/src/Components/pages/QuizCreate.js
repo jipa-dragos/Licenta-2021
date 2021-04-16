@@ -1,4 +1,4 @@
-import React, {  useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import '../../App.css'
 import './QuizCreate.css'
 import LoadingSpinner from '../../shared/components/UI/LoadingSpinner'
@@ -13,7 +13,7 @@ import {
   Space,
   Checkbox,
   Select,
-  InputNumber
+  InputNumber,
 } from 'antd'
 import moment from 'moment'
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
@@ -55,19 +55,16 @@ export default function QuizCreate() {
 
     const createQuiz = async () => {
       try {
- 
-          await sendRequest(
-            'http://localhost:5005/api/quiz/',
-            'POST',
-            JSON.stringify(newData)
-          )
-        
+        await sendRequest(
+          'http://localhost:5005/api/quiz/',
+          'POST',
+          JSON.stringify(newData)
+        )
       } catch (err) {
         console.log(err)
       }
     }
     createQuiz()
-
   }
 
   useEffect(() => {
@@ -273,7 +270,6 @@ export default function QuizCreate() {
                                     span: 12,
                                     offset: 11,
                                   }}
-                                  
                                   name={[answer.name, 'points']}
                                   fieldKey={[answer.fieldKey, 'points']}
                                   rules={[
@@ -286,7 +282,7 @@ export default function QuizCreate() {
                                 >
                                   <InputNumber min={0} max={10} />
                                 </Form.Item>
-                                <MinusCircleOutlined
+                                <MinusCircleOutlined style={{ marginLeft: 40}}
                                   onClick={() => {
                                     remove(answer.name)
                                   }}
