@@ -26,7 +26,15 @@ function Quiz() {
   }, [sendRequest, auth.token])
 
   const showModal = (e) => {
-    console.log(e)
+    const deleteQuiz = async () => {
+      try {
+        await sendRequest(`http://localhost:5005/api/quiz/${e.currentTarget.id}`, 'DELETE')
+      } catch (err) {
+        console.log(err)
+      }
+    }
+
+    deleteQuiz()
   }
 
   return (
@@ -47,7 +55,6 @@ function Quiz() {
               style={{ marginLeft: '46%', marginTop: '3%' }}
             >
               Create Quiz
-              {console.log(LoadedQuizzes)}
             </Button>
           </Link>
           <div>
@@ -68,13 +75,14 @@ function Quiz() {
             renderItem={(item) => (
               <List.Item>
                 <Card title={item.title}>
-                 <p>AccessCode: {item.accessCode},</p>
-                 <p>Number of Questions: {item.quiz.length},</p>
-                 <p>Start Date: {item.startDate}</p>
-                 <p>End Date: {item.endDate}</p>
+                  <p>AccessCode: {item.accessCode},</p>
+                  <p>Number of Questions: {item.quiz.length},</p>
+                  <p>Start Date: {item.startDate}</p>
+                  <p>End Date: {item.endDate}</p>
                   <MinusCircleOutlined
                     onClick={showModal}
-                    style={{ marginLeft: '100%'}}
+                    id={item._id}
+                    style={{ marginLeft: '100%' }}
                   />
                 </Card>
               </List.Item>
