@@ -38,7 +38,7 @@ function App() {
           <Courses />
         </Route>
         <Route path='/create/course'>
-          <CreateCoursePage/>
+          <CreateCoursePage />
         </Route>
         <Route
           path='/quiz/:id/result'
@@ -48,11 +48,11 @@ function App() {
           <QuizPage />
         </Route>
         <Route path='/quiz'>
-          <Quiz />
+          {role && <Quiz />}
+          {!role && <Answers />}
         </Route>
         <Route path='/create/quiz'>
-          {role && <QuizCreate />}
-          {!role && <Answers />}
+          <QuizCreate />
         </Route>
         <Redirect to='/' />
       </Switch>
