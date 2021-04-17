@@ -75,15 +75,21 @@ const patchAnswer = async (req, res, next) => {
     const creator = req.userData.userId
 
     const student = await Student.findById(creator)
+    
     if (!student) {
       return next(new HttpError('Only a student can send answers!', 403))
     }
+
     const { answers, quiz } = req.body
 
     const quizTaken = await Quiz.findById(quiz)
 
-    let publishedAnswer = await Answer.findOne({ quiz: quizTaken })
-
+    let publishedAnswer = await Answer.findOne({ quiz: quizTaken, student: student._id })
+    
+    if (!publishedAnswer) {
+      return next(new HttpError('Can only add answers to your own answers', 403))
+    }
+    
     let grader = publishedAnswer.grade
 
     try {
