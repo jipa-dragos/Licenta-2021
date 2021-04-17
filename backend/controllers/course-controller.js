@@ -67,14 +67,50 @@ const createCourse = async (req, res, next) => {
         new HttpError('Invalid inputs passed, please check your data.', 422)
       )
     }
+
     const prof = await Professor.findById(req.userData.userId)
-    if (!prof)
-      return next(
-        new HttpError('No prof found', 403) //// SHOULD BE AN ADMIN LATER ON!
-      )
+    if (!prof) return next(new HttpError('No prof found', 403))
 
     const course = await Course.create(req.body)
-    await Professor.findByIdAndUpdate({_id: req.userData.userId}, { $addToSet: {course: course.id} }, {new: true} )
+    await Professor.findByIdAndUpdate(
+      { _id: req.userData.userId },
+      { $addToSet: { course: course.id } },
+      { new: true }
+    )
+
+    res.status(201).json({
+      success: true,
+      data: course,
+    })
+  } catch (err) {
+    next(err)
+  }
+}
+
+const updateCourse = async (req, res, next) => {
+  try {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      return next(
+        new HttpError('Invalid inputs passed, please check your data.', 422)
+      )
+    }
+
+    const prof = await Professor.findById(req.userData.userId)
+    if (!prof) return next(new HttpError('No prof found', 403))
+
+    let course = await Course.findById(req.params.id)
+
+    if (!prof.course.includes(course._id)) {
+      return next(
+        new HttpError('Only the creator of the course can update it!', 403)
+      )
+    }
+
+    course = await Course.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    })
 
     res.status(201).json({
       success: true,
@@ -98,7 +134,10 @@ const deleteCourse = async (req, res, next) => {
     const prof = await Professor.findById(req.userData.userId)
     if (!prof) {
       return next(
-        new HttpError(`The user with the id:  ${req.params.id} is not a professor`, 404)
+        new HttpError(
+          `The user with the id:  ${req.params.id} is not a professor`,
+          404
+        )
       )
     }
 
@@ -113,7 +152,7 @@ const deleteCourse = async (req, res, next) => {
 
     const quiz = await Quiz.find({ course: req.params.id })
     let quizIds = []
-    for (let i = 0; i < quiz.length; i++){
+    for (let i = 0; i < quiz.length; i++) {
       quizIds.push(quiz[i]._id)
     }
 
@@ -122,7 +161,7 @@ const deleteCourse = async (req, res, next) => {
     await Course.findByIdAndDelete(req.params.id)
     res.status(200).json({
       success: true,
-      data: {}
+      data: {},
     })
   } catch (err) {
     next(err)
@@ -130,6 +169,7 @@ const deleteCourse = async (req, res, next) => {
 }
 
 exports.createCourse = createCourse
+exports.updateCourse = updateCourse
 exports.deleteCourse = deleteCourse
 exports.getCourses = getCourses
 exports.getCourseByTitle = getCourseByTitle
