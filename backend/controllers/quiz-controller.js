@@ -62,6 +62,54 @@ const createQuiz = async (req, res, next) => {
   }
 }
 
+const updateQuiz = async (req, res, next) => {
+  try {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      return next(
+        new HttpError('Invalid inputs passed, please check your data.', 422)
+      )
+    }
+
+    const creator = req.userData.userId
+
+    const prof = await Professor.findById(creator)
+    if (!prof) {
+      return next(new HttpError('Only a professor can update quizzes!', 403))
+    }
+
+    const quizz = await Quiz.findOne({ creator: creator})
+
+    if(!quizz) {
+      return next(new HttpError('Only the creator of the quiz can update it!', 403))
+    }
+
+    const { title, quiz, startDate, endDate } = req.body
+
+    const fieldsToUpdate = {
+      title,
+      quiz,
+      startDate,
+      endDate
+    }
+
+    const updateQuiz = await Quiz.findByIdAndUpdate(
+      quizz._id,
+      fieldsToUpdate,
+      {
+        new: true,
+      }
+    )
+
+    res.status(201).json({
+      success: true,
+      data: updateQuiz
+    })
+  } catch (err) {
+    next(err)
+  }
+}
+
 const deleteQuiz = async (req, res, next) => {
   try {
     const quiz = await Quiz.findById(req.params.id)
@@ -211,6 +259,7 @@ const getQuizById = async (req, res, next) => {
   }
 }
 exports.createQuiz = createQuiz
+exports.updateQuiz = updateQuiz
 exports.deleteQuiz = deleteQuiz
 exports.getQuizzesForStudent = getQuizzesForStudent
 exports.getQuizzesForProf = getQuizzesForProf

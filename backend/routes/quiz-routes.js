@@ -13,5 +13,6 @@ router.get('/:id', quizControllers.getQuizzesForCourse)
 router.get('/course/:id', quizControllers.getQuizById)
 router.post('/', quizControllers.createQuiz)
 router.delete('/:id', quizControllers.deleteQuiz)
+router.patch('/:id', quizControllers.updateQuiz)
 
 module.exports = router
