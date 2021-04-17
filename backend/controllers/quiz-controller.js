@@ -78,9 +78,9 @@ const updateQuiz = async (req, res, next) => {
       return next(new HttpError('Only a professor can update quizzes!', 403))
     }
 
-    const quizz = await Quiz.findOne({ creator: creator})
+    const quizz = await Quiz.findById(req.params.id)
 
-    if(!quizz) {
+    if(quizz.creator.toString() !== prof._id.toString()) {
       return next(new HttpError('Only the creator of the quiz can update it!', 403))
     }
 
