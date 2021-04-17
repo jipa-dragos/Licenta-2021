@@ -78,32 +78,20 @@ const updateQuiz = async (req, res, next) => {
       return next(new HttpError('Only a professor can update quizzes!', 403))
     }
 
-    const quizz = await Quiz.findById(req.params.id)
+    let quizz = await Quiz.findById(req.params.id)
 
     if(quizz.creator.toString() !== prof._id.toString()) {
       return next(new HttpError('Only the creator of the quiz can update it!', 403))
     }
 
-    const { title, quiz, startDate, endDate } = req.body
-
-    const fieldsToUpdate = {
-      title,
-      quiz,
-      startDate,
-      endDate
-    }
-
-    const updateQuiz = await Quiz.findByIdAndUpdate(
-      quizz._id,
-      fieldsToUpdate,
-      {
-        new: true,
-      }
-    )
+    quizz = await Quiz.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    })
 
     res.status(201).json({
       success: true,
-      data: updateQuiz
+      data: quizz
     })
   } catch (err) {
     next(err)
