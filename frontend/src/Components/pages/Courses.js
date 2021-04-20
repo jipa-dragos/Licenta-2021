@@ -7,7 +7,7 @@ import { Button, Input } from 'antd'
 import { Link } from 'react-router-dom'
 import { Row, Col } from 'antd'
 import { Card } from 'antd'
-import { MinusCircleOutlined } from '@ant-design/icons'
+import { MinusCircleOutlined, EditOutlined } from '@ant-design/icons'
 import Modal from 'antd/lib/modal/Modal'
 
 const { Meta } = Card
@@ -110,6 +110,13 @@ export default function Courses() {
                         title={course.title}
                         onClick={showModal}
                       />
+                      <Link to={`/update/course/${course._id}`}>
+                        <EditOutlined
+                          style={{ marginLeft: '85%' }}
+                          id={course._id}
+                          title={course.title}
+                        />
+                      </Link>
                       <Link to={`/courses/${course.title}`}>
                         <Card
                           hoverable

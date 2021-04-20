@@ -31,7 +31,7 @@ function QuizUpdate() {
 
       {!isLoading && loadedQuiz && (
         <div>
-          hai salut bau bausd
+          Update Quiz Page
           {console.log(loadedQuiz)}
         </div>
       )}
