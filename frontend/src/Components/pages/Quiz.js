@@ -49,6 +49,8 @@ function Quiz() {
     deleteQuiz()
   }
 
+ 
+
   return (
     <>
       {isLoading && (
@@ -87,7 +89,9 @@ function Quiz() {
             renderItem={(item) => (
               <List.Item>
                 <Card title={item.title}>
+                  <Link to={`/update/quiz/${item._id}`}>
                   <p>AccessCode: {item.accessCode},</p>
+                  </Link>
                   <p>Number of Questions: {item.quiz.length},</p>
                   <p>Start Date: {item.startDate}</p>
                   <p>End Date: {item.endDate}</p>

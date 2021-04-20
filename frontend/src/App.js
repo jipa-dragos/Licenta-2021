@@ -20,6 +20,7 @@ import Result from './Components/pages/Result'
 import Answers from './Components/pages/Answers'
 import CreateCoursePage from './Components/pages/CreateCoursePage'
 import Quiz from './Components/pages/Quiz'
+import QuizUpdate from './Components/pages/QuizUpdate'
 
 function App() {
   const { token, login, logout, userId, role } = useAuth()
@@ -53,6 +54,9 @@ function App() {
         </Route>
         <Route path='/create/quiz'>
           <QuizCreate />
+        </Route>
+        <Route path='/update/quiz/:id'>
+          <QuizUpdate />
         </Route>
         <Redirect to='/' />
       </Switch>
