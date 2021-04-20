@@ -23,6 +23,7 @@ function QuizUpdate() {
   }, [sendRequest, id])
   return (
     <>
+    {console.log(id)}
       {isLoading && (
         <div className='center'>
           <LoadingSpinner asOverlay />

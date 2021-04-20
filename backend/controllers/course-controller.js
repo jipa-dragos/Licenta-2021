@@ -59,6 +59,20 @@ const getCourseByTitle = async (req, res, next) => {
   }
 }
 
+const getCourseById = async (req, res, next) => {
+  try {
+    const course = await Course.findById(req.params.id)
+
+    console.log(course)
+    res.status(200).json({
+      success: true,
+      data: course
+    })
+  } catch (err) {
+    next(err)
+  }
+}
+
 const createCourse = async (req, res, next) => {
   try {
     const errors = validationResult(req)
@@ -173,3 +187,4 @@ exports.updateCourse = updateCourse
 exports.deleteCourse = deleteCourse
 exports.getCourses = getCourses
 exports.getCourseByTitle = getCourseByTitle
+exports.getCourseById = getCourseById
