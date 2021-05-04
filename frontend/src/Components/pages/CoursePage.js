@@ -8,7 +8,9 @@ function CoursePage() {
   const course = useParams()
   const auth = useContext(AuthContext)
   const [loadedCourse, setLoadedCourse] = useState()
+  const [loadedTitles, setLoadedTitles] = useState()
   const { isLoading, sendRequest } = useHttpClient()
+
   useEffect(() => {
     const fetchCourse = async () => {
       try {
@@ -20,12 +22,27 @@ function CoursePage() {
         console.log(err)
       }
     }
+    const fetchAnswers = async () => {
+      try {
+        const responseData = await sendRequest(
+          'http://localhost:5005/api/answer/'
+        )
+        let titles = []
+        for (let i of responseData.data) {
+          titles.push(i.title)
+        }
+        setLoadedTitles(titles)
+      } catch (err) {
+        console.log(err)
+      }
+    }
     fetchCourse()
+    fetchAnswers()
   }, [sendRequest, auth.token, course.title])
 
   return (
     <>
-      {!isLoading && loadedCourse && !auth.role && (
+      {!isLoading && loadedCourse && loadedTitles && !auth.role && (
         <div>
           Title: {loadedCourse.data.title}
           <br />
@@ -35,11 +52,12 @@ function CoursePage() {
           <br />
           {loadedCourse.quiz.map((quiz, index) => (
             <React.Fragment key={index}>
-              {new Date(quiz.startDate).getTime() < Date.now() && (
-                <Link to={`/quiz/${quiz._id}`} key={index}>
-                  <h3 key={quiz._id}>{quiz.title}</h3>
-                </Link>
-              )}
+              {new Date(quiz.startDate).getTime() < Date.now() &&
+                !loadedTitles.includes(quiz.title) && (
+                  <Link to={`/quiz/${quiz._id}`} key={index}>
+                    <h3 key={quiz._id}>{quiz.title}</h3>
+                  </Link>
+                )}
             </React.Fragment>
           ))}
         </div>
