@@ -8,7 +8,7 @@ function CoursePage() {
   const course = useParams()
   const auth = useContext(AuthContext)
   const [loadedCourse, setLoadedCourse] = useState()
-  const [loadedTitles, setLoadedTitles] = useState()
+  const [loadedIds, setLoadedIds] = useState()
   const { isLoading, sendRequest } = useHttpClient()
 
   useEffect(() => {
@@ -25,13 +25,14 @@ function CoursePage() {
     const fetchAnswers = async () => {
       try {
         const responseData = await sendRequest(
-          'http://localhost:5005/api/answer/'
+          `http://localhost:5005/api/answer/courseName/${course.title}`
         )
-        let titles = []
+        let ids = []
         for (let i of responseData.data) {
-          titles.push(i.title)
+          ids.push(i.quiz)
         }
-        setLoadedTitles(titles)
+
+        setLoadedIds(ids)
       } catch (err) {
         console.log(err)
       }
@@ -42,7 +43,7 @@ function CoursePage() {
 
   return (
     <>
-      {!isLoading && loadedCourse && loadedTitles && !auth.role && (
+      {!isLoading && loadedCourse && loadedIds && !auth.role && (
         <div>
           Title: {loadedCourse.data.title}
           <br />
@@ -53,7 +54,7 @@ function CoursePage() {
           {loadedCourse.quiz.map((quiz, index) => (
             <React.Fragment key={index}>
               {new Date(quiz.startDate).getTime() < Date.now() &&
-                !loadedTitles.includes(quiz.title) && (
+                !loadedIds.includes(quiz._id) && (
                   <Link to={`/quiz/${quiz._id}`} key={index}>
                     <h3 key={quiz._id}>{quiz.title}</h3>
                   </Link>

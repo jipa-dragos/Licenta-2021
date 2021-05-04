@@ -1,6 +1,7 @@
 const HttpError = require('../util/http-error')
 const { validationResult } = require('express-validator')
 const Student = require('../models/Student')
+const Course = require('../models/Course')
 const Answer = require('../models/Answer')
 const Quiz = require('../models/Quiz')
 
@@ -183,7 +184,38 @@ const getAnswerById = async (req, res, next) => {
   }
 }
 
+const getAnswerByCourse = async (req, res, next) => {
+  try {
+    const answer = await Answer.find({ student: req.userData.userId })
+    
+    const course = await Course.findOne({ title: req.params.title })
+
+    const quiz = await Quiz.find({ course: { $in: course._id } })
+      .select('_id')
+
+    let ids = []  
+    for (let i of quiz) {
+      ids.push(i._id.toString())
+    }
+
+    let answeredQuizzes = []
+    for (let i of answer) {
+      if (ids.includes(i.quiz.toString())) {
+        answeredQuizzes.push(i)
+      }
+    }
+
+    res.status(200).json({
+      success: true,
+      data: answeredQuizzes
+    })
+  } catch (err) {
+    next(err)
+  }
+}
+
 exports.sendFirstAnswer = sendFirstAnswer
 exports.patchAnswer = patchAnswer
 exports.getAnswers = getAnswers
 exports.getAnswerById = getAnswerById
+exports.getAnswerByCourse = getAnswerByCourse
