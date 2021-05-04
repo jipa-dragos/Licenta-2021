@@ -38,11 +38,11 @@ function UpdateCourse() {
 
   const onFinish = (values) => {
       console.log(values)
-
+      console.log(id)
       const updateCourse = async () => {
         try {
           await sendRequest(
-            'http://localhost:5005/api/course/',
+            `http://localhost:5005/api/course/${id}`,
             'PATCH',
             JSON.stringify({
               title: values.course.title,
@@ -71,9 +71,9 @@ function UpdateCourse() {
           <Form.Item
             name={['course', 'title']}
             label='title'
+            initialValue={loadedCourse.data.title}
           >
-            <Input defaultValue={loadedCourse.data.title}
-            value={loadedCourse.data.title}
+            <Input
             />
           </Form.Item>
           <Form.Item
@@ -84,15 +84,16 @@ function UpdateCourse() {
                 required: true,
               },
             ]}
+            initialValue={loadedCourse.data.description}
           >
-            <Input defaultValue={loadedCourse.data.description}/>
+            <Input />
           </Form.Item>
           <Form.Item
             name={['course', 'type']}
             label='type'
-
+            initialValue={loadedCourse.data.type}
           >
-            <Select defaultValue={loadedCourse.data.type}>
+            <Select >
               <Select.Option value='course'>course</Select.Option>
               <Select.Option value='lab'>lab</Select.Option>
             </Select>
@@ -101,9 +102,9 @@ function UpdateCourse() {
           <Form.Item
             name={['course', 'year']}
             label='year'
-
+            initialValue={loadedCourse.data.year}
           >
-            <Select defaultValue={loadedCourse.data.year}>
+            <Select >
               <Select.Option value='I'>I</Select.Option>
               <Select.Option value='II'>II</Select.Option>
               <Select.Option value='III'>III</Select.Option>
@@ -113,9 +114,9 @@ function UpdateCourse() {
           <Form.Item
             name={['course', 'semester']}
             label='semester'
-
+            initialValue={loadedCourse.data.semester}
           >
-            <Select defaultValue={loadedCourse.data.semester}>
+            <Select >
               <Select.Option value='I'>I</Select.Option>
               <Select.Option value='II'>II</Select.Option>
             </Select>
