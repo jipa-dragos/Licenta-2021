@@ -172,8 +172,8 @@ const getAnswers = async (req, res, next) => {
 
 const getAnswerById = async (req, res, next) => {
   try {
-    const answer = await Answer.findOne({ quiz: req.params.id })
-
+    const answer = await Answer.findOne({ quiz: req.params.id, student: req.userData.userId })
+    
     res.status(200).json({
       success: true,
       data: answer,
