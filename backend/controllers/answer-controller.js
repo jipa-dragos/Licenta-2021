@@ -182,10 +182,6 @@ const getAnswers = async (req, res, next) => {
       correctAnswers.push(correctAnsPerQuiz)
     }
 
-    console.log(questions)
-    console.log(tags)
-    console.log(correctAnswers)
-
     let theQuiz = []
     for (let i = 0; i < answers.length; i++) {
       let data = {

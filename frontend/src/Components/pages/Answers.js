@@ -40,19 +40,35 @@ function Answers() {
             renderItem={(item) => (
               <List.Item>
                 <List.Item.Meta
-                  avatar={
-                    <Avatar src='/images/quizicon.png' />
-                  }
-                  title={<p style={{fontSize: 20}}>{item.title}</p>}
+                  avatar={<Avatar src='/images/quizicon.png' />}
+                  title={<p style={{ fontSize: 20 }}>{item.title}</p>}
                   description={
                     <>
                       <p>grade: {item.grades}</p>
                       <Divider orientation='left'>Sent Answers</Divider>
+                        
+                      {}
                       <List
                         size='default'
                         bordered
                         dataSource={item.answers}
-                        renderItem={(item, index) => <List.Item>{index+1}. {item}</List.Item>}
+                        renderItem={(item, index) => (
+                          <List.Item>
+                            {index + 1}. {item}
+                          </List.Item>
+                        )}
+                      />
+                      <Divider orientation='left'>Correct Answers</Divider>
+
+                      <List
+                        size='default'
+                        bordered
+                        dataSource={item.correctAnswers}
+                        renderItem={(item, index) => (
+                          <List.Item key={index}>
+                            {index + 1}. {item}
+                          </List.Item>
+                        )}
                       />
                     </>
                   }
