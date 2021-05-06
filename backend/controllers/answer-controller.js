@@ -76,7 +76,7 @@ const patchAnswer = async (req, res, next) => {
     const creator = req.userData.userId
 
     const student = await Student.findById(creator)
-    
+
     if (!student) {
       return next(new HttpError('Only a student can send answers!', 403))
     }
@@ -85,12 +85,17 @@ const patchAnswer = async (req, res, next) => {
 
     const quizTaken = await Quiz.findById(quiz)
 
-    let publishedAnswer = await Answer.findOne({ quiz: quizTaken, student: student._id })
-    
+    let publishedAnswer = await Answer.findOne({
+      quiz: quizTaken,
+      student: student._id,
+    })
+
     if (!publishedAnswer) {
-      return next(new HttpError('Can only add answers to your own answers', 403))
+      return next(
+        new HttpError('Can only add answers to your own answers', 403)
+      )
     }
-    
+
     let grader = publishedAnswer.grade
 
     try {
@@ -140,9 +145,11 @@ const getAnswers = async (req, res, next) => {
     let grades = []
     let quizTitle = []
     let ans = []
+    let quizId = []
     answers.forEach((element) => {
       grades.push(element.grade)
       ans.push(element.answers)
+      quizId.push(element.quiz)
     })
 
     let quiz = []
@@ -151,12 +158,44 @@ const getAnswers = async (req, res, next) => {
       quizTitle.push(quiz[index].title)
     }
 
+    let questions = []
+    let tags = []
+    let correctAnswers = []
+
+    for (const i of quiz) {
+      let questionsPerQuiz = []
+      let tagsPerQuiz = []
+      let correctAnsPerQuiz = []
+      for (const iterator of i.quiz) {
+        questionsPerQuiz.push(iterator.question)
+        tagsPerQuiz.push(iterator.tag)
+        let answersPerQuestion = []
+        for (const k of iterator.answers) {
+          if (k.isCorrect) {
+            answersPerQuestion.push(k.text)
+          }
+        }
+        correctAnsPerQuiz.push(answersPerQuestion)
+      }
+      questions.push(questionsPerQuiz)
+      tags.push(tagsPerQuiz)
+      correctAnswers.push(correctAnsPerQuiz)
+    }
+
+    console.log(questions)
+    console.log(tags)
+    console.log(correctAnswers)
+
     let theQuiz = []
     for (let i = 0; i < answers.length; i++) {
       let data = {
         title: quizTitle[i],
         grades: grades[i],
+        qestions: questions[i],
+        tags: tags[i],
+        correctAnswers: correctAnswers[i],
         answers: ans[i],
+        quiz: quizId[i],
       }
       theQuiz.push(data)
     }
@@ -173,8 +212,11 @@ const getAnswers = async (req, res, next) => {
 
 const getAnswerById = async (req, res, next) => {
   try {
-    const answer = await Answer.findOne({ quiz: req.params.id, student: req.userData.userId })
-    
+    const answer = await Answer.findOne({
+      quiz: req.params.id,
+      student: req.userData.userId,
+    })
+
     res.status(200).json({
       success: true,
       data: answer,
@@ -187,13 +229,12 @@ const getAnswerById = async (req, res, next) => {
 const getAnswerByCourse = async (req, res, next) => {
   try {
     const answer = await Answer.find({ student: req.userData.userId })
-    
+
     const course = await Course.findOne({ title: req.params.title })
 
-    const quiz = await Quiz.find({ course: { $in: course._id } })
-      .select('_id')
+    const quiz = await Quiz.find({ course: { $in: course._id } }).select('_id')
 
-    let ids = []  
+    let ids = []
     for (let i of quiz) {
       ids.push(i._id.toString())
     }
@@ -207,7 +248,7 @@ const getAnswerByCourse = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      data: answeredQuizzes
+      data: answeredQuizzes,
     })
   } catch (err) {
     next(err)

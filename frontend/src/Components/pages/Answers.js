@@ -33,6 +33,7 @@ function Answers() {
       )}
       {!isLoading && loadedAnswers && (
         <>
+          {console.log(loadedAnswers)}
           <List
             itemLayout='horizontal'
             dataSource={loadedAnswers.data}
@@ -51,7 +52,7 @@ function Answers() {
                         size='default'
                         bordered
                         dataSource={item.answers}
-                        renderItem={(item) => <List.Item>{item}</List.Item>}
+                        renderItem={(item, index) => <List.Item>{index+1}. {item}</List.Item>}
                       />
                     </>
                   }
