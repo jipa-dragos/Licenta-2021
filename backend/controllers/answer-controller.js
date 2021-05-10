@@ -204,7 +204,7 @@ const getAnswers = async (req, res, next) => {
       let data = {
         title: quizTitle[i],
         grades: grades[i],
-        qestions: questions[i],
+        questions: questions[i],
         tags: tags[i],
         correctAnswers: correctAnswers[i],
         answers: ans[i],

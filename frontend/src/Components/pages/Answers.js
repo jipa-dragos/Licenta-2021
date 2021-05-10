@@ -44,16 +44,17 @@ function Answers() {
                   title={<p style={{ fontSize: 20 }}>{item.title}</p>}
                   description={
                     <>
-                      <p>grade: {item.grades}</p>
+                      <h2>grade: {item.grades}</h2>
+
                       <Divider orientation='left'>Sent Answers</Divider>
-                        
+
                       <List
                         size='default'
                         bordered
                         dataSource={item.answers}
                         renderItem={(item, index) => (
                           <List.Item>
-                            {index + 1}. {item} 
+                            {index + 1}. {item}
                           </List.Item>
                         )}
                       />
