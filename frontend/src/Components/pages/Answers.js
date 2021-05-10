@@ -46,6 +46,31 @@ function Answers() {
                     <>
                       <h2>grade: {item.grades}</h2>
 
+                      <Divider orientation='left'>Questions</Divider>
+
+                      <List
+                        size='default'
+                        bordered
+                        dataSource={item.questions}
+                        renderItem={(item, index) => (
+                          <List.Item>
+                            {index + 1}. {item}
+                          </List.Item>
+                        )}
+                      />
+                      <Divider orientation='left'>Tags</Divider>
+
+                      <List
+                        size='default'
+                        bordered
+                        dataSource={item.tags}
+                        renderItem={(item, index) => (
+                          <List.Item>
+                            {index + 1}. {item}
+                          </List.Item>
+                        )}
+                      />
+
                       <Divider orientation='left'>Sent Answers</Divider>
 
                       <List
