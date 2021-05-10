@@ -172,7 +172,7 @@ const getAnswers = async (req, res, next) => {
         let answersPerQuestion = []
         for (const k of iterator.answers) {
           if (k.isCorrect) {
-            answersPerQuestion.push(k.text)
+            answersPerQuestion.push(k.text + ', ')
           }
         }
         correctAnsPerQuiz.push(answersPerQuestion)
@@ -180,6 +180,23 @@ const getAnswers = async (req, res, next) => {
       questions.push(questionsPerQuiz)
       tags.push(tagsPerQuiz)
       correctAnswers.push(correctAnsPerQuiz)
+    }
+
+    for (let i = 0; i < correctAnswers.length; i++) {
+      for (let j = 0; j < correctAnswers[i].length; j++) {
+        let lastStr = correctAnswers[i][j][correctAnswers[i][j].length - 1]
+        correctAnswers[i][j][correctAnswers[i][j].length - 1] =
+          lastStr.slice(0, -2) + '.'
+      }
+    }
+
+    for (let i = 0; i < answers.length; i++) {
+      console.log(answers[i].answers)
+      for (let j = 0; j < answers[i].answers.length; j++) {
+        answers[i].answers[j] = answers[i].answers[j].toString() + ', '
+        let lastStr = answers[i].answers[j].toString()
+        answers[i].answers[j] = lastStr.slice(0, -2) + '.'
+      }
     }
 
     let theQuiz = []
