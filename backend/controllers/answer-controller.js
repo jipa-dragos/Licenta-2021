@@ -142,6 +142,18 @@ const getAnswers = async (req, res, next) => {
 
     const answers = await Answer.find({ student: student._id })
 
+    let course = []
+    for (const iterator of answers) {
+      let quiz = await Quiz.findById(iterator.quiz)
+      course.push(quiz.course)
+    }
+
+    let courseName = []
+    for (const iterator of course) {
+      const course = await Course.findById(iterator)
+      courseName.push(course.title)
+    }
+
     let grades = []
     let quizTitle = []
     let ans = []
@@ -191,7 +203,6 @@ const getAnswers = async (req, res, next) => {
     }
 
     for (let i = 0; i < answers.length; i++) {
-      console.log(answers[i].answers)
       for (let j = 0; j < answers[i].answers.length; j++) {
         answers[i].answers[j] = answers[i].answers[j].toString() + ', '
         let lastStr = answers[i].answers[j].toString()
@@ -203,6 +214,7 @@ const getAnswers = async (req, res, next) => {
     for (let i = 0; i < answers.length; i++) {
       let data = {
         title: quizTitle[i],
+        courseName: courseName[i],
         grades: grades[i],
         questions: questions[i],
         tags: tags[i],
