@@ -9,6 +9,7 @@ router.use(checkAuth)
 router.patch('/', answerController.patchAnswer)
 router.post('/first', answerController.sendFirstAnswer)
 router.get('/', answerController.getAnswers)
+router.get('/stats', answerController.getAnswersForStats)
 router.get('/courseName/:title', answerController.getAnswerByCourse)
 router.get('/:id', answerController.getAnswerById)
 

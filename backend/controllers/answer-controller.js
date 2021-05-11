@@ -136,6 +136,66 @@ const patchAnswer = async (req, res, next) => {
   }
 }
 
+const getAnswersForStats = async (req, res, next) => {
+  try {
+    const student = await Student.findById(req.userData.userId)
+
+    const answers = await Answer.find({ student: student._id })
+
+    let ans = []
+    let quizId = []
+
+    answers.forEach((element) => {
+      ans.push(element.answers)
+      quizId.push(element.quiz)
+    })
+
+    let quiz = []
+    for (let index = 0; index < answers.length; index++) {
+      quiz.push(await Quiz.findById(answers[index].quiz))
+    }
+
+    let tags = []
+    let correctAnswers = []
+
+    for (const i of quiz) {
+      let tagsPerQuiz = []
+      let correctAnsPerQuiz = []
+      for (const iterator of i.quiz) {
+        tagsPerQuiz.push(iterator.tag)
+        let answersPerQuestion = []
+        for (const k of iterator.answers) {
+          if (k.isCorrect) {
+            answersPerQuestion.push(k.text)
+          }
+        }
+        correctAnsPerQuiz.push(answersPerQuestion)
+      }
+      tags.push(tagsPerQuiz)
+      correctAnswers.push(correctAnsPerQuiz)
+    }
+
+    let theQuiz = []
+    for (let i = 0; i < answers.length; i++) {
+      let data = {
+        tags: tags[i],
+        correctAnswers: correctAnswers[i],
+        answers: ans[i],
+        quiz: quizId[i],
+      }
+      theQuiz.push(data)
+    }
+
+    res.status(200).json({
+      success: true,
+      count: answers.length,
+      data: { theQuiz },
+    })
+  } catch (err) {
+    next(err)
+  }
+}
+
 const getAnswers = async (req, res, next) => {
   try {
     const student = await Student.findById(req.userData.userId)
@@ -158,6 +218,7 @@ const getAnswers = async (req, res, next) => {
     let quizTitle = []
     let ans = []
     let quizId = []
+
     answers.forEach((element) => {
       grades.push(element.grade)
       ans.push(element.answers)
@@ -228,7 +289,7 @@ const getAnswers = async (req, res, next) => {
     res.status(200).json({
       success: true,
       count: answers.length,
-      data: theQuiz,
+      data: theQuiz 
     })
   } catch (err) {
     next(err)
@@ -285,3 +346,4 @@ exports.patchAnswer = patchAnswer
 exports.getAnswers = getAnswers
 exports.getAnswerById = getAnswerById
 exports.getAnswerByCourse = getAnswerByCourse
+exports.getAnswersForStats = getAnswersForStats
