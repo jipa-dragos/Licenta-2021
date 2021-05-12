@@ -10,22 +10,25 @@ const columns = [
     title: 'Tag',
     dataIndex: 'tag',
     key: 'tag',
-    width: '30%',
     sorter: (a, b) => {
       return a.tag.localeCompare(b.tag)
     },
   },
   {
     title: 'Success Rate',
-    dataindex: 'successRate',
+    dataIndex: 'successRate',
     key: 'successRate',
-    width: '30%',
+    sorter: (a, b) => {
+      return a.successRate.localeCompare(b.successRate)
+    },
   },
   {
-    title: 'Total Answers',
-    dataindex: 'totalAnswers',
+    title: 'Total',
+    dataIndex: 'totalAnswers',
     key: 'totalAnswers',
-    width: '30%',
+    sorter: {
+      compare: (a, b) => a.totalAnswers - b.totalAnswers,
+    },
   },
 ]
 
@@ -33,7 +36,6 @@ function Answers() {
   const auth = useContext(AuthContext)
   const { isLoading, sendRequest } = useHttpClient()
   const [loadedAnswers, setLoadedAnswers] = useState()
-  const [data, setData] = useState()
   const [tableDataSource, setTableDataSource] = useState([])
 
   useEffect(() => {
@@ -57,92 +59,96 @@ function Answers() {
           'http://localhost:5005/api/answer/stats'
         )
         console.log(responseData)
-        setData(responseData.data)
+
+        let realAnswer = []
+        let correctAnswer = []
+        let tags = []
+
+        responseData.data.theQuiz.forEach((array) => {
+          array.answers.forEach((element) => {
+            realAnswer.push(element)
+          })
+          array.correctAnswers.forEach((element) => {
+            correctAnswer.push(element)
+          })
+          array.tags.forEach((element) => {
+            tags.push(element)
+          })
+        })
+
+        let total = []
+        let rate = []
+        for (let i = 0; i < correctAnswer.length; i++) {
+          const filteredArray = correctAnswer[i].filter((value) =>
+            realAnswer[i].includes(value)
+          )
+          total.push(correctAnswer[i].length)
+          rate.push((filteredArray.length / correctAnswer[i].length) * 100)
+        }
+
+        const duplicates = tags.reduce(function (acc, el, i, arr) {
+          if (arr.indexOf(el) !== i && acc.indexOf(el) < 0) acc.push(el)
+          return acc
+        }, [])
+
+        console.log('duplicates for real:', duplicates)
+
+        let uniqueTags = [...new Set(tags)]
+        let indices = []
+        for (let i = 0; i < tags.length; i++) {
+          let indexes = []
+          for (let j = 0; j < uniqueTags.length; j++) {
+            if (tags[i] === uniqueTags[j]) {
+              let tag = uniqueTags[j]
+              let successRate = rate[i] + '%'
+              let totalAnswers = total[i]
+              let key = i
+              let index = { key, tag, successRate, totalAnswers }
+              indexes.push(index)
+            }
+          }
+          indices.push(indexes)
+        }
+
+        console.log('indices. ', indices)
+
+        let data = []
+
+        indices.forEach((el) => {
+          if (!duplicates.includes(el[0].tag)) {
+            console.log('matai mare', el[0])
+            data.push(el[0])
+          }
+        })
+
+        duplicates.forEach((tag) => {
+          let successRate = 0
+          let total = 0
+          let duplicateEl
+          indices.forEach((el) => {
+            if (duplicates.includes(el[0].tag)) {
+              if (tag === el[0].tag) {
+                const nr = el[0].successRate.slice(0, -1)
+                successRate += parseInt(nr)
+                total += el[0].totalAnswers
+                duplicateEl = el[0]
+              }
+            }
+          })
+          duplicateEl.successRate = (successRate / (total * 50)) * 100 + '%'
+          duplicateEl.totalAnswers = total
+          data.push(duplicateEl)
+        })
+        console.log('dataaa', data)
+        setTableDataSource(data)
       } catch (err) {
         console.log(err)
       }
     }
     fetchStats()
-  }, [sendRequest, auth.token])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sendRequest])
 
-  useEffect(() => {
-    if (data) {
-      let realAnswer = []
-      let correctAnswer = []
-      let tags = []
-
-      data.theQuiz.forEach((array) => {
-        array.answers.forEach((element) => {
-          realAnswer.push(element)
-        })
-        array.correctAnswers.forEach((element) => {
-          correctAnswer.push(element)
-        })
-        array.tags.forEach((element) => {
-          tags.push(element)
-        })
-      })
-
-      // console.log(realAnswer)
-      // console.log(correctAnswer)
-      // console.log(tags)
-
-      let total = []
-      let rate = []
-      for (let i = 0; i < correctAnswer.length; i++) {
-        const filteredArray = correctAnswer[i].filter((value) =>
-          realAnswer[i].includes(value)
-        )
-        // console.log('filteredarray', filteredArray.length)
-        // console.log('correctanswers', correctAnswer[i].length)
-        total.push(correctAnswer[i].length)
-        rate.push((filteredArray.length / correctAnswer[i].length) * 100)
-      }
-      // console.log(rate)
-      // console.log(total)
-
-      const duplicates = tags.reduce(function (acc, el, i, arr) {
-        if (arr.indexOf(el) !== i && acc.indexOf(el) < 0) acc.push(el)
-        return acc
-      }, [])
-
-      console.log('duplicates for real:', duplicates)
-
-      let uniqueTags = [...new Set(tags)]
-      let indices = []
-      for (let i = 0; i < tags.length; i++) {
-        let indexes = []
-        for (let j = 0; j < uniqueTags.length; j++) {
-          if (tags[i] === uniqueTags[j]) {
-            // console.log(index)
-            // indexes.push(i)
-            // indexes.push(index)
-            // indexes.push(uniqueTags[j])
-            // indexes.push(rate[i])
-            // indexes.push(total[i])
-            let tag = uniqueTags[j]
-            let successRate = rate[i]
-            let totalAnswers = total[i]
-            let index = { i, tag, successRate, totalAnswers }
-            indexes.push(index)
-          }
-        }
-        // console.log(indexes)
-        indices.push(indexes)
-      }
-      // console.log(indices)
-
-      duplicates.forEach((tag) => {
-        // console.log(tag)
-        indices.forEach((el) => {
-          // console.log(el[0].tag)
-          if (tag !== el[0].tag) {
-            setTableDataSource([...tableDataSource, el[0]])
-          }
-        })
-      })
-    }
-  }, [data])
   return (
     <>
       {isLoading && (
@@ -151,7 +157,7 @@ function Answers() {
         </div>
       )}
 
-      {!isLoading && loadedAnswers && data && (
+      {!isLoading && loadedAnswers && (
         <>
           <List
             itemLayout='horizontal'
@@ -231,11 +237,8 @@ function Answers() {
           {tableDataSource && (
             <>
               {console.log('table ', tableDataSource)}
-              <Table
-                rowKey={(tableDataSource) => tableDataSource.i}
-                columns={columns}
-                dataSource={tableDataSource}
-              />
+              <Table columns={columns} dataSource={tableDataSource} />
+              <p>doinea</p>
             </>
           )}
         </>
