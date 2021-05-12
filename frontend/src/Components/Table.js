@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import LoadingSpinner from '../shared/components/UI/LoadingSpinner'
 import { useHttpClient } from '../shared/hooks/http-hook'
 import { Table, Input, Button, Space } from 'antd'
 import 'antd/dist/antd.css'
@@ -7,7 +6,7 @@ import { SearchOutlined } from '@ant-design/icons'
 import Highlighter from 'react-highlight-words'
 
 function TableComponent() {
-  const { isLoading, sendRequest } = useHttpClient()
+  const { sendRequest } = useHttpClient()
   const [tableDataSource, setTableDataSource] = useState([])
   const [searchText, setSearchText] = useState('')
   const [searchedColumn, setSearchedColumn] = useState('')
@@ -89,8 +88,6 @@ function TableComponent() {
         const responseData = await sendRequest(
           'http://localhost:5005/api/answer/stats'
         )
-        console.log(responseData)
-
         let realAnswer = []
         let correctAnswer = []
         let tags = []
@@ -122,8 +119,6 @@ function TableComponent() {
           return acc
         }, [])
 
-        console.log('duplicates for real:', duplicates)
-
         let uniqueTags = [...new Set(tags)]
         let indices = []
         for (let i = 0; i < tags.length; i++) {
@@ -140,14 +135,10 @@ function TableComponent() {
           }
           indices.push(indexes)
         }
-
-        console.log('indices. ', indices)
-
         let data = []
 
         indices.forEach((el) => {
           if (!duplicates.includes(el[0].tag)) {
-            console.log('matai mare', el[0])
             data.push(el[0])
           }
         })
@@ -170,7 +161,7 @@ function TableComponent() {
           duplicateEl.totalAnswers = total
           data.push(duplicateEl)
         })
-        console.log('dataaa', data)
+
         setTableDataSource(data)
       } catch (err) {
         console.log(err)
@@ -183,12 +174,39 @@ function TableComponent() {
   const columns = [
     {
       title: 'Tag',
+      render: (record) => <React.Fragment>{record.tag}</React.Fragment>,
+      sorter: (a, b) => {
+        return a.tag.localeCompare(b.tag)
+      },
+      responsive: ['xs'],
+      ...getColumnSearchProps('tag'),
+    },
+    {
+      title: 'Success Rate',
+      render: (record) => <React.Fragment>{record.successRate}</React.Fragment>,
+      sorter: (a, b) => {
+        return a.successRate.localeCompare(b.successRate)
+      },
+      responsive: ['xs'],
+    },
+    {
+      title: 'Total',
+      render: (record) => <React.Fragment>{record.totalAnswers}</React.Fragment>,
+      sorter: {
+        compare: (a, b) => a.totalAnswers - b.totalAnswers,
+      },
+      responsive: ['xs'],
+    },
+
+    {
+      title: 'Tag',
       dataIndex: 'tag',
       key: 'tag',
       sorter: (a, b) => {
         return a.tag.localeCompare(b.tag)
       },
       ...getColumnSearchProps('tag'),
+      responsive: ['sm'],
     },
     {
       title: 'Success Rate',
@@ -198,7 +216,9 @@ function TableComponent() {
         return a.successRate.localeCompare(b.successRate)
       },
       ...getColumnSearchProps('successRate'),
+      responsive: ['sm'],
     },
+
     {
       title: 'Total',
       dataIndex: 'totalAnswers',
@@ -207,20 +227,15 @@ function TableComponent() {
         compare: (a, b) => a.totalAnswers - b.totalAnswers,
       },
       ...getColumnSearchProps('totalAnswers'),
+      responsive: ['sm'],
     },
   ]
 
   return (
     <>
-      {isLoading && (
-        <div className='center'>
-          <LoadingSpinner asOverlay />
-        </div>
-      )}
       <div>
         {tableDataSource && (
           <>
-            {console.log('table ', tableDataSource)}
             <Table columns={columns} dataSource={tableDataSource} />
           </>
         )}
