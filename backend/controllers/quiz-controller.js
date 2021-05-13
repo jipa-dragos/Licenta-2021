@@ -4,7 +4,6 @@ const Quiz = require('../models/Quiz')
 const Professor = require('../models/Professor')
 const Student = require('../models/Student')
 const Course = require('../models/Course')
-const { uuid } = require('uuidv4')
 const Answer = require('../models/Answer')
 
 const createQuiz = async (req, res, next) => {
@@ -36,10 +35,9 @@ const createQuiz = async (req, res, next) => {
       )
     }
 
-    let uid = uuid()
-    uid = uid.replace('-', '')
+    const { v4: uuidv4 } = require('uuid')
     const accessCode =
-      courseName + '-' + Buffer.from(uid, 'hex').toString('base64')
+      courseName + '-' + uuidv4().toString('base64').substring(0, 8)
 
     const quizz = await Quiz.create({
       title,
@@ -246,6 +244,45 @@ const getQuizById = async (req, res, next) => {
     next(err)
   }
 }
+
+const getQuizByAccessCode = async (req, res, next) => {
+  try {
+    const quiz = await Quiz.findOne({accessCode: req.params.id})
+      .select('-quiz.answers.points')
+      .select('-quiz.answers.isCorrect')
+
+    const student = await Student.findById(req.userData.userId)
+    if(!student) {
+      return next(
+        new HttpError(
+          `User ${req.userData.userId} cannot access the Quiz`,
+          403
+        )
+      )
+    }
+
+    if (new Date(quiz.startDate).getTime() > Date.now()) {
+      return next(
+        new HttpError(
+          `User ${req.userData.userId} is too early to start the quiz`,
+          403
+        )
+      )
+    }
+
+    if (new Date(quiz.endDate).getTime() < Date.now()) {
+      return next(new HttpError(`Time expired for the quiz`, 403))
+    }
+
+    res.status(200).json({
+      success: true,
+      data: quiz,
+    })
+  } catch (err) {
+    next(err)
+  }
+}
+
 exports.createQuiz = createQuiz
 exports.updateQuiz = updateQuiz
 exports.deleteQuiz = deleteQuiz
@@ -254,3 +291,4 @@ exports.getQuizzesForProf = getQuizzesForProf
 exports.getAllQuizzes = getAllQuizzes
 exports.getQuizzesForCourse = getQuizzesForCourse
 exports.getQuizById = getQuizById
+exports.getQuizByAccessCode = getQuizByAccessCode

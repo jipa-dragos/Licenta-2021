@@ -68,7 +68,7 @@ function App() {
   } else {
     routes = (
       <Switch>
-        <Route exact path='/' component={Home} />
+        <Route path='/' exact component={Home} />
         <Route path='/auth/student' component={AuthStudent} />
         <Route path='/auth/professor' component={AuthProf} />
       </Switch>
@@ -88,7 +88,6 @@ function App() {
       <Router>
         <Navbar />
         <main>{routes}</main>
-        {console.log(routes)}
       </Router>
     </AuthContext.Provider>
   )

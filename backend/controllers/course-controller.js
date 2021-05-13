@@ -62,11 +62,32 @@ const getCourseByTitle = async (req, res, next) => {
 const getCourseById = async (req, res, next) => {
   try {
     const course = await Course.findById(req.params.id)
-
-    console.log(course)
     res.status(200).json({
       success: true,
-      data: course
+      data: course,
+    })
+  } catch (err) {
+    next(err)
+  }
+}
+
+const getCourseByAccessCode = async (req, res, next) => {
+  try {
+    const course = await Course.findOne({ accessCode: req.params.id })
+
+    const student = await Student.findById(req.userData.userId)
+    if (!student) {
+      return next(
+        new HttpError(
+          `User ${req.userData.userId} cannot access the Course`,
+          403
+        )
+      )
+    }
+
+    res.status(200).json({
+      success: true,
+      data: course,
     })
   } catch (err) {
     next(err)
@@ -85,7 +106,21 @@ const createCourse = async (req, res, next) => {
     const prof = await Professor.findById(req.userData.userId)
     if (!prof) return next(new HttpError('No prof found', 403))
 
-    const course = await Course.create(req.body)
+    const { title, description, type, year, semester } = req.body
+    const { v4: uuidv4 } = require('uuid')
+
+    const accessCode =
+      title + '-' + type + '-' + uuidv4().toString('base64').substring(0, 8)
+
+    const course = await Course.create({
+      title,
+      description,
+      type,
+      year,
+      accessCode,
+      semester,
+    })
+
     await Professor.findByIdAndUpdate(
       { _id: req.userData.userId },
       { $addToSet: { course: course.id } },
@@ -188,3 +223,4 @@ exports.deleteCourse = deleteCourse
 exports.getCourses = getCourses
 exports.getCourseByTitle = getCourseByTitle
 exports.getCourseById = getCourseById
+exports.getCourseByAccessCode = getCourseByAccessCode

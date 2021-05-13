@@ -8,6 +8,7 @@ router.use(checkAuth)
 
 router.get('/', courseController.getCourses)
 router.get('/One/:id', courseController.getCourseById)
+router.get('/access/:id', courseController.getCourseByAccessCode)
 router.get('/:title', courseController.getCourseByTitle)
 router.patch('/:id', courseController.updateCourse)
 router.delete('/:id', courseController.deleteCourse)
