@@ -30,7 +30,7 @@ function App() {
   if (token) {
     routes = (
       <Switch>
-        <Route exact path='/'>
+        <Route path='/' exact>
           <Home />
         </Route>
         <Route path='/courses/:title'>
@@ -68,10 +68,9 @@ function App() {
   } else {
     routes = (
       <Switch>
-        <Route path='/' exact component={Home} />
+        <Route exact path='/' component={Home} />
         <Route path='/auth/student' component={AuthStudent} />
         <Route path='/auth/professor' component={AuthProf} />
-        <Redirect to='/' />
       </Switch>
     )
   }
@@ -89,6 +88,7 @@ function App() {
       <Router>
         <Navbar />
         <main>{routes}</main>
+        {console.log(routes)}
       </Router>
     </AuthContext.Provider>
   )

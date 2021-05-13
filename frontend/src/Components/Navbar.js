@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { Button } from './Button'
-import { Link } from 'react-router-dom'
+import { Link, useHistory } from 'react-router-dom'
 import './Navbar.css'
 import { AuthContext } from '../shared/context/auth-context'
 import { Modal, Button as Buttonski } from 'antd'
@@ -11,7 +11,7 @@ function Navbar() {
   const [click, setClick] = useState(false)
   const [button, setButton] = useState(true)
   const [isModalVisible, setIsModalVisible] = useState(false)
-
+  const history = useHistory()
   const handleClick = () => setClick(!click)
   const closeMobileMenu = () => setClick(false)
 
@@ -43,6 +43,13 @@ function Navbar() {
     setIsModalVisible(false)
   }
 
+  async function handleLogout() {
+    try {
+      await auth.logout()
+      history.push('/')
+    } catch (error) {}
+  }
+
   return (
     <>
       <nav className='navbar'>
@@ -60,31 +67,41 @@ function Navbar() {
                 Home
               </Link>
             </li>
-            <li className='nav-item' style={{ marginTop: 16 }}>
-              <Link
-                to='/courses'
-                className='nav-links'
-                onClick={closeMobileMenu}
-              >
-                Courses
-              </Link>
-            </li>
-            <li className='nav-item' style={{ marginTop: 16 }}>
-              <Link to='/quiz' className='nav-links' onClick={closeMobileMenu}>
-                Quiz
-              </Link>
-            </li>
+            {auth.isLoggedIn && (
+              <>
+                <li className='nav-item' style={{ marginTop: 16 }}>
+                  <Link
+                    to='/courses'
+                    className='nav-links'
+                    onClick={closeMobileMenu}
+                  >
+                    Courses
+                  </Link>
+                </li>
+                <li className='nav-item' style={{ marginTop: 16 }}>
+                  <Link
+                    to='/quiz'
+                    className='nav-links'
+                    onClick={closeMobileMenu}
+                  >
+                    Quiz
+                  </Link>
+                </li>
+                <li>
+                  <p
+                    className='nav-links-mobile'
+                    onClick={handleLogout}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    Logout
+                  </p>
+                </li>
+              </>
+            )}
             {!auth.isLoggedIn && (
               <li>
                 <p className='nav-links-mobile' onClick={handleClickMobile}>
                   Auth
-                </p>
-              </li>
-            )}
-             {auth.isLoggedIn && (
-              <li>
-                <p className='nav-links-mobile' onClick={auth.logout}>
-                  Logout
                 </p>
               </li>
             )}
@@ -130,7 +147,7 @@ function Navbar() {
             </Link>
           </Modal>
           {auth.isLoggedIn && button && (
-            <Button buttonStyle='btn--outline' onClick={auth.logout}>
+            <Button buttonStyle='btn--outline' onClick={handleLogout}>
               Logout
             </Button>
           )}
