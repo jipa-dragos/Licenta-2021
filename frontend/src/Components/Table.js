@@ -18,7 +18,7 @@ function TableComponent() {
       confirm,
       clearFilters,
     }) => (
-      <div style={{ padding: 8 }}>
+      <div style={{ padding: 0 }}>
         <Input
           placeholder={`Search ${dataIndex}`}
           value={selectedKeys[0]}
@@ -88,81 +88,7 @@ function TableComponent() {
         const responseData = await sendRequest(
           'http://localhost:5005/api/answer/stats'
         )
-        let realAnswer = []
-        let correctAnswer = []
-        let tags = []
-
-        responseData.data.theQuiz.forEach((array) => {
-          array.answers.forEach((element) => {
-            realAnswer.push(element)
-          })
-          array.correctAnswers.forEach((element) => {
-            correctAnswer.push(element)
-          })
-          array.tags.forEach((element) => {
-            tags.push(element)
-          })
-        })
-
-        let total = []
-        let rate = []
-        for (let i = 0; i < correctAnswer.length; i++) {
-          const filteredArray = correctAnswer[i].filter((value) =>
-            realAnswer[i].includes(value)
-          )
-          total.push(correctAnswer[i].length)
-          rate.push((filteredArray.length / correctAnswer[i].length) * 100)
-        }
-
-        const duplicates = tags.reduce(function (acc, el, i, arr) {
-          if (arr.indexOf(el) !== i && acc.indexOf(el) < 0) acc.push(el)
-          return acc
-        }, [])
-
-        let uniqueTags = [...new Set(tags)]
-        let indices = []
-        for (let i = 0; i < tags.length; i++) {
-          let indexes = []
-          for (let j = 0; j < uniqueTags.length; j++) {
-            if (tags[i] === uniqueTags[j]) {
-              let tag = uniqueTags[j]
-              let successRate = rate[i] + '%'
-              let totalAnswers = total[i]
-              let key = i
-              let index = { key, tag, successRate, totalAnswers }
-              indexes.push(index)
-            }
-          }
-          indices.push(indexes)
-        }
-        let data = []
-
-        indices.forEach((el) => {
-          if (!duplicates.includes(el[0].tag)) {
-            data.push(el[0])
-          }
-        })
-
-        duplicates.forEach((tag) => {
-          let successRate = 0
-          let total = 0
-          let duplicateEl
-          indices.forEach((el) => {
-            if (duplicates.includes(el[0].tag)) {
-              if (tag === el[0].tag) {
-                const nr = el[0].successRate.slice(0, -1)
-                successRate += parseInt(nr)
-                total += el[0].totalAnswers
-                duplicateEl = el[0]
-              }
-            }
-          })
-          duplicateEl.successRate = (successRate / (total * 50)) * 100 + '%'
-          duplicateEl.totalAnswers = total
-          data.push(duplicateEl)
-        })
-
-        setTableDataSource(data)
+        TableData(responseData)
       } catch (err) {
         console.log(err)
       }
@@ -174,39 +100,12 @@ function TableComponent() {
   const columns = [
     {
       title: 'Tag',
-      render: (record) => <React.Fragment>{record.tag}</React.Fragment>,
-      sorter: (a, b) => {
-        return a.tag.localeCompare(b.tag)
-      },
-      responsive: ['xs'],
-      ...getColumnSearchProps('tag'),
-    },
-    {
-      title: 'Success Rate',
-      render: (record) => <React.Fragment>{record.successRate}</React.Fragment>,
-      sorter: (a, b) => {
-        return a.successRate.localeCompare(b.successRate)
-      },
-      responsive: ['xs'],
-    },
-    {
-      title: 'Total',
-      render: (record) => <React.Fragment>{record.totalAnswers}</React.Fragment>,
-      sorter: {
-        compare: (a, b) => a.totalAnswers - b.totalAnswers,
-      },
-      responsive: ['xs'],
-    },
-
-    {
-      title: 'Tag',
       dataIndex: 'tag',
       key: 'tag',
       sorter: (a, b) => {
         return a.tag.localeCompare(b.tag)
       },
       ...getColumnSearchProps('tag'),
-      responsive: ['sm'],
     },
     {
       title: 'Success Rate',
@@ -216,7 +115,6 @@ function TableComponent() {
         return a.successRate.localeCompare(b.successRate)
       },
       ...getColumnSearchProps('successRate'),
-      responsive: ['sm'],
     },
 
     {
@@ -227,7 +125,6 @@ function TableComponent() {
         compare: (a, b) => a.totalAnswers - b.totalAnswers,
       },
       ...getColumnSearchProps('totalAnswers'),
-      responsive: ['sm'],
     },
   ]
 
@@ -242,6 +139,84 @@ function TableComponent() {
       </div>
     </>
   )
+
+  function TableData(responseData) {
+    let realAnswer = []
+    let correctAnswer = []
+    let tags = []
+
+    responseData.data.theQuiz.forEach((array) => {
+      array.answers.forEach((element) => {
+        realAnswer.push(element)
+      })
+      array.correctAnswers.forEach((element) => {
+        correctAnswer.push(element)
+      })
+      array.tags.forEach((element) => {
+        tags.push(element)
+      })
+    })
+
+    let total = []
+    let rate = []
+    for (let i = 0; i < correctAnswer.length; i++) {
+      const filteredArray = correctAnswer[i].filter((value) =>
+        realAnswer[i].includes(value)
+      )
+      total.push(correctAnswer[i].length)
+      rate.push((filteredArray.length / correctAnswer[i].length) * 100)
+    }
+
+    const duplicates = tags.reduce(function (acc, el, i, arr) {
+      if (arr.indexOf(el) !== i && acc.indexOf(el) < 0) acc.push(el)
+      return acc
+    }, [])
+
+    let uniqueTags = [...new Set(tags)]
+    let indices = []
+    for (let i = 0; i < tags.length; i++) {
+      let indexes = []
+      for (let j = 0; j < uniqueTags.length; j++) {
+        if (tags[i] === uniqueTags[j]) {
+          let tag = uniqueTags[j]
+          let successRate = rate[i] + '%'
+          let totalAnswers = total[i]
+          let key = i
+          let index = { key, tag, successRate, totalAnswers }
+          indexes.push(index)
+        }
+      }
+      indices.push(indexes)
+    }
+    let data = []
+
+    indices.forEach((el) => {
+      if (!duplicates.includes(el[0].tag)) {
+        data.push(el[0])
+      }
+    })
+
+    duplicates.forEach((tag) => {
+      let successRate = 0
+      let total = 0
+      let duplicateEl
+      indices.forEach((el) => {
+        if (duplicates.includes(el[0].tag)) {
+          if (tag === el[0].tag) {
+            const nr = el[0].successRate.slice(0, -1)
+            successRate += parseInt(nr)
+            total += el[0].totalAnswers
+            duplicateEl = el[0]
+          }
+        }
+      })
+      duplicateEl.successRate = (successRate / (total * 50)) * 100 + '%'
+      duplicateEl.totalAnswers = total
+      data.push(duplicateEl)
+    })
+
+    setTableDataSource(data)
+  }
 }
 
 export default TableComponent
