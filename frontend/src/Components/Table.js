@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { useHttpClient } from '../shared/hooks/http-hook'
-import { Table, Input, Button, Space } from 'antd'
+import { Table, Input, Button, Space, Statistic, Card, Row, Col } from 'antd'
+import { ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons'
+import './Table.css'
 import 'antd/dist/antd.css'
 import { SearchOutlined } from '@ant-design/icons'
 import Highlighter from 'react-highlight-words'
@@ -10,6 +12,8 @@ function TableComponent() {
   const [tableDataSource, setTableDataSource] = useState([])
   const [searchText, setSearchText] = useState('')
   const [searchedColumn, setSearchedColumn] = useState('')
+  const [highest, setHighest] = useState([])
+  const [lowest, setLowest] = useState([])
 
   const getColumnSearchProps = (dataIndex) => ({
     filterDropdown: ({
@@ -137,6 +141,36 @@ function TableComponent() {
           </>
         )}
       </div>
+      <div className='site-statistic-demo-card'>
+        {highest && lowest && (
+          <Row gutter={16}>
+            <Col span={12}>
+              <Card>
+                <Statistic
+                  title='Best'
+                  value={highest[0]}
+                  precision={2}
+                  valueStyle={{ color: '#3f8600' }}
+                  prefix={<ArrowUpOutlined />}
+                  suffix={`Total answers ${highest[1]}`}
+                />
+              </Card>
+            </Col>
+            <Col span={12}>
+              <Card>
+                <Statistic
+                  title='Worst'
+                  value={lowest[0]}
+                  precision={2}
+                  valueStyle={{ color: '#cf1322' }}
+                  prefix={<ArrowDownOutlined />}
+                  suffix={`Total answers ${lowest[1]}`}
+                />
+              </Card>
+            </Col>
+          </Row>
+        )}
+      </div>
     </>
   )
 
@@ -188,8 +222,8 @@ function TableComponent() {
       }
       indices.push(indexes)
     }
-    let data = []
 
+    let data = []
     indices.forEach((el) => {
       if (!duplicates.includes(el[0].tag)) {
         data.push(el[0])
@@ -216,6 +250,16 @@ function TableComponent() {
     })
 
     setTableDataSource(data)
+
+    const max = data.sort(
+      (a, b) => parseInt(b.successRate) - parseInt(a.successRate)
+    )[0]
+    const min = data.sort(
+      (a, b) => parseInt(a.successRate) - parseInt(b.successRate)
+    )[0]
+
+    setHighest([max.tag, max.totalAnswers])
+    setLowest([min.tag, min.totalAnswers])
   }
 }
 
