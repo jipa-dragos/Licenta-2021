@@ -30,7 +30,7 @@ function App() {
   if (token) {
     routes = (
       <Switch>
-        <Route path='/' exact>
+        <Route exact path='/'>
           <Home />
         </Route>
         <Route path='/courses/:title'>

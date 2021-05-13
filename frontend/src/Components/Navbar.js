@@ -74,18 +74,23 @@ function Navbar() {
                 Quiz
               </Link>
             </li>
-
-            <li>
-              <p className='nav-links-mobile' onClick={handleClickMobile}>
-                Auth
-              </p>
-            </li>
+            {!auth.isLoggedIn && (
+              <li>
+                <p className='nav-links-mobile' onClick={handleClickMobile}>
+                  Auth
+                </p>
+              </li>
+            )}
+             {auth.isLoggedIn && (
+              <li>
+                <p className='nav-links-mobile' onClick={auth.logout}>
+                  Logout
+                </p>
+              </li>
+            )}
           </ul>
           {!auth.isLoggedIn && button && (
-            <Button
-              onClick={showModal}
-              buttonStyle='btn--outline'
-            >
+            <Button onClick={showModal} buttonStyle='btn--outline'>
               Auth
             </Button>
           )}
@@ -97,14 +102,29 @@ function Navbar() {
             onCancel={handleCancel}
           >
             <Link to='/auth/professor' onClick={handleCancel}>
-              <Buttonski type='primary' style={{ marginLeft: '30%', width: 180, color: 'white', backgroundColor: '#7f00ff'}}>
+              <Buttonski
+                type='primary'
+                style={{
+                  marginLeft: '30%',
+                  width: 180,
+                  color: 'white',
+                  backgroundColor: '#7f00ff',
+                }}
+              >
                 Professor Authentication
               </Buttonski>
             </Link>
             <br />
             <br />
             <Link to='/auth/student' onClick={handleCancel}>
-              <Buttonski type='primary' style={{ marginLeft: '30%', width: 180, backgroundColor: '#ff0080' }}>
+              <Buttonski
+                type='primary'
+                style={{
+                  marginLeft: '30%',
+                  width: 180,
+                  backgroundColor: '#ff0080',
+                }}
+              >
                 Student Authentication
               </Buttonski>
             </Link>
