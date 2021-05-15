@@ -11,11 +11,6 @@ const getCourses = async (req, res, next) => {
     let user = await Professor.findById(req.userData.userId)
     if (!user) {
       user = await Student.findById(req.userData.userId)
-
-      // const courses = await Course.find({ year: { $in: user.year } })
-      // if (courses.length === 0) {
-      //   return res.status(204).json({ success: true, data: courses })
-      // }
       const courses = await Course.find({ students: { $in: user._id }})
 
       for (const i of courses) {

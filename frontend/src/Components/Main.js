@@ -15,6 +15,7 @@ function Main() {
   const [isAccessModalVisible, setIsAccessModalVisible] = useState(false)
   const [click] = useState(false)
   const [foundQuiz, setFoundQuiz] = useState()
+  const [joinCourse, setJoinCourse] = useState()
 
   const showModal = () => {
     setIsModalVisible(!click)
@@ -39,27 +40,25 @@ function Main() {
         console.log(err)
       }
     }
-    const fetchAnswers = async () => {
-      try {
-        const responseData = await sendRequest(
-          // `http://localhost:5005/api/answer/courseName/${course.title}`
-        )
-        let ids = []
-        for (let i of responseData.data) {
-          ids.push(i.quiz)
-        }
-
-        // setLoadedIds(ids)
-      } catch (err) {
-        console.log(err)
-      }
-    }
-    fetchAnswers()
     fetchQuiz()
   }
 
   const onFinishCourse = (values) => {
-    console.log('Success:', values)
+    const joinCourse = async () => {
+      try {
+        const responseData = await sendRequest(
+          'http://localhost:5005/api/course',
+          'PATCH',
+          JSON.stringify({
+            accessCode: values.accessCode,
+          })
+        )
+        setJoinCourse(responseData)
+      } catch (err) {
+        console.log(err)
+      }
+    }
+    joinCourse()
   }
 
   return (
@@ -182,6 +181,11 @@ function Main() {
           {new Date(foundQuiz.data.startDate).getTime() < Date.now() && (
             <Redirect to={{ pathname: `/quiz/${foundQuiz.data._id}` }} />
           )}
+        </>
+      )}
+      {joinCourse && (
+        <>
+          <Redirect to={{ pathname: `/courses/${joinCourse.data.title}` }} />
         </>
       )}
     </div>
