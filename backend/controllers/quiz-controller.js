@@ -78,8 +78,10 @@ const updateQuiz = async (req, res, next) => {
 
     let quizz = await Quiz.findById(req.params.id)
 
-    if(quizz.creator.toString() !== prof._id.toString()) {
-      return next(new HttpError('Only the creator of the quiz can update it!', 403))
+    if (quizz.creator.toString() !== prof._id.toString()) {
+      return next(
+        new HttpError('Only the creator of the quiz can update it!', 403)
+      )
     }
 
     quizz = await Quiz.findByIdAndUpdate(req.params.id, req.body, {
@@ -89,7 +91,7 @@ const updateQuiz = async (req, res, next) => {
 
     res.status(201).json({
       success: true,
-      data: quizz
+      data: quizz,
     })
   } catch (err) {
     next(err)
@@ -199,7 +201,7 @@ const getAllQuizzes = async (req, res, next) => {
     for (let i = 0; i < quizzes.length; i++) {
       quizCreator.push(quizzes[i].creator)
     }
-    
+
     console.log(quizCreator)
     console.log(req.userData.userId)
 
@@ -222,6 +224,19 @@ const getQuizById = async (req, res, next) => {
     const quiz = await Quiz.findById(req.params.id)
       .select('-quiz.answers.points')
       .select('-quiz.answers.isCorrect')
+
+    const answer = await Answer.find({ student: req.userData.userId })
+
+    for (const i of answer) {
+      if (i.quiz.toString() === quiz._id.toString()) {
+        return next(
+          new HttpError(
+            `Student ${req.userData.userId} Already answered this quiz`,
+            403
+          )
+        )
+      }
+    }
 
     if (new Date(quiz.startDate).getTime() > Date.now()) {
       return next(
@@ -247,18 +262,28 @@ const getQuizById = async (req, res, next) => {
 
 const getQuizByAccessCode = async (req, res, next) => {
   try {
-    const quiz = await Quiz.findOne({accessCode: req.params.id})
+    const quiz = await Quiz.findOne({ accessCode: req.params.id })
       .select('-quiz.answers.points')
       .select('-quiz.answers.isCorrect')
 
     const student = await Student.findById(req.userData.userId)
-    if(!student) {
+    if (!student) {
       return next(
-        new HttpError(
-          `User ${req.userData.userId} cannot access the Quiz`,
-          403
-        )
+        new HttpError(`User ${req.userData.userId} cannot access the Quiz`, 403)
       )
+    }
+
+    const answer = await Answer.find({ student: student._id })
+
+    for (const i of answer) {
+      if (i.quiz.toString() === quiz._id.toString()) {
+        return next(
+          new HttpError(
+            `Student ${req.userData.userId} Already answered this quiz`,
+            403
+          )
+        )
+      }
     }
 
     if (new Date(quiz.startDate).getTime() > Date.now()) {

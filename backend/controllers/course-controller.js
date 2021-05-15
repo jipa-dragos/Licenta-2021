@@ -172,21 +172,21 @@ const updateCourse = async (req, res, next) => {
 
 const deleteCourse = async (req, res, next) => {
   try {
-    const course = await Course.findById(req.params.id)
-
-    if (!course) {
-      return next(
-        new HttpError(`course not found with id of ${req.params.id}`, 404)
-      )
-    }
-
-    const prof = await Professor.findById(req.userData.userId)
+    let prof = await Professor.findById(req.userData.userId)
     if (!prof) {
       return next(
         new HttpError(
           `The user with the id:  ${req.params.id} is not a professor`,
           404
         )
+      )
+    }
+
+    const course = await Course.findById(req.params.id)
+
+    if (!course) {
+      return next(
+        new HttpError(`course not found with id of ${req.params.id}`, 404)
       )
     }
 
@@ -208,6 +208,16 @@ const deleteCourse = async (req, res, next) => {
     await Answer.find({ quiz: { $in: quizIds } }).deleteMany()
     await Quiz.find({ course: req.params.id }).deleteMany()
     await Course.findByIdAndDelete(req.params.id)
+
+    for (const i of prof.course) {
+      if (i.toString() === req.params.id.toString()) {
+        await Professor.update(
+          { _id: req.userData.userId },
+          { $pull: { course: i }}
+        )
+      }
+    }
+
     res.status(200).json({
       success: true,
       data: {},
