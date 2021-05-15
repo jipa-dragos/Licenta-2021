@@ -12,9 +12,14 @@ const getCourses = async (req, res, next) => {
     if (!user) {
       user = await Student.findById(req.userData.userId)
 
-      const courses = await Course.find({ year: { $in: user.year } })
-      if (courses.length === 0) {
-        return res.status(204).json({ success: true, data: courses })
+      // const courses = await Course.find({ year: { $in: user.year } })
+      // if (courses.length === 0) {
+      //   return res.status(204).json({ success: true, data: courses })
+      // }
+      const courses = await Course.find({ students: { $in: user._id }})
+
+      for (const i of courses) {
+        console.log(i.students)
       }
 
       return res.status(200).json({
@@ -170,6 +175,47 @@ const updateCourse = async (req, res, next) => {
   }
 }
 
+const joinCourse = async (req, res, next) => {
+  try {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      return next(
+        new HttpError('Invalid inputs passed, please check your data.', 422)
+      )
+    }
+
+    const stud = await Student.findById(req.userData.userId)
+    if (!stud) return next(new HttpError('No student found', 403))
+
+    const { accessCode } = req.body
+
+    const courseFound = await Course.findOne({ accessCode: accessCode })
+    
+    let set = new Set()
+    for (const i of courseFound.students) {
+      set.add(i.toString())
+    }
+    set.add(req.userData.userId)
+
+    const fieldToUpdate = {
+      students: Array.from(set)
+    }
+
+    console.log(fieldToUpdate)
+    const course = await Course.findByIdAndUpdate(courseFound._id, fieldToUpdate, {
+      new: true,
+      runValidators: true,
+    })
+
+    res.status(201).json({
+      success: true,
+      data: course,
+    })
+  } catch (err) {
+    next(err)
+  }
+}
+
 const deleteCourse = async (req, res, next) => {
   try {
     let prof = await Professor.findById(req.userData.userId)
@@ -229,6 +275,7 @@ const deleteCourse = async (req, res, next) => {
 
 exports.createCourse = createCourse
 exports.updateCourse = updateCourse
+exports.joinCourse = joinCourse
 exports.deleteCourse = deleteCourse
 exports.getCourses = getCourses
 exports.getCourseByTitle = getCourseByTitle
