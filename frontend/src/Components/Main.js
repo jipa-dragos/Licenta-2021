@@ -1,17 +1,20 @@
 import React, { useContext, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, Redirect } from 'react-router-dom'
 import '../App.css'
 import { AuthContext } from '../shared/context/auth-context'
 import { Button } from './Button'
 import './Main.css'
 import { Modal, Button as Buttonski, Input, Form } from 'antd'
 import 'antd/dist/antd.css'
+import { useHttpClient } from '../shared/hooks/http-hook'
 
 function Main() {
   const auth = useContext(AuthContext)
+  const { sendRequest } = useHttpClient()
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [isAccessModalVisible, setIsAccessModalVisible] = useState(false)
   const [click] = useState(false)
+  const [foundQuiz, setFoundQuiz] = useState()
 
   const showModal = () => {
     setIsModalVisible(!click)
@@ -25,7 +28,35 @@ function Main() {
     setIsAccessModalVisible(false)
   }
 
-  const onFinishQuiz = (values) => values
+  const onFinishQuiz = (values) => {
+    const fetchQuiz = async () => {
+      try {
+        const responseData = await sendRequest(
+          `http://localhost:5005/api/quiz/access/${values.accessCode}`
+        )
+        setFoundQuiz(responseData)
+      } catch (err) {
+        console.log(err)
+      }
+    }
+    const fetchAnswers = async () => {
+      try {
+        const responseData = await sendRequest(
+          // `http://localhost:5005/api/answer/courseName/${course.title}`
+        )
+        let ids = []
+        for (let i of responseData.data) {
+          ids.push(i.quiz)
+        }
+
+        // setLoadedIds(ids)
+      } catch (err) {
+        console.log(err)
+      }
+    }
+    fetchAnswers()
+    fetchQuiz()
+  }
 
   const onFinishCourse = (values) => {
     console.log('Success:', values)
@@ -71,14 +102,14 @@ function Main() {
             onFinish={onFinishCourse}
           >
             <Form.Item label='Course' name='accessCode'>
-              <Input placeholder='Course access code' style={{width: '55%'}}/>
+              <Input
+                placeholder='Course access code'
+                style={{ width: '77%' }}
+              />
             </Form.Item>
 
             <Form.Item>
-              <Buttonski
-                type='primary'
-                htmlType='submit'
-              >
+              <Buttonski type='primary' htmlType='submit'>
                 Join Course
               </Buttonski>
             </Form.Item>
@@ -92,20 +123,22 @@ function Main() {
             }}
             onFinish={onFinishQuiz}
           >
-            <Form.Item label='Quiz' name='accessCode' style={{paddingLeft: 25}}>
-              <Input placeholder='Quiz access code' style={{width: '55%'}}/>
+            <Form.Item
+              label='Quiz'
+              name='accessCode'
+              style={{ paddingLeft: 25 }}
+            >
+              <Input placeholder='Quiz access code' style={{ width: '77%' }} />
             </Form.Item>
 
             <Form.Item>
-            <Link to={`/courses/WEBTECH/quiz/${onFinishQuiz}`}>
               <Buttonski
                 type='primary'
                 htmlType='submit'
-                style={{width: '115%'}}
+                style={{ width: '115%' }}
               >
                 Start Quiz
               </Buttonski>
-              </Link>
             </Form.Item>
           </Form>
         </Modal>
@@ -144,6 +177,13 @@ function Main() {
           </Link>
         </Modal>
       </div>
+      {foundQuiz && (
+        <>
+          {new Date(foundQuiz.data.startDate).getTime() < Date.now() && (
+            <Redirect to={{ pathname: `/quiz/${foundQuiz.data._id}` }} />
+          )}
+        </>
+      )}
     </div>
   )
 }

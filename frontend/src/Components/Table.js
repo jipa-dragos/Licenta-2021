@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { useHttpClient } from '../shared/hooks/http-hook'
 import { Table, Input, Button, Space, Statistic, Card, Row, Col } from 'antd'
-import { ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons'
+import { ArrowUpOutlined, ArrowDownOutlined, SearchOutlined } from '@ant-design/icons'
 import './Table.css'
 import 'antd/dist/antd.css'
-import { SearchOutlined } from '@ant-design/icons'
 import Highlighter from 'react-highlight-words'
 
 function TableComponent() {
@@ -152,7 +151,7 @@ function TableComponent() {
                   precision={2}
                   valueStyle={{ color: '#3f8600' }}
                   prefix={<ArrowUpOutlined />}
-                  suffix={`Total answers ${highest[1]}`}
+                  suffix={`Correct Answers ${highest[1]} out of ${highest[2]}`}
                 />
               </Card>
             </Col>
@@ -164,7 +163,7 @@ function TableComponent() {
                   precision={2}
                   valueStyle={{ color: '#cf1322' }}
                   prefix={<ArrowDownOutlined />}
-                  suffix={`Total answers ${lowest[1]}`}
+                  suffix={`Correct Answers ${lowest[1]} out of ${lowest[2]}`}
                 />
               </Card>
             </Col>
@@ -258,8 +257,10 @@ function TableComponent() {
       (a, b) => parseInt(a.successRate) - parseInt(b.successRate)
     )[0]
 
-    setHighest([max.tag, max.totalAnswers])
-    setLowest([min.tag, min.totalAnswers])
+    const nrCorrectAnswHigh = max.totalAnswers * (parseInt(max.successRate)/100)
+    const nrCorrectAnswLow = min.totalAnswers * (parseInt(min.successRate)/100)
+    setHighest([max.tag, nrCorrectAnswHigh, max.totalAnswers])
+    setLowest([min.tag, nrCorrectAnswLow, min.totalAnswers])
   }
 }
 
