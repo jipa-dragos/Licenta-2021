@@ -1,4 +1,4 @@
-import { Button, Card, List } from 'antd'
+import { Popover, Button, Card, List } from 'antd'
 import React, { useState, useEffect, useContext } from 'react'
 import LoadingSpinner from '../../shared/components/UI/LoadingSpinner'
 import { Link } from 'react-router-dom'
@@ -49,7 +49,14 @@ function Quiz() {
     deleteQuiz()
   }
 
- 
+  const content = (
+    <div style={{ paddingLeft: '10%' }}>
+      <Link to='/create/quiz'>
+        <Button>Normal</Button>
+      </Link>
+      <Button>Final</Button>
+    </div>
+  )
 
   return (
     <>
@@ -61,7 +68,7 @@ function Quiz() {
 
       {!isLoading && LoadedQuizzes && (
         <>
-          <Link to='/create/quiz'>
+          <Popover content={content} title='Select the type of quiz to create'>
             <Button
               shape='round'
               type='primary'
@@ -70,7 +77,7 @@ function Quiz() {
             >
               Create Quiz
             </Button>
-          </Link>
+          </Popover>
           <div>
             <h2>List of Quizzes</h2>
             <p>These are all the quizzes that you created!</p>
@@ -90,7 +97,7 @@ function Quiz() {
               <List.Item>
                 <Card title={item.title}>
                   <Link to={`/update/quiz/${item._id}`}>
-                  <p>AccessCode: {item.accessCode},</p>
+                    <p>AccessCode: {item.accessCode},</p>
                   </Link>
                   <p>Number of Questions: {item.quiz.length},</p>
                   <p>Start Date: {item.startDate}</p>
