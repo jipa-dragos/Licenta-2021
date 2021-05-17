@@ -60,6 +60,125 @@ const createQuiz = async (req, res, next) => {
   }
 }
 
+const createFinalQuiz = async (req, res, next) => {
+  try {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      return next(
+        new HttpError('Invalid inputs passed, please check your data.', 422)
+      )
+    }
+
+    const creator = req.userData.userId
+
+    const prof = await Professor.findById(creator)
+    if (!prof) {
+      return next(new HttpError('Only a professor can create quizzes!', 403))
+    }
+
+    const { title, tags, numbers, quiz, startDate, endDate, courseName } =
+      req.body
+
+    const course = await Course.findOne({ title: courseName })
+
+    if (!prof.course.includes(course._id)) {
+      return next(
+        new HttpError(
+          'Invalid Course Name. Please select a course that you have access to!',
+          403
+        )
+      )
+    }
+
+    const quizzes = await Quiz.find({ creator: creator })
+
+    let q = []
+    for (const i of quizzes) {
+      for (const quiz of i.quiz) {
+        for (const tag of tags) {
+          if (tag === quiz.tag) q.push(quiz)
+        }
+      }
+    }
+
+    q.sort(function (a, b) {
+      return a.tag.localeCompare(b.tag)
+    })
+
+    let group = q.reduce((r, a) => {
+      r[a.tag] = [...(r[a.tag] || []), a]
+      return r
+    }, {})
+
+    function popRandom(array, number, total) {
+      let i = Math.floor(Math.random() * array.length) | 0
+      const remainingQuestions = total - number
+      if (number === total) return array
+      else if (number > total) {
+        return next(
+          new HttpError("The number can't be larger than total!", 403)
+        )
+      }
+      return array.splice(i, remainingQuestions)[0]
+    }
+
+    let pair = []
+    for (let i = 0; i < tags.length; i++) {
+      let temp = []
+      temp.push(tags[i])
+      temp.push(numbers[i])
+      pair.push(temp)
+    }
+
+    let newQuestionsRandomized = []
+    for (const key in group) {
+      for (let i = 0; i < pair.length; i++) {
+        if (pair[i][0] === group[key][0].tag) {
+          newQuestionsRandomized.push(
+            popRandom(group[key], numbers[i], group[key].length)
+          )
+        }
+      }
+    }
+
+    let structuredQuestions = []
+    for (const i of newQuestionsRandomized) {
+      if (i.length === null || i.length === undefined)
+        structuredQuestions.push(i)
+      else if (i.length > 1) {
+        for (const j of i) {
+          structuredQuestions.push(j)
+        }
+      }
+    }
+
+    for (const i of structuredQuestions) {
+      quiz.push(i)
+    }
+
+    const { v4: uuidv4 } = require('uuid')
+    const accessCode =
+      courseName + '-' + uuidv4().toString('base64').substring(0, 8)
+
+    const quizz = await Quiz.create({
+      title,
+      quiz,
+      creator: prof._id,
+      course,
+      accessCode,
+      startDate,
+      endDate,
+    })
+
+    res.status(201).json({
+      success: true,
+      data: quizz,
+    })
+  } catch (err) {
+    next(err)
+  }
+}
+
 const updateQuiz = async (req, res, next) => {
   try {
     const errors = validationResult(req)
@@ -202,9 +321,6 @@ const getAllQuizzes = async (req, res, next) => {
       quizCreator.push(quizzes[i].creator)
     }
 
-    console.log(quizCreator)
-    console.log(req.userData.userId)
-
     if (quizCreator.includes(req.userData.userId)) {
       console.log('nu e eroare')
     }
@@ -309,6 +425,7 @@ const getQuizByAccessCode = async (req, res, next) => {
 }
 
 exports.createQuiz = createQuiz
+exports.createFinalQuiz = createFinalQuiz
 exports.updateQuiz = updateQuiz
 exports.deleteQuiz = deleteQuiz
 exports.getQuizzesForStudent = getQuizzesForStudent

@@ -85,7 +85,6 @@ function Main() {
             Get Access
           </Button>
         )}
-
         <Modal
           title='Get Access'
           visible={isAccessModalVisible}

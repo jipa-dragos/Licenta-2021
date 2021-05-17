@@ -13,6 +13,7 @@ router.get('/:id', quizControllers.getQuizzesForCourse)
 router.get('/course/:id', quizControllers.getQuizById)
 router.get('/access/:id', quizControllers.getQuizByAccessCode)
 router.post('/', quizControllers.createQuiz)
+router.post('/final', quizControllers.createFinalQuiz)
 router.delete('/:id', quizControllers.deleteQuiz)
 router.patch('/:id', quizControllers.updateQuiz)
 
