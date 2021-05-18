@@ -115,9 +115,7 @@ const createFinalQuiz = async (req, res, next) => {
       const remainingQuestions = total - number
       if (number === total) return array
       else if (number > total) {
-        return next(
-          new HttpError("The number can't be larger than total!", 403)
-        )
+        return array.splice(i, 1)[0]
       }
       return array.splice(i, remainingQuestions)[0]
     }
@@ -141,6 +139,7 @@ const createFinalQuiz = async (req, res, next) => {
       }
     }
 
+    console.log(newQuestionsRandomized)
     let structuredQuestions = []
     for (const i of newQuestionsRandomized) {
       if (i.length === null || i.length === undefined)
