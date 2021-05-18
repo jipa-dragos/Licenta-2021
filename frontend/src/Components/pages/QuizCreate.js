@@ -39,7 +39,9 @@ function disabledDate(current) {
 export default function QuizCreate(props) {
   const { isLoading, sendRequest } = useHttpClient()
   const [loadedCourses, setLoadedCourses] = useState()
+  const [loadedQuizzes, setLoadedQuizzes] = useState()
   const [isFinalQuiz, setisFinalQuiz] = useState()
+  const [selectedTag, setSelectedTag] = useState()
 
   const onFinish = async (values) => {
     let newData = values
@@ -87,6 +89,30 @@ export default function QuizCreate(props) {
       }
     }
     fetchCourses()
+    const fetchQuizzes = async () => {
+      try {
+        const responseData = await sendRequest(
+          'http://localhost:5005/api/quiz/'
+        )
+
+        let tags = []
+        for (const quiz of responseData.data) {
+          for (const question of quiz.quiz) {
+            tags.push(question.tag)
+          }
+        }
+
+        let count = {}
+        tags.forEach(function (i) {
+          count[i] = (count[i] || 0) + 1
+        })
+        console.log(count)
+        setLoadedQuizzes(count)
+      } catch (err) {
+        console.log(err)
+      }
+    }
+    fetchQuizzes()
   }, [sendRequest, props])
 
   const setQuizDate = () => (
@@ -147,49 +173,6 @@ export default function QuizCreate(props) {
       </Select>
     </Form.Item>
   )
-  const tags = () => (
-    <Form.Item
-      label='Tags'
-      name='tags'
-      hasFeedback
-      rules={[
-        {
-          required: true,
-          message: 'Please select the tags!',
-        },
-      ]}
-    >
-      <Select placeholder='Please select a tag'>
-        {loadedCourses.data.map((course) => (
-          <Option key={course._id} value={course.title}>
-            {course.title}
-          </Option>
-        ))}
-      </Select>
-    </Form.Item>
-  )
-
-  const numbers = () => (
-    <Form.Item
-      label='Numbers'
-      name='numbers'
-      hasFeedback
-      rules={[
-        {
-          required: true,
-          message: 'Please select the numbers of tags!',
-        },
-      ]}
-    >
-      <Select placeholder='Please select how many questions with that tag to add'>
-        {loadedCourses.data.map((course) => (
-          <Option key={course._id} value={course.title}>
-            {course.title}
-          </Option>
-        ))}
-      </Select>
-    </Form.Item>
-  )
 
   const button = () => (
     <Form.Item
@@ -204,6 +187,23 @@ export default function QuizCreate(props) {
     </Form.Item>
   )
 
+  const findMax = (selectedTag) => {
+    let max = 3
+    if (selectedTag) {
+      console.log(selectedTag)
+      Object.keys(loadedQuizzes).forEach((tag) => {
+        if(tag === selectedTag) {
+          console.log(loadedQuizzes[tag])
+          max = loadedQuizzes[tag]
+        }
+      })
+    }
+    return max;
+  }
+
+  const handleChange = (e) => {
+    setSelectedTag(e)
+  }
   return (
     <>
       {isLoading && (
@@ -217,10 +217,91 @@ export default function QuizCreate(props) {
           {courseName()}
           {setQuizDate()}
           {isFinalQuiz && (
-            <>
-              {tags()}
-              {numbers()}
-            </>
+            <Form.List name='final'>
+              {(fields, { add, remove }) => (
+                <>
+                  {fields.map((field) => (
+                    <React.Fragment key={field.key}>
+                      <Space
+                        style={{
+                          display: 'flex',
+                          marginBottom: 8,
+                          marginLeft: 500,
+                        }}
+                        align='baseline'
+                      >
+                        <Form.Item
+                          {...field}
+                          wrapperCol={{
+                            span: 200,
+                            offset: 6,
+                          }}
+                          name={[field.name, 'tag']}
+                          fieldKey={[field.fieldKey, 'tag']}
+                        >
+                          <Select
+                            placeholder='Please select a tag'
+                            style={{ minWidth: '200px' }}
+                            onChange={handleChange}
+                          >
+                            {Object.keys(loadedQuizzes).map((quiz, index) => (
+                              <Option key={index} value={quiz}>
+                                {quiz}
+                              </Option>
+                            ))}
+                          </Select>
+                        </Form.Item>
+
+                        <Form.Item
+                          {...field}
+                          hasFeedback
+                          wrapperCol={{
+                            span: 23,
+                            offset: 16,
+                          }}
+                          style={{ width: 400, marginLeft: -150 }}
+                          name={[field.name, 'number']}
+                          fieldKey={[field.fieldKey, 'number']}
+                          rules={[
+                            {
+                              required: true,
+                              message: 'Missing number',
+                            },
+                          ]}
+                        >
+                          <InputNumber
+                            size='small'
+                            placeholder='number'
+                            min={1}
+                            max={findMax(selectedTag)}
+                          />
+                        </Form.Item>
+
+                        <MinusCircleOutlined
+                          style={{ marginLeft: 10 }}
+                          onClick={() => remove(field.name)}
+                        />
+                      </Space>
+                    </React.Fragment>
+                  ))}
+                  <Form.Item
+                    wrapperCol={{
+                      span: 12,
+                      offset: 6,
+                    }}
+                  >
+                    <Button
+                      type='dashed'
+                      onClick={() => add()}
+                      block
+                      icon={<PlusOutlined />}
+                    >
+                      Add random quiz questions
+                    </Button>
+                  </Form.Item>
+                </>
+              )}
+            </Form.List>
           )}
           <Form.List name='quiz'>
             {(fields2, { add, remove }) => (
