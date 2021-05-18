@@ -41,7 +41,6 @@ export default function QuizCreate(props) {
   const [loadedCourses, setLoadedCourses] = useState()
   const [loadedQuizzes, setLoadedQuizzes] = useState()
   const [isFinalQuiz, setisFinalQuiz] = useState()
-  const [selectedTag, setSelectedTag] = useState()
 
   const onFinish = async (values) => {
     let newData = values
@@ -49,6 +48,26 @@ export default function QuizCreate(props) {
     let startDate = values.rangeTime[0]._d.toString()
     let endDate = values.rangeTime[1]._d.toString()
 
+    let isFinal = false
+    if (isFinalQuiz) {
+      let tags = []
+      let numbers = []
+      if (newData.final) {
+        for (const i of newData.final) {
+          tags.push(i.tag)
+          numbers.push(i.number)
+        }
+
+        console.log(tags)
+        console.log(numbers)
+
+        delete newData.final
+
+        newData.tags = tags
+        newData.numbers = numbers
+        isFinal = true
+      }
+    }
     delete newData.rangeTime
 
     newData.startDate = startDate
@@ -58,11 +77,19 @@ export default function QuizCreate(props) {
 
     const createQuiz = async () => {
       try {
-        await sendRequest(
-          'http://localhost:5005/api/quiz/',
-          'POST',
-          JSON.stringify(newData)
-        )
+        if (isFinal) {
+          await sendRequest(
+            'http://localhost:5005/api/quiz/final',
+            'POST',
+            JSON.stringify(newData)
+          )
+        } else {
+          await sendRequest(
+            'http://localhost:5005/api/quiz/',
+            'POST',
+            JSON.stringify(newData)
+          )
+        }
       } catch (err) {
         console.log(err)
       }
@@ -77,11 +104,9 @@ export default function QuizCreate(props) {
           'http://localhost:5005/api/course/'
         )
         setLoadedCourses(responseData)
-        console.log('am rulat doar la inceput sper')
 
         try {
           const quizFinal = props.location.state.finalQuiz
-          console.log(quizFinal)
           setisFinalQuiz(quizFinal)
         } catch {}
       } catch (err) {
@@ -106,7 +131,6 @@ export default function QuizCreate(props) {
         tags.forEach(function (i) {
           count[i] = (count[i] || 0) + 1
         })
-        console.log(count)
         setLoadedQuizzes(count)
       } catch (err) {
         console.log(err)
@@ -187,23 +211,6 @@ export default function QuizCreate(props) {
     </Form.Item>
   )
 
-  const findMax = (selectedTag) => {
-    let max = 3
-    if (selectedTag) {
-      console.log(selectedTag)
-      Object.keys(loadedQuizzes).forEach((tag) => {
-        if(tag === selectedTag) {
-          console.log(loadedQuizzes[tag])
-          max = loadedQuizzes[tag]
-        }
-      })
-    }
-    return max;
-  }
-
-  const handleChange = (e) => {
-    setSelectedTag(e)
-  }
   return (
     <>
       {isLoading && (
@@ -220,7 +227,7 @@ export default function QuizCreate(props) {
             <Form.List name='final'>
               {(fields, { add, remove }) => (
                 <>
-                  {fields.map((field) => (
+                  {fields.map((field, index) => (
                     <React.Fragment key={field.key}>
                       <Space
                         style={{
@@ -242,7 +249,6 @@ export default function QuizCreate(props) {
                           <Select
                             placeholder='Please select a tag'
                             style={{ minWidth: '200px' }}
-                            onChange={handleChange}
                           >
                             {Object.keys(loadedQuizzes).map((quiz, index) => (
                               <Option key={index} value={quiz}>
@@ -273,7 +279,6 @@ export default function QuizCreate(props) {
                             size='small'
                             placeholder='number'
                             min={1}
-                            max={findMax(selectedTag)}
                           />
                         </Form.Item>
 
