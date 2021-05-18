@@ -36,9 +36,10 @@ function disabledDate(current) {
   return current && current < moment().add(-1, 'days')
 }
 
-export default function QuizCreate() {
+export default function QuizCreate(props) {
   const { isLoading, sendRequest } = useHttpClient()
   const [loadedCourses, setLoadedCourses] = useState()
+  const [isFinalQuiz, setisFinalQuiz] = useState()
 
   const onFinish = async (values) => {
     let newData = values
@@ -75,12 +76,18 @@ export default function QuizCreate() {
         )
         setLoadedCourses(responseData)
         console.log('am rulat doar la inceput sper')
+
+        try {
+          const quizFinal = props.location.state.finalQuiz
+          console.log(quizFinal)
+          setisFinalQuiz(quizFinal)
+        } catch {}
       } catch (err) {
         console.log(err)
       }
     }
     fetchCourses()
-  }, [sendRequest])
+  }, [sendRequest, props])
 
   const setQuizDate = () => (
     <Row>
@@ -140,6 +147,49 @@ export default function QuizCreate() {
       </Select>
     </Form.Item>
   )
+  const tags = () => (
+    <Form.Item
+      label='Tags'
+      name='tags'
+      hasFeedback
+      rules={[
+        {
+          required: true,
+          message: 'Please select the tags!',
+        },
+      ]}
+    >
+      <Select placeholder='Please select a tag'>
+        {loadedCourses.data.map((course) => (
+          <Option key={course._id} value={course.title}>
+            {course.title}
+          </Option>
+        ))}
+      </Select>
+    </Form.Item>
+  )
+
+  const numbers = () => (
+    <Form.Item
+      label='Numbers'
+      name='numbers'
+      hasFeedback
+      rules={[
+        {
+          required: true,
+          message: 'Please select the numbers of tags!',
+        },
+      ]}
+    >
+      <Select placeholder='Please select how many questions with that tag to add'>
+        {loadedCourses.data.map((course) => (
+          <Option key={course._id} value={course.title}>
+            {course.title}
+          </Option>
+        ))}
+      </Select>
+    </Form.Item>
+  )
 
   const button = () => (
     <Form.Item
@@ -166,7 +216,12 @@ export default function QuizCreate() {
           {quizTitle()}
           {courseName()}
           {setQuizDate()}
-
+          {isFinalQuiz && (
+            <>
+              {tags()}
+              {numbers()}
+            </>
+          )}
           <Form.List name='quiz'>
             {(fields2, { add, remove }) => (
               <>
@@ -282,7 +337,8 @@ export default function QuizCreate() {
                                 >
                                   <InputNumber min={0} max={10} />
                                 </Form.Item>
-                                <MinusCircleOutlined style={{ marginLeft: 40}}
+                                <MinusCircleOutlined
+                                  style={{ marginLeft: 40 }}
                                   onClick={() => {
                                     remove(answer.name)
                                   }}

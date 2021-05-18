@@ -54,7 +54,9 @@ function Quiz() {
       <Link to='/create/quiz'>
         <Button>Normal</Button>
       </Link>
-      <Button>Final</Button>
+      <Link to={{ pathname: '/create/quiz', state: { finalQuiz: true } }}>
+        <Button>Final</Button>
+      </Link>
     </div>
   )
 

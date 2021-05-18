@@ -56,9 +56,10 @@ function App() {
           {role && <Quiz />}
           {!role && <Answers />}
         </Route>
-        <Route path='/create/quiz'>
-          <QuizCreate />
-        </Route>
+        <Route
+          path='/create/quiz'
+          render={(props) => <QuizCreate {...props} />}
+        ></Route>
         <Route path='/update/quiz/:id'>
           <QuizUpdate />
         </Route>
