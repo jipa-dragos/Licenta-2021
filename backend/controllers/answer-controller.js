@@ -314,14 +314,12 @@ const getAnswerById = async (req, res, next) => {
 
 const getAnswersForQuiz = async (req, res, next) => {
   try {
-
-
-    const answer = await Answer.find({
+    let answer = await Answer.find({
       quiz: req.params.id,
     })
       .select('answers')
       .select('grade')
-
+      .select('student')
     const quiz = await Quiz.findById(req.params.id)
 
     if (req.userData.userId.toString() !== quiz.creator.toString()) {
@@ -329,9 +327,22 @@ const getAnswersForQuiz = async (req, res, next) => {
         new HttpError('Only the creator of the quiz can see the results', 403)
       )
     }
+
+    let students = []
+    for (const i of answer) {
+      students.push(i.student)
+    }
+
+    const student = await Student.find({_id: {$in: students }})
+
+    let names = []
+    for (const i of student) {
+      names.push(i.name)
+    }
+
     res.status(200).json({
       success: true,
-      data: answer,
+      data: answer, names
     })
   } catch (err) {
     next(err)
