@@ -5,6 +5,8 @@ const dotenv = require('dotenv')
 const morgan = require('morgan')
 const colors = require('colors')
 const connectDB = require('./config/db')
+const mongoSanitize = require('express-mongo-sanitize')
+const xss = require('xss-clean')
 
 // Load config.env
 dotenv.config({ path: './config/config.env' })
@@ -34,6 +36,11 @@ app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE')
   next()
 })
+
+// Data sanitization against NoSQL query injection and XSS
+app.use(mongoSanitize())
+
+app.use(xss())
 
 // Dev logging middleware
 if (process.env.NODE_ENV === 'development') app.use(morgan('dev'))
