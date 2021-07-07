@@ -11,6 +11,7 @@ router.post('/first', answerController.sendFirstAnswer)
 router.get('/', answerController.getAnswers)
 router.get('/stats', answerController.getAnswersForStats)
 router.get('/courseName/:title', answerController.getAnswerByCourse)
+router.get('/quiz/:id', answerController.getAnswersForQuiz)
 router.get('/:id', answerController.getAnswerById)
 
 module.exports = router

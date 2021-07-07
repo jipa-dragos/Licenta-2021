@@ -312,6 +312,21 @@ const getAnswerById = async (req, res, next) => {
   }
 }
 
+const getAnswersForQuiz = async (req, res, next) => {
+  try {
+    const answer = await Answer.find({
+      quiz: req.params.id,
+    })
+
+    res.status(200).json({
+      success: true,
+      data: answer,
+    })
+  } catch (err) {
+    next(err)
+  }
+}
+
 const getAnswerByCourse = async (req, res, next) => {
   try {
     const answer = await Answer.find({ student: req.userData.userId })
@@ -346,4 +361,5 @@ exports.patchAnswer = patchAnswer
 exports.getAnswers = getAnswers
 exports.getAnswerById = getAnswerById
 exports.getAnswerByCourse = getAnswerByCourse
+exports.getAnswersForQuiz = getAnswersForQuiz
 exports.getAnswersForStats = getAnswersForStats
