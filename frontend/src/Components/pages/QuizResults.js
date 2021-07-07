@@ -3,7 +3,7 @@ import { useParams } from 'react-router'
 import LoadingSpinner from '../../shared/components/UI/LoadingSpinner'
 import { useHttpClient } from '../../shared/hooks/http-hook'
 
-function QuizUpdate() {
+function QuizResults() {
   const [loadedQuiz, setLoadedQuiz] = useState()
   const { id } = useParams()
   const { isLoading, sendRequest } = useHttpClient()
@@ -32,7 +32,7 @@ function QuizUpdate() {
 
       {!isLoading && loadedQuiz && (
         <div>
-          Update Quiz Page
+          Results Quiz Page
           {console.log(loadedQuiz)}
         </div>
       )}
@@ -40,4 +40,4 @@ function QuizUpdate() {
   )
 }
 
-export default QuizUpdate
+export default QuizResults

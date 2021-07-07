@@ -97,13 +97,14 @@ function Quiz() {
             dataSource={LoadedQuizzes.data}
             renderItem={(item) => (
               <List.Item>
-                <Card title={item.title}>
-                  <Link to={`/update/quiz/${item._id}`}>
-                    <p>AccessCode: {item.accessCode},</p>
-                  </Link>
+                <Card title={item.title} hoverable>
+                  <p>AccessCode: {item.accessCode},</p>
                   <p>Number of Questions: {item.quiz.length},</p>
                   <p>Start Date: {item.startDate}</p>
                   <p>End Date: {item.endDate}</p>
+                  <Link to={`/results/quiz/${item._id}`}>
+                    <p>Click to see results</p>
+                  </Link>
                   <MinusCircleOutlined
                     onClick={showModal}
                     id={item._id}

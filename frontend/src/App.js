@@ -20,7 +20,7 @@ import Result from './Components/pages/Result'
 import Answers from './Components/pages/Answers'
 import CreateCoursePage from './Components/pages/CreateCoursePage'
 import Quiz from './Components/pages/Quiz'
-import QuizUpdate from './Components/pages/QuizUpdate'
+import QuizResults from './Components/pages/QuizResults'
 import UpdateCourse from './Components/pages/UpdateCourse'
 
 function App() {
@@ -60,8 +60,8 @@ function App() {
           path='/create/quiz'
           render={(props) => <QuizCreate {...props} />}
         ></Route>
-        <Route path='/update/quiz/:id'>
-          <QuizUpdate />
+        <Route path='/results/quiz/:id'>
+          <QuizResults />
         </Route>
         <Redirect to='/' />
       </Switch>
