@@ -3,22 +3,8 @@ import { useParams } from 'react-router'
 import LoadingSpinner from '../../shared/components/UI/LoadingSpinner'
 import { useHttpClient } from '../../shared/hooks/http-hook'
 import 'antd/dist/antd.css'
-import { List, Avatar } from 'antd'
-
-const data = [
-  {
-    title: 'Ant Design Title 1',
-  },
-  {
-    title: 'Ant Design Title 2',
-  },
-  {
-    title: 'Ant Design Title 3',
-  },
-  {
-    title: 'Ant Design Title 4',
-  },
-]
+import { List } from 'antd'
+import { UserOutlined } from '@ant-design/icons'
 
 function QuizResults() {
   const [loadedQuiz, setLoadedQuiz] = useState()
@@ -31,7 +17,12 @@ function QuizResults() {
         const responseData = await sendRequest(
           `http://localhost:5005/api/answer/quiz/${id}`
         )
-        setLoadedQuiz(responseData)
+        let Results = responseData.data.map(data=> ({ ...data, name: 'default' }))
+        
+        for (let i = 0; i < Results.length; i++) {
+          Results[i].name = responseData.array[i]
+        }
+        setLoadedQuiz(Results)
       } catch (err) {
         console.log(err)
       }
@@ -40,7 +31,6 @@ function QuizResults() {
   }, [sendRequest, id])
   return (
     <>
-      {console.log(id)}
       {isLoading && (
         <div className='center'>
           <LoadingSpinner asOverlay />
@@ -50,21 +40,22 @@ function QuizResults() {
       {!isLoading && loadedQuiz && (
         <>
           <div>
-            Results Quiz Page
+            Quiz with id: {id}
             {console.log(loadedQuiz)}
           </div>
-          <List 
-          itemLayout="horizontal"
-          dataSource={data}
-          renderItem={item => (
-            <List.Item>
-              <List.Item.Meta
-                avatar={<Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />}
-                title={<a href="https://ant.design">{item.title}</a>}
-                description="Ant Design, a design language for background applications, is refined by Ant UED Team"
-              />
-            </List.Item>
-          )}/>
+          <List
+            itemLayout='horizontal'
+            dataSource={loadedQuiz}
+            renderItem={(item) => (
+              <List.Item>
+                <List.Item.Meta
+                  avatar={<UserOutlined style={{ fontSize: '43px' }} />}
+                  title={Object.values(item.name)}
+                  description={`Grade: ${item.grade}`}
+                />
+              </List.Item>
+            )}
+          />
         </>
       )}
     </>

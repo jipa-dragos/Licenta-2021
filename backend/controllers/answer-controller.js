@@ -340,9 +340,16 @@ const getAnswersForQuiz = async (req, res, next) => {
       names.push(i.name)
     }
 
+    let array = []
+    for (let i = 0; i < names.length; i++) {
+      if (names[i] !== undefined) {
+        array.push(Object.assign({}, new Array(names[i])))
+      }
+    }
+
     res.status(200).json({
       success: true,
-      data: answer, names
+      data: answer, array
     })
   } catch (err) {
     next(err)
