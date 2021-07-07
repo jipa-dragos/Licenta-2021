@@ -314,12 +314,21 @@ const getAnswerById = async (req, res, next) => {
 
 const getAnswersForQuiz = async (req, res, next) => {
   try {
+
+
     const answer = await Answer.find({
       quiz: req.params.id,
     })
       .select('answers')
       .select('grade')
 
+    const quiz = await Quiz.findById(req.params.id)
+
+    if (req.userData.userId.toString() !== quiz.creator.toString()) {
+      return next(
+        new HttpError('Only the creator of the quiz can see the results', 403)
+      )
+    }
     res.status(200).json({
       success: true,
       data: answer,
