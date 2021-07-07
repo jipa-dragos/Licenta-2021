@@ -25,6 +25,8 @@ function QuizResults() {
         for (let i = 0; i < Results.length; i++) {
           Results[i].name = responseData.array[i]
         }
+
+        Results.quiz = responseData.quiz
         setLoadedQuiz(Results)
       } catch (err) {
         console.log(err)
@@ -44,8 +46,7 @@ function QuizResults() {
       {!isLoading && loadedQuiz && (
         <>
           <div>
-            Quiz with id: {id}
-            {console.log(loadedQuiz)}
+            <h1>Quiz: {loadedQuiz.quiz}</h1>
           </div>
           {loadedQuiz.length !== 0 && (
             <>
@@ -65,9 +66,7 @@ function QuizResults() {
               />
             </>
           )}
-          {loadedQuiz.length === 0 && (
-            <p>No answers for this quiz!</p>
-          )}
+          {loadedQuiz.length === 0 && <p>No answers for this quiz!</p>}
         </>
       )}
     </>

@@ -349,7 +349,8 @@ const getAnswersForQuiz = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      data: answer, array
+      data: answer, array,
+      quiz: quiz.title
     })
   } catch (err) {
     next(err)
