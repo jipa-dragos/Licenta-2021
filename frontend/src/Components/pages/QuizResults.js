@@ -17,8 +17,11 @@ function QuizResults() {
         const responseData = await sendRequest(
           `http://localhost:5005/api/answer/quiz/${id}`
         )
-        let Results = responseData.data.map(data=> ({ ...data, name: 'default' }))
-        
+        let Results = responseData.data.map((data) => ({
+          ...data,
+          name: 'default',
+        }))
+
         for (let i = 0; i < Results.length; i++) {
           Results[i].name = responseData.array[i]
         }
@@ -29,6 +32,7 @@ function QuizResults() {
     }
     fetchQuiz()
   }, [sendRequest, id])
+
   return (
     <>
       {isLoading && (
@@ -43,19 +47,27 @@ function QuizResults() {
             Quiz with id: {id}
             {console.log(loadedQuiz)}
           </div>
-          <List
-            itemLayout='horizontal'
-            dataSource={loadedQuiz}
-            renderItem={(item) => (
-              <List.Item>
-                <List.Item.Meta
-                  avatar={<UserOutlined style={{ fontSize: '43px' }} />}
-                  title={Object.values(item.name)}
-                  description={`Grade: ${item.grade}`}
-                />
-              </List.Item>
-            )}
-          />
+          {loadedQuiz.length !== 0 && (
+            <>
+              {console.log(loadedQuiz)}
+              <List
+                itemLayout='horizontal'
+                dataSource={loadedQuiz}
+                renderItem={(item) => (
+                  <List.Item>
+                    <List.Item.Meta
+                      avatar={<UserOutlined style={{ fontSize: '43px' }} />}
+                      title={Object.values(item.name)}
+                      description={`Grade: ${item.grade}`}
+                    />
+                  </List.Item>
+                )}
+              />
+            </>
+          )}
+          {loadedQuiz.length === 0 && (
+            <p>No answers for this quiz!</p>
+          )}
         </>
       )}
     </>
