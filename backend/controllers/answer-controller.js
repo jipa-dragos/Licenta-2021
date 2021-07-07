@@ -289,7 +289,7 @@ const getAnswers = async (req, res, next) => {
     res.status(200).json({
       success: true,
       count: answers.length,
-      data: theQuiz 
+      data: theQuiz,
     })
   } catch (err) {
     next(err)
@@ -317,6 +317,8 @@ const getAnswersForQuiz = async (req, res, next) => {
     const answer = await Answer.find({
       quiz: req.params.id,
     })
+      .select('answers')
+      .select('grade')
 
     res.status(200).json({
       success: true,
