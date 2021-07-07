@@ -57,10 +57,6 @@ export default function QuizCreate(props) {
           tags.push(i.tag)
           numbers.push(i.number)
         }
-
-        console.log(tags)
-        console.log(numbers)
-
         delete newData.final
 
         newData.tags = tags
@@ -405,6 +401,7 @@ export default function QuizCreate(props) {
                                   <Checkbox>Correct</Checkbox>
                                 </Form.Item>
 
+                                <p style={{ marginLeft: 40, marginRight: -40}}>Points</p>
                                 <Form.Item
                                   {...answer}
                                   wrapperCol={{
@@ -423,12 +420,14 @@ export default function QuizCreate(props) {
                                 >
                                   <InputNumber min={0} max={10} />
                                 </Form.Item>
+
                                 <MinusCircleOutlined
                                   style={{ marginLeft: 40 }}
                                   onClick={() => {
                                     remove(answer.name)
                                   }}
                                 />
+
                               </Space>
                             ))}
 

@@ -63,7 +63,8 @@ function Main() {
 
   return (
     <div className='hero-container'>
-      <h1>ASE QUIZ IS HERE</h1>
+      <h1>ASE QUIZ</h1>
+      
       <div className='hero-btns'>
         {!auth.isLoggedIn && (
           <Button
