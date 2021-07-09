@@ -10,9 +10,6 @@ const layout = {
   labelCol: {
     span: 8,
   },
-  wrapperCol: {
-    span: 16,
-  },
 }
 
 function CreateCoursePage() {
@@ -49,7 +46,7 @@ function CreateCoursePage() {
       )}
 
       {!isLoading && (
-        <Form {...layout} name='nest-messages' onFinish={onFinish}>
+        <Form {...layout} name='nest-messages' onFinish={onFinish} style={{ marginTop: '10%'}}>
           <Form.Item
             name={['course', 'title']}
             label='title'
@@ -59,7 +56,7 @@ function CreateCoursePage() {
               },
             ]}
           >
-            <Input />
+            <Input style={{ width: '50%' }}/>
           </Form.Item>
           <Form.Item
             name={['course', 'description']}
@@ -70,7 +67,7 @@ function CreateCoursePage() {
               },
             ]}
           >
-            <Input />
+            <Input style={{ width: '50%' }}/>
           </Form.Item>
           <Form.Item
             name={['course', 'type']}
@@ -81,7 +78,7 @@ function CreateCoursePage() {
               },
             ]}
           >
-            <Select>
+            <Select style={{ width: '50%' }}>
               <Select.Option value='course'>course</Select.Option>
               <Select.Option value='lab'>lab</Select.Option>
             </Select>
@@ -96,7 +93,7 @@ function CreateCoursePage() {
               },
             ]}
           >
-            <Select>
+            <Select style={{ width: '50%' }}>
               <Select.Option value='I'>I</Select.Option>
               <Select.Option value='II'>II</Select.Option>
               <Select.Option value='III'>III</Select.Option>
@@ -112,7 +109,7 @@ function CreateCoursePage() {
               },
             ]}
           >
-            <Select>
+            <Select style={{ width: '50%' }}>
               <Select.Option value='I'>I</Select.Option>
               <Select.Option value='II'>II</Select.Option>
             </Select>

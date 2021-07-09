@@ -4,14 +4,11 @@ import LoadingSpinner from '../../shared/components/UI/LoadingSpinner'
 import { useHttpClient } from '../../shared/hooks/http-hook'
 import { useHistory } from 'react-router-dom'
 import 'antd/dist/antd.css'
-import { Form, Input, Select, Button } from 'antd'
+import { Form, Input, Select, Button, Space } from 'antd'
 
 const layout = {
   labelCol: {
     span: 8,
-  },
-  wrapperCol: {
-    span: 16,
   },
 }
 
@@ -37,26 +34,25 @@ function UpdateCourse() {
   }, [sendRequest, id])
 
   const onFinish = (values) => {
-      console.log(values)
-      console.log(id)
-      const updateCourse = async () => {
-        try {
-          await sendRequest(
-            `http://localhost:5005/api/course/${id}`,
-            'PATCH',
-            JSON.stringify({
-              title: values.course.title,
-              description: values.course.description,
-              type: values.course.type,
-              year: values.course.year,
-              semester: values.course.semester,
-            })
-          )
-          setRedirect(true)
-        } catch (err) {}
-      }
-      updateCourse()
-  
+    console.log(values)
+    console.log(id)
+    const updateCourse = async () => {
+      try {
+        await sendRequest(
+          `http://localhost:5005/api/course/${id}`,
+          'PATCH',
+          JSON.stringify({
+            title: values.course.title,
+            description: values.course.description,
+            type: values.course.type,
+            year: values.course.year,
+            semester: values.course.semester,
+          })
+        )
+        setRedirect(true)
+      } catch (err) {}
+    }
+    updateCourse()
   }
 
   return (
@@ -67,14 +63,18 @@ function UpdateCourse() {
         </div>
       )}
       {!isLoading && loadedCourse && (
-        <Form {...layout} name='nest-messages' onFinish={onFinish}>
+        <Form
+          {...layout}
+          name='nest-messages'
+          onFinish={onFinish}
+          style={{ marginTop: '10%' }}
+        >
           <Form.Item
             name={['course', 'title']}
             label='title'
             initialValue={loadedCourse.data.title}
           >
-            <Input
-            />
+            <Input style={{ width: '50%' }} />
           </Form.Item>
           <Form.Item
             name={['course', 'description']}
@@ -86,14 +86,14 @@ function UpdateCourse() {
             ]}
             initialValue={loadedCourse.data.description}
           >
-            <Input />
+            <Input style={{ width: '50%' }} />
           </Form.Item>
           <Form.Item
             name={['course', 'type']}
             label='type'
             initialValue={loadedCourse.data.type}
           >
-            <Select >
+            <Select style={{ width: '50%' }}>
               <Select.Option value='course'>course</Select.Option>
               <Select.Option value='lab'>lab</Select.Option>
             </Select>
@@ -104,7 +104,7 @@ function UpdateCourse() {
             label='year'
             initialValue={loadedCourse.data.year}
           >
-            <Select >
+            <Select style={{ width: '50%' }}>
               <Select.Option value='I'>I</Select.Option>
               <Select.Option value='II'>II</Select.Option>
               <Select.Option value='III'>III</Select.Option>
@@ -116,7 +116,7 @@ function UpdateCourse() {
             label='semester'
             initialValue={loadedCourse.data.semester}
           >
-            <Select >
+            <Select style={{ width: '50%' }}>
               <Select.Option value='I'>I</Select.Option>
               <Select.Option value='II'>II</Select.Option>
             </Select>
