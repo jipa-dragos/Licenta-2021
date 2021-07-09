@@ -365,9 +365,7 @@ const getQuizById = async (req, res, next) => {
     if (new Date(quiz.startDate).toISOString() > now.toISOString()) {
       return next(
         new HttpError(
-          `User ${
-            req.userData.userId
-          } is too early to start the quiz`,
+          `User ${req.userData.userId} is too early to start the quiz`,
           403
         )
       )
@@ -389,6 +387,13 @@ const getQuizById = async (req, res, next) => {
 const getQuizforUpdate = async (req, res, next) => {
   try {
     const quiz = await Quiz.findById(req.params.id)
+
+    const prof = await Professor.findById(req.userData.userId)
+    if (!prof) {
+      return next(
+        new HttpError(`User ${req.userData.userId} cannot access the Quiz`, 403)
+      )
+    }
 
     res.status(200).json({
       success: true,
@@ -431,9 +436,7 @@ const getQuizByAccessCode = async (req, res, next) => {
     if (new Date(quiz.startDate).toISOString() > now.toISOString()) {
       return next(
         new HttpError(
-          `User ${
-            req.userData.userId
-          } is too early to start the quiz
+          `User ${req.userData.userId} is too early to start the quiz
           `,
           403
         )
