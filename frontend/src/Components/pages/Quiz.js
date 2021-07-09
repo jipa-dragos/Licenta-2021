@@ -1,10 +1,10 @@
-import { Popover, Button, Card, List } from 'antd'
+import { Popover, Button, Card, List, Row, Col } from 'antd'
 import React, { useState, useEffect, useContext } from 'react'
 import LoadingSpinner from '../../shared/components/UI/LoadingSpinner'
 import { Link } from 'react-router-dom'
 import { AuthContext } from '../../shared/context/auth-context'
 import { useHttpClient } from '../../shared/hooks/http-hook'
-import { MinusCircleOutlined } from '@ant-design/icons'
+import { MinusCircleOutlined, EditOutlined } from '@ant-design/icons'
 
 function Quiz() {
   const auth = useContext(AuthContext)
@@ -105,11 +105,16 @@ function Quiz() {
                   <Link to={`/results/quiz/${item._id}`}>
                     <p>Click to see results</p>
                   </Link>
-                  <MinusCircleOutlined
-                    onClick={showModal}
-                    id={item._id}
-                    style={{ marginLeft: '100%' }}
-                  />
+                  <Row>
+                    <Col>
+                      <MinusCircleOutlined onClick={showModal} id={item._id} />
+                    </Col>
+                    <Col push={23}>
+                      <Link to={`/update/quiz/${item._id}`}>
+                        <EditOutlined />
+                      </Link>
+                    </Col>
+                  </Row>
                 </Card>
               </List.Item>
             )}
