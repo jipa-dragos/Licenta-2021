@@ -359,20 +359,21 @@ const getQuizById = async (req, res, next) => {
       }
     }
 
-    if (new Date(quiz.startDate).getTime() > Date.now()) {
+    let now = new Date()
+    now.setHours(now.getHours() + 3)
+
+    if (new Date(quiz.startDate).toISOString() > now.toISOString()) {
       return next(
         new HttpError(
           `User ${
             req.userData.userId
-          } is too early to start the quiz +++ ${new Date(
-            quiz.startDate
-          ).getTime()}`,
+          } is too early to start the quiz`,
           403
         )
       )
     }
 
-    if (new Date(quiz.endDate).getTime() < Date.now()) {
+    if (new Date(quiz.endDate).toISOString() < now.toISOString()) {
       return next(new HttpError(`Time expired for the quiz`, 403))
     }
 
@@ -411,20 +412,22 @@ const getQuizByAccessCode = async (req, res, next) => {
       }
     }
 
-    if (new Date(quiz.startDate).getTime() > Date.now()) {
+    let now = new Date()
+    now.setHours(now.getHours() + 3)
+
+    if (new Date(quiz.startDate).toISOString() > now.toISOString()) {
       return next(
         new HttpError(
           `User ${
             req.userData.userId
-          } is too early to start the quiz +++ ${new Date(
-            quiz.startDate
-          ).getUTCDate()}`,
+          } is too early to start the quiz
+          `,
           403
         )
       )
     }
 
-    if (new Date(quiz.endDate).getTime() < Date.now()) {
+    if (new Date(quiz.endDate).toISOString() < now.toISOString()) {
       return next(new HttpError(`Time expired for the quiz`, 403))
     }
 
