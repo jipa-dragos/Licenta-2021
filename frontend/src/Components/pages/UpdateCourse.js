@@ -4,7 +4,7 @@ import LoadingSpinner from '../../shared/components/UI/LoadingSpinner'
 import { useHttpClient } from '../../shared/hooks/http-hook'
 import { useHistory } from 'react-router-dom'
 import 'antd/dist/antd.css'
-import { Form, Input, Select, Button, Space } from 'antd'
+import { Form, Input, Select, Button } from 'antd'
 
 const layout = {
   labelCol: {
@@ -34,8 +34,6 @@ function UpdateCourse() {
   }, [sendRequest, id])
 
   const onFinish = (values) => {
-    console.log(values)
-    console.log(id)
     const updateCourse = async () => {
       try {
         await sendRequest(

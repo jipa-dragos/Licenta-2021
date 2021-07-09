@@ -17,8 +17,6 @@ function CreateCoursePage() {
   const [redirect, setRedirect] = useState(false)
   let history = useHistory()
   const onFinish = (values) => {
-    console.log(values)
-
     const createCourse = async () => {
       try {
         await sendRequest(
