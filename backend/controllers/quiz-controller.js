@@ -26,6 +26,10 @@ const createQuiz = async (req, res, next) => {
 
     const course = await Course.findOne({ title: courseName })
 
+    if (!quiz) {
+      return next(new HttpError('A quiz needs questions and answers!!!', 400))
+    }
+
     if (!prof.course.includes(course._id)) {
       return next(
         new HttpError(
@@ -48,8 +52,6 @@ const createQuiz = async (req, res, next) => {
       startDate,
       endDate,
     })
-
-    console.log(quizz)
 
     res.status(201).json({
       success: true,
@@ -78,6 +80,10 @@ const createFinalQuiz = async (req, res, next) => {
 
     const { title, tags, numbers, quiz, startDate, endDate, courseName } =
       req.body
+
+    if (!quiz) {
+      return next(new HttpError('A quiz needs questions and answers!!!', 400))
+    }
 
     const course = await Course.findOne({ title: courseName })
 
@@ -356,7 +362,11 @@ const getQuizById = async (req, res, next) => {
     if (new Date(quiz.startDate).getTime() > Date.now()) {
       return next(
         new HttpError(
-          `User ${req.userData.userId} is too early to start the quiz +++ ${new Date(quiz.startDate).getTime()}`,
+          `User ${
+            req.userData.userId
+          } is too early to start the quiz +++ ${new Date(
+            quiz.startDate
+          ).getTime()}`,
           403
         )
       )
@@ -404,7 +414,11 @@ const getQuizByAccessCode = async (req, res, next) => {
     if (new Date(quiz.startDate).getTime() > Date.now()) {
       return next(
         new HttpError(
-          `User ${req.userData.userId} is too early to start the quiz +++ ${new Date(quiz.startDate).getUTCDate()}`,
+          `User ${
+            req.userData.userId
+          } is too early to start the quiz +++ ${new Date(
+            quiz.startDate
+          ).getUTCDate()}`,
           403
         )
       )
