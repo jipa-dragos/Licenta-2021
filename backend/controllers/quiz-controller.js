@@ -386,6 +386,19 @@ const getQuizById = async (req, res, next) => {
   }
 }
 
+const getQuizforUpdate = async (req, res, next) => {
+  try {
+    const quiz = await Quiz.findById(req.params.id)
+
+    res.status(200).json({
+      success: true,
+      data: quiz,
+    })
+  } catch (err) {
+    next(err)
+  }
+}
+
 const getQuizByAccessCode = async (req, res, next) => {
   try {
     const quiz = await Quiz.findOne({ accessCode: req.params.id })
@@ -449,4 +462,5 @@ exports.getQuizzesForProf = getQuizzesForProf
 exports.getAllQuizzes = getAllQuizzes
 exports.getQuizzesForCourse = getQuizzesForCourse
 exports.getQuizById = getQuizById
+exports.getQuizforUpdate = getQuizforUpdate
 exports.getQuizByAccessCode = getQuizByAccessCode
