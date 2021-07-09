@@ -45,8 +45,9 @@ export default function QuizCreate(props) {
   const onFinish = async (values) => {
     let newData = values
 
-    let startDate = values.rangeTime[0]._d.toString()
-    let endDate = values.rangeTime[1]._d.toString()
+    let startDate = (values.rangeTime[0]._d.setHours(values.rangeTime[0]._d.getHours() + 3)).toString()
+    let endDate = (values.rangeTime[1]._d.setHours(values.rangeTime[1]._d.getHours() + 3)).toString()
+
 
     let isFinal = false
     if (isFinalQuiz) {

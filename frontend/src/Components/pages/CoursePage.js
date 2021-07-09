@@ -43,22 +43,24 @@ function CoursePage() {
 
   return (
     <>
-      {!isLoading && loadedCourse && loadedIds && !auth.role && (
+      {!isLoading && loadedCourse && loadedIds && (
         <div>
-          Title: {loadedCourse.data.title}
-          <br />
-          Type: {loadedCourse.data.type}
-          <br />
-          Description: {loadedCourse.data.description}
-          <br />
+          <h1>Title: {loadedCourse.data.title}</h1>
+          <h2>Type: {loadedCourse.data.type}</h2>
+          <h3>Description: {loadedCourse.data.description}</h3>
+          <p>Quizzes for this course:</p>
           {loadedCourse.quiz.map((quiz, index) => (
             <React.Fragment key={index}>
-              {new Date(quiz.startDate).getTime() < Date.now() &&
-                !loadedIds.includes(quiz._id) && (
+              {
+                !loadedIds.includes(quiz._id) &&
+                !auth.role &&
+                (
                   <Link to={`/quiz/${quiz._id}`} key={index}>
                     <h3 key={quiz._id}>{quiz.title}</h3>
                   </Link>
                 )}
+
+              {auth.role && !loadedIds.includes(quiz._id) && <h3 key={quiz._id}>{quiz.title}</h3>}
             </React.Fragment>
           ))}
         </div>

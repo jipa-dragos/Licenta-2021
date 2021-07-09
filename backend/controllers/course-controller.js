@@ -11,7 +11,7 @@ const getCourses = async (req, res, next) => {
     let user = await Professor.findById(req.userData.userId)
     if (!user) {
       user = await Student.findById(req.userData.userId)
-      const courses = await Course.find({ students: { $in: user._id }})
+      const courses = await Course.find({ students: { $in: user._id } })
 
       for (const i of courses) {
         console.log(i.students)
@@ -44,16 +44,36 @@ const getCourseByTitle = async (req, res, next) => {
   try {
     const course = await Course.findOne({ title: req.params.title })
 
-    const quiz = await Quiz.find({ course: { $in: course._id } })
-      .select('_id')
-      .select('title')
-      .select('startDate')
+    let now = new Date()
+    now.setHours(now.getHours() + 3)
 
-    res.status(200).json({
-      success: true,
-      data: course,
-      quiz,
-    })
+    const student = await Student.findById(req.userData.userId)
+
+    if (student) {
+      const quiz = await Quiz.find({
+        course: { $in: course._id },
+        startDate: { $lte: now.toISOString() },
+        endDate: { $gte: now.toISOString() },
+      })
+        .select('_id')
+        .select('title')
+        .select('startDate')
+        .select('endDate')
+
+      res.status(200).json({
+        success: true,
+        data: course,
+        quiz,
+      })
+    } else {
+      const quiz = await Quiz.find({ course: { $in: course._id } })
+
+      res.status(200).json({
+        success: true,
+        data: course,
+        quiz,
+      })
+    }
   } catch (err) {
     next(err)
   }
@@ -185,7 +205,7 @@ const joinCourse = async (req, res, next) => {
     const { accessCode } = req.body
 
     const courseFound = await Course.findOne({ accessCode: accessCode })
-    
+
     let set = new Set()
     for (const i of courseFound.students) {
       set.add(i.toString())
@@ -193,14 +213,18 @@ const joinCourse = async (req, res, next) => {
     set.add(req.userData.userId)
 
     const fieldToUpdate = {
-      students: Array.from(set)
+      students: Array.from(set),
     }
 
     console.log(fieldToUpdate)
-    const course = await Course.findByIdAndUpdate(courseFound._id, fieldToUpdate, {
-      new: true,
-      runValidators: true,
-    })
+    const course = await Course.findByIdAndUpdate(
+      courseFound._id,
+      fieldToUpdate,
+      {
+        new: true,
+        runValidators: true,
+      }
+    )
 
     res.status(201).json({
       success: true,
@@ -254,7 +278,7 @@ const deleteCourse = async (req, res, next) => {
       if (i.toString() === req.params.id.toString()) {
         await Professor.update(
           { _id: req.userData.userId },
-          { $pull: { course: i }}
+          { $pull: { course: i } }
         )
       }
     }

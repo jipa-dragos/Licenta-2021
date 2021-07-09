@@ -356,7 +356,7 @@ const getQuizById = async (req, res, next) => {
     if (new Date(quiz.startDate).getTime() > Date.now()) {
       return next(
         new HttpError(
-          `User ${req.userData.userId} is too early to start the quiz`,
+          `User ${req.userData.userId} is too early to start the quiz +++ ${new Date(quiz.startDate).getTime()}`,
           403
         )
       )
@@ -404,7 +404,7 @@ const getQuizByAccessCode = async (req, res, next) => {
     if (new Date(quiz.startDate).getTime() > Date.now()) {
       return next(
         new HttpError(
-          `User ${req.userData.userId} is too early to start the quiz`,
+          `User ${req.userData.userId} is too early to start the quiz +++ ${new Date(quiz.startDate).getUTCDate()}`,
           403
         )
       )
