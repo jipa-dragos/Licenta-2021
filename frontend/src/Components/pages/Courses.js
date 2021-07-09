@@ -104,20 +104,24 @@ export default function Courses() {
                       key={i}
                     >
                       {auth.role && (
-                        <>
-                          <MinusCircleOutlined
-                            id={course._id}
-                            title={course.title}
-                            onClick={showModal}
-                          />
-                          <Link to={`/update/course/${course._id}`}>
-                            <EditOutlined
-                              style={{ marginLeft: '85%' }}
+                        <Row>
+                          <Col>
+                            <MinusCircleOutlined
                               id={course._id}
                               title={course.title}
+                              onClick={showModal}
                             />
-                          </Link>
-                        </>
+                          </Col>
+                          <Col push={20}>
+                            <Link to={`/update/course/${course._id}`}>
+                              <EditOutlined
+                                style={{ marginLeft: '85%' }}
+                                id={course._id}
+                                title={course.title}
+                              />
+                            </Link>
+                          </Col>
+                        </Row>
                       )}
 
                       <Link to={`/courses/${course.title}`}>
