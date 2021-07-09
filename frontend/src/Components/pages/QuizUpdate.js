@@ -20,7 +20,7 @@ function QuizUpdate() {
       }
     }
     fetchQuizzes()
-  }, [sendRequest])
+  }, [sendRequest, id])
 
   return (
     <>
