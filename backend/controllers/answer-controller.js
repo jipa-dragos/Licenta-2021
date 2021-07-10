@@ -328,7 +328,26 @@ const getAnswersForQuiz = async (req, res, next) => {
         points += i.points
       }
     }
-    
+
+    let quizQuestionsAnswers = []
+    for (const i of answer) {
+      quizQuestionsAnswers.push(i.answers.length)
+    }
+
+    let isFinished = []
+    for (const i of quizQuestionsAnswers) {
+      isFinished.push(i === quiz.quiz.length)
+    }
+
+    let isFinishedTime = null
+    Date.now() > quiz.endDate
+      ? (isFinishedTime = true)
+      : (isFinishedTime = false)
+
+    if (isFinishedTime === true) {
+      isFinished.fill(true, 0, isFinished.length)
+    }
+
     if (req.userData.userId.toString() !== quiz.creator.toString()) {
       return next(
         new HttpError('Only the creator of the quiz can see the results', 403)
@@ -340,25 +359,27 @@ const getAnswersForQuiz = async (req, res, next) => {
       students.push(i.student)
     }
 
-    const student = await Student.find({_id: {$in: students }})
+    const student = await Student.find({ _id: { $in: students } })
 
     let names = []
     for (const i of student) {
       names.push(i.name)
     }
 
-    let array = []
+    let studentsArray = []
     for (let i = 0; i < names.length; i++) {
       if (names[i] !== undefined) {
-        array.push(Object.assign({}, new Array(names[i])))
+        studentsArray.push(Object.assign({}, new Array(names[i])))
       }
     }
 
     res.status(200).json({
       success: true,
-      data: answer, array,
+      data: answer,
+      studentsArray,
       quiz: quiz.title,
-      points
+      points,
+      isFinished,
     })
   } catch (err) {
     next(err)

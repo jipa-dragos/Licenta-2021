@@ -23,7 +23,7 @@ function QuizResults() {
         }))
         console.log(responseData)
         for (let i = 0; i < Results.length; i++) {
-          Results[i].name = responseData.array[i]
+          Results[i].name = responseData.studentsArray[i]
         }
 
         Results.points = responseData.points
