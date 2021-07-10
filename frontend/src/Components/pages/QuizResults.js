@@ -21,7 +21,7 @@ function QuizResults() {
           ...data,
           name: 'default',
         }))
-
+        console.log(responseData)
         for (let i = 0; i < Results.length; i++) {
           Results[i].name = responseData.array[i]
         }
@@ -37,7 +37,7 @@ function QuizResults() {
   }, [sendRequest, id])
 
   const calculatePercentage = (value) => {
-    return value / loadedQuiz.points + '%'
+    return value / loadedQuiz.points * 100 + '%'
   }
 
   return (
