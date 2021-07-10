@@ -372,7 +372,7 @@ const getAnswersForQuiz = async (req, res, next) => {
         studentsArray.push(Object.assign({}, new Array(names[i])))
       }
     }
-
+    
     res.status(200).json({
       success: true,
       data: answer,
