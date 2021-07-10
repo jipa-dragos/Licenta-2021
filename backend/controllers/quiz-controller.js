@@ -208,7 +208,25 @@ const updateQuiz = async (req, res, next) => {
       )
     }
 
-    quizz = await Quiz.findByIdAndUpdate(req.params.id, req.body, {
+    const answers = await Answer.findOne({ quiz: req.params.id })
+    if (answers) {
+      return next(new HttpError('The quiz is in progress, cannot update!', 403))
+    }
+
+    const { title, quiz, course, startDate, endDate } =
+      req.body
+
+    const courseFound = await Course.findOne({ title: course })
+
+    const fieldsToUpdate = {
+      title,
+      quiz,
+      creator,
+      course: courseFound._id,
+      startDate,
+      endDate,
+    }
+    quizz = await Quiz.findByIdAndUpdate(req.params.id, fieldsToUpdate, {
       new: true,
       runValidators: true,
     })

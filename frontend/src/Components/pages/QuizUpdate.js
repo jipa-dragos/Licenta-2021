@@ -64,8 +64,34 @@ function QuizUpdate() {
     fetchCourses()
   }, [sendRequest, id])
 
-  const onFinish = (values) => {
-    console.log(values.quiz)
+  const onFinish = async (values) => {
+    let newData = values.quiz
+
+    let startDate = values.quiz.rangeTime[0]._d
+      .setHours(values.quiz.rangeTime[0]._d.getHours() + 3)
+      .toString()
+    let endDate = values.quiz.rangeTime[1]._d
+      .setHours(values.quiz.rangeTime[1]._d.getHours() + 3)
+      .toString()
+    let quiz = values.quiz.quizQuestions
+
+    delete newData.rangeTime
+    delete newData.quizQuestions
+
+    newData.quiz = quiz
+    newData.startDate = startDate
+    newData.endDate = endDate
+
+    try {
+      await sendRequest(
+        `http://localhost:5005/api/quiz/${id}`,
+        'PATCH',
+        JSON.stringify(newData)
+      )
+    } catch (err) {
+      console.log(err)
+    }
+
     setRedirect(true)
   }
 
@@ -136,7 +162,10 @@ function QuizUpdate() {
               />
             </Form.Item>
 
-            <Form.List name='quizQuestion' initialValue={loadedQuiz.data.quiz}>
+            <Form.List
+              name={['quiz', 'quizQuestions']}
+              initialValue={loadedQuiz.data.quiz}
+            >
               {(fields2, { add, remove }) => (
                 <>
                   {fields2.map((field2) => (
@@ -310,10 +339,9 @@ function QuizUpdate() {
               </Button>
             </Form.Item>
           </Form>
-          {console.log(loadedQuiz)}
         </div>
       )}
-      {/* {redirect && <Redirect to={{ pathname: history.goBack() }} />} */}
+      {redirect && <Redirect to={{ pathname: history.goBack() }} />}
     </>
   )
 }
