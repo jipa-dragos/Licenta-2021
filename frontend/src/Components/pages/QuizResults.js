@@ -22,11 +22,11 @@ function QuizResults() {
           name: 'default',
         }))
 
-
         for (let i = 0; i < Results.length; i++) {
           Results[i].name = responseData.array[i]
         }
 
+        Results.points = responseData.points
         Results.quiz = responseData.quiz
         setLoadedQuiz(Results)
       } catch (err) {
@@ -51,7 +51,6 @@ function QuizResults() {
           </div>
           {loadedQuiz.length !== 0 && (
             <>
-              {console.log(loadedQuiz)}
               <List
                 itemLayout='horizontal'
                 dataSource={loadedQuiz}
@@ -60,7 +59,7 @@ function QuizResults() {
                     <List.Item.Meta
                       avatar={<UserOutlined style={{ fontSize: '43px' }} />}
                       title={Object.values(item.name)}
-                      description={`Grade: ${item.grade}`}
+                      description={`Grade: ${item.grade} out of ${loadedQuiz.points}`}
                     />
                     <p style={{ marginRight: '30%'}}>
                       Status
