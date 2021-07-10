@@ -1,15 +1,20 @@
-import { Popover, Button, Card, List, Row, Col } from 'antd'
+import { Popover, Button, Card, List, Row, Col, Input } from 'antd'
 import React, { useState, useEffect, useContext } from 'react'
 import LoadingSpinner from '../../shared/components/UI/LoadingSpinner'
 import { Link } from 'react-router-dom'
 import { AuthContext } from '../../shared/context/auth-context'
 import { useHttpClient } from '../../shared/hooks/http-hook'
 import { MinusCircleOutlined, EditOutlined } from '@ant-design/icons'
+import Modal from 'antd/lib/modal/Modal'
 
 function Quiz() {
   const auth = useContext(AuthContext)
   const [LoadedQuizzes, setLoadedQuizzes] = useState()
   const { isLoading, sendRequest } = useHttpClient()
+  const [disabled, setDisabled] = useState(true)
+  const [id, setId] = useState()
+  const [courseTitle, setCourseTitle] = useState()
+  const [isModalVisible, setIsModalVisible] = useState(false)
 
   useEffect(() => {
     const fetchQuizzes = async () => {
@@ -34,19 +39,33 @@ function Quiz() {
   }
 
   const showModal = (e) => {
-    const deleteQuiz = async () => {
+    setIsModalVisible(true)
+    setId(e.currentTarget.getAttribute('id'))
+    setCourseTitle(e.currentTarget.getAttribute('title'))
+  }
+
+  const inputEl = (e) => {
+    e.target.value === courseTitle ? setDisabled(false) : setDisabled(true)
+  }
+
+  const handleCancel = () => {
+    setIsModalVisible(false)
+  }
+
+  const handleDelete = () => {
+    setIsModalVisible(false)
+
+    const deleteCourse = async () => {
       try {
-        await sendRequest(
-          `http://localhost:5005/api/quiz/${e.currentTarget.id}`,
-          'DELETE'
-        )
+        await sendRequest(`http://localhost:5005/api/quiz/${id}`, 'DELETE')
+
         await fetchQuizzes()
       } catch (err) {
         console.log(err)
       }
     }
 
-    deleteQuiz()
+    deleteCourse()
   }
 
   const content = (
@@ -107,7 +126,7 @@ function Quiz() {
                   </Link>
                   <Row>
                     <Col>
-                      <MinusCircleOutlined onClick={showModal} id={item._id} />
+                      <MinusCircleOutlined onClick={showModal} id={item._id} title={item.title}/>
                     </Col>
                     <Col push={23}>
                       <Link to={`/update/quiz/${item._id}`}>
@@ -119,6 +138,25 @@ function Quiz() {
               </List.Item>
             )}
           />
+
+          <Modal
+            title='Delete Quiz'
+            visible={isModalVisible}
+            footer={
+              <>
+                <Button onClick={handleCancel}>Cancel</Button>
+                <Button disabled={disabled} danger onClick={handleDelete}>
+                  Delete
+                </Button>
+              </>
+            }
+          >
+            <h3>
+              All the answers related to this quiz will be deleted
+            </h3>
+            <p>To delete the quiz, type the title of the quiz to confirm.</p>
+            <Input onChange={inputEl} />
+          </Modal>
         </>
       )}
     </>
