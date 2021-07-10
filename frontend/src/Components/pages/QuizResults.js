@@ -36,6 +36,10 @@ function QuizResults() {
     fetchQuiz()
   }, [sendRequest, id])
 
+  const calculatePercentage = (value) => {
+    return value / loadedQuiz.points + '%'
+  }
+
   return (
     <>
       {isLoading && (
@@ -59,11 +63,14 @@ function QuizResults() {
                     <List.Item.Meta
                       avatar={<UserOutlined style={{ fontSize: '43px' }} />}
                       title={Object.values(item.name)}
-                      description={`Grade: ${item.grade} out of ${loadedQuiz.points}`}
+                      description={`Grade: ${item.grade} out of ${
+                        loadedQuiz.points
+                      } .... ${calculatePercentage(item.grade)}`}
                     />
-                    <p style={{ marginRight: '30%'}}>
-                      Status
-                    </p>
+
+                    <div style={{ marginRight: '30%' }}>
+                      <p style={{ color: 'orange' }}>IN PROGRESS</p>
+                    </div>
                   </List.Item>
                 )}
               />
