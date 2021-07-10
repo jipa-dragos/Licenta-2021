@@ -37,7 +37,9 @@ function QuizResults() {
   }, [sendRequest, id])
 
   const calculatePercentage = (value) => {
-    return value / loadedQuiz.points * 100 + '%'
+    const grade = value / loadedQuiz.points * 100
+    const roundedGrade = Math.round((grade + Number.EPSILON) * 100) / 100
+    return roundedGrade + '%'
   }
 
   return (
