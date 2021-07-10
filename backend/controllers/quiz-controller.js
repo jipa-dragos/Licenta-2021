@@ -213,8 +213,7 @@ const updateQuiz = async (req, res, next) => {
       return next(new HttpError('The quiz is in progress, cannot update!', 403))
     }
 
-    const { title, quiz, course, startDate, endDate } =
-      req.body
+    const { title, quiz, course, startDate, endDate } = req.body
 
     const courseFound = await Course.findOne({ title: course })
 

@@ -322,6 +322,11 @@ const getAnswersForQuiz = async (req, res, next) => {
       .select('student')
     const quiz = await Quiz.findById(req.params.id)
 
+    let points = 0
+    for (const i of quiz.quiz[0].answers) {
+      points += i.points
+    }
+
     if (req.userData.userId.toString() !== quiz.creator.toString()) {
       return next(
         new HttpError('Only the creator of the quiz can see the results', 403)
@@ -350,7 +355,8 @@ const getAnswersForQuiz = async (req, res, next) => {
     res.status(200).json({
       success: true,
       data: answer, array,
-      quiz: quiz.title
+      quiz: quiz.title,
+      points
     })
   } catch (err) {
     next(err)

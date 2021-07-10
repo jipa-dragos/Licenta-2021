@@ -22,6 +22,7 @@ function QuizResults() {
           name: 'default',
         }))
 
+
         for (let i = 0; i < Results.length; i++) {
           Results[i].name = responseData.array[i]
         }
@@ -61,6 +62,9 @@ function QuizResults() {
                       title={Object.values(item.name)}
                       description={`Grade: ${item.grade}`}
                     />
+                    <p style={{ marginRight: '30%'}}>
+                      Status
+                    </p>
                   </List.Item>
                 )}
               />
