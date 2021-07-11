@@ -1,12 +1,15 @@
 import React, { useContext, useState, useEffect } from 'react'
 import { Redirect, useParams } from 'react-router'
 import { useHistory } from 'react-router-dom'
-import { Button } from 'antd'
+import { Button, Col, Row, Statistic } from 'antd'
 import LoadingSpinner from '../../shared/components/UI/LoadingSpinner'
 import { AuthContext } from '../../shared/context/auth-context'
 import { useHttpClient } from '../../shared/hooks/http-hook'
 import Cards from '../../shared/components/UI/Cards'
-import Countdown from 'react-countdown'
+// import Countdown from 'react-countdown'
+import moment from 'moment'
+
+const { Countdown } = Statistic
 
 function QuizPage() {
   const { id } = useParams()
@@ -80,13 +83,22 @@ function QuizPage() {
         } catch (err) {}
       }
       sendAnswer()
-
     }
     if (currentQuestion + 1 < loadedQuestions.quiz.length)
       setCurrentQuestion(currentQuestion + 1)
     else setLastQuestion(true)
 
     setClickedAnswers([])
+  }
+
+  function onFinish() {
+    console.log('finished!')
+  }
+
+  const functionDate = (date) => {
+    date.setHours(date.getHours() - 3)
+    console.log(date)
+    return moment(date.getTime())
   }
 
   return (
@@ -102,50 +114,52 @@ function QuizPage() {
         <>
           {new Date(loadedQuestions.endDate).getTime() < Date.now() ||
           lastQuestion ? (
-            <Redirect
-              to={{ pathname: path, state: { id: id } }}
-            />
+            <Redirect to={{ pathname: path, state: { id: id } }} />
           ) : (
             <Cards>
-              <div>{loadedQuestions.title}</div>
+              <Row gutter={70}>
+                <Col span={6}>{loadedQuestions.title}</Col>
+                <Col push={15}>
+                  <Countdown
+                    title='Remaining Time'
+                    value={functionDate(new Date(loadedQuestions.endDate))}
+                    onFinish={onFinish}
+                  />
+                </Col>
+              </Row>
+
               <div>
-                Remaining Time
-                <Countdown
-                  date={
-                    new Date(loadedQuestions.startDate).getTime() +
-                    (new Date(loadedQuestions.endDate).getTime() -
-                      new Date(loadedQuestions.startDate).getTime())
-                  }
-                />
+                <label>Question: </label>
+                {loadedQuestions.quiz[currentQuestion].question}
               </div>
-              <div>{loadedQuestions.quiz[currentQuestion].question}</div>
-              <div>
+              <br />
+              <Row>
                 {loadedQuestions.quiz[currentQuestion].answers.map((answer) => (
                   <React.Fragment key={answer._id}>
-                    <Button
-                      style={{ marginBottom: 10 }}
-                      onClick={() =>
-                        handleAnswerButtonClick(answer.text)
-                      }
-                    >
-                      {answer.text}
-                    </Button>
-                    <br />
+                    <Col span={24}>
+                      <Button
+                        style={{ marginBottom: 10 }}
+                        onClick={() => handleAnswerButtonClick(answer.text)}
+                      >
+                        {answer.text}
+                      </Button>
+                    </Col>
                   </React.Fragment>
                 ))}
-
-                <Button
-                  type='primary'
-                  style={{
-                    marginLeft: '95%',
-                    width: 80,
-                    backgroundColor: '#00FF00',
-                  }}
-                  onClick={() => handleNextButtonClick()}
-                >
-                  Next
-                </Button>
-              </div>
+                <Col span={23}>
+                  <Button
+                    type='primary'
+                    style={{
+                      marginLeft: '95%',
+                      width: 80,
+                      backgroundColor: '#00FF00',
+                    }}
+                    onClick={() => handleNextButtonClick()}
+                  >
+                    Next
+                  </Button>
+                </Col>
+              </Row>
             </Cards>
           )}
         </>
