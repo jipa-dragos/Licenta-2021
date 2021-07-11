@@ -12,7 +12,6 @@
     "antd": "^4.14.0",
     "framer-motion": "^4.0.0",
     "react": "^17.0.1",
-    "react-countdown": "^2.3.1",
     "react-dom": "^17.0.1",
     "react-highlight-words": "^0.17.0",
     "react-router-dom": "^5.2.0",

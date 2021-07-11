@@ -1,12 +1,12 @@
 import React, { useContext, useState, useEffect } from 'react'
 import { Redirect, useParams } from 'react-router'
 import { useHistory } from 'react-router-dom'
-import { Button, Col, Row, Statistic } from 'antd'
+import { Button, Col, Row, Statistic, Progress } from 'antd'
+import 'antd/dist/antd.css'
 import LoadingSpinner from '../../shared/components/UI/LoadingSpinner'
 import { AuthContext } from '../../shared/context/auth-context'
 import { useHttpClient } from '../../shared/hooks/http-hook'
 import Cards from '../../shared/components/UI/Cards'
-// import Countdown from 'react-countdown'
 import moment from 'moment'
 
 const { Countdown } = Statistic
@@ -97,8 +97,11 @@ function QuizPage() {
 
   const functionDate = (date) => {
     date.setHours(date.getHours() - 3)
-    console.log(date)
     return moment(date.getTime())
+  }
+
+  const calculatePercentage = (value) => {
+    return Math.round(currentQuestion / value * 100)
   }
 
   return (
@@ -117,9 +120,20 @@ function QuizPage() {
             <Redirect to={{ pathname: path, state: { id: id } }} />
           ) : (
             <Cards>
-              <Row gutter={70}>
+              <Row>
                 <Col span={6}>{loadedQuestions.title}</Col>
-                <Col push={15}>
+
+                <Col style={{marginLeft: '50%'}}>
+                  <Progress
+                    type='circle'
+                    strokeColor={{
+                      '0%': '#108ee9',
+                      '100%': '#87d068',
+                    }}
+                    percent={calculatePercentage(loadedQuestions.quiz.length)}
+                  />
+                </Col>
+                <Col style={{marginLeft: '5%'}}>
                   <Countdown
                     title='Remaining Time'
                     value={functionDate(new Date(loadedQuestions.endDate))}
@@ -150,7 +164,7 @@ function QuizPage() {
                   <Button
                     type='primary'
                     style={{
-                      marginLeft: '95%',
+                      marginLeft: '90%',
                       width: 80,
                       backgroundColor: '#00FF00',
                     }}
