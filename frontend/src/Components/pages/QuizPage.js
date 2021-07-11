@@ -31,6 +31,10 @@ function QuizPage() {
         const responseData = await sendRequest(
           'http://localhost:5005/api/quiz/course/' + id
         )
+        let quizExpirationDate = new Date(responseData.data.endDate)
+        quizExpirationDate.setHours(quizExpirationDate.getHours() - 3)
+
+        responseData.data.quizExpirationDate = quizExpirationDate
         setLoadedQuestions(responseData.data)
       } catch (err) {
         setRedirect(true)
@@ -91,17 +95,13 @@ function QuizPage() {
     setClickedAnswers([])
   }
 
-  function onFinish() {
-    console.log('finished!')
-  }
-
   const functionDate = (date) => {
     date.setHours(date.getHours() - 3)
     return moment(date.getTime())
   }
 
   const calculatePercentage = (value) => {
-    return Math.round(currentQuestion / value * 100)
+    return Math.round((currentQuestion / value) * 100)
   }
 
   return (
@@ -115,7 +115,7 @@ function QuizPage() {
 
       {!isLoading && loadedQuestions && (
         <>
-          {new Date(loadedQuestions.endDate).getTime() < Date.now() ||
+          {new Date(loadedQuestions.quizExpirationDate).getTime() < Date.now() ||
           lastQuestion ? (
             <Redirect to={{ pathname: path, state: { id: id } }} />
           ) : (
@@ -123,7 +123,7 @@ function QuizPage() {
               <Row>
                 <Col span={6}>{loadedQuestions.title}</Col>
 
-                <Col style={{marginLeft: '50%'}}>
+                <Col style={{ marginLeft: '50%' }}>
                   <Progress
                     type='circle'
                     strokeColor={{
@@ -133,11 +133,10 @@ function QuizPage() {
                     percent={calculatePercentage(loadedQuestions.quiz.length)}
                   />
                 </Col>
-                <Col style={{marginLeft: '5%'}}>
+                <Col style={{ marginLeft: '5%' }}>
                   <Countdown
                     title='Remaining Time'
                     value={functionDate(new Date(loadedQuestions.endDate))}
-                    onFinish={onFinish}
                   />
                 </Col>
               </Row>

@@ -30,6 +30,13 @@ const sendFirstAnswer = async (req, res, next) => {
       )
     }
 
+    let now = new Date()
+    now.setHours(now.getHours() + 3)
+
+    if (new Date(quizTaken.endDate).getTime() < now) {
+      return next(new HttpError('Time expired!', 403))
+    }
+
     const publishedAnswer = await Answer.findOne({ quiz: quizTaken })
 
     if (publishedAnswer) {
@@ -84,6 +91,13 @@ const patchAnswer = async (req, res, next) => {
     const { answers, quiz } = req.body
 
     const quizTaken = await Quiz.findById(quiz)
+    
+    let now = new Date()
+    now.setHours(now.getHours() + 3)
+
+    if (new Date(quizTaken.endDate).getTime() < now) {
+      return next(new HttpError('Time expired!', 403))
+    }
 
     let publishedAnswer = await Answer.findOne({
       quiz: quizTaken,
@@ -372,7 +386,7 @@ const getAnswersForQuiz = async (req, res, next) => {
         studentsArray.push(Object.assign({}, new Array(names[i])))
       }
     }
-    
+
     res.status(200).json({
       success: true,
       data: answer,
