@@ -17,7 +17,7 @@ function Result(props) {
         const answersData = await sendRequest(
           `http://localhost:5005/api/answer/${id}`
         )
-        setLoadedAnswers(answersData)
+        setLoadedAnswers(answersData.data)
       } catch (err) {
         setRedirect(true)
       }
@@ -33,8 +33,32 @@ function Result(props) {
           <LoadingSpinner asOverlay />
         </div>
       )}
-      {!isLoading && loadedAnswers && (
-        <>Grade for this quiz is {loadedAnswers.data.grade}</>
+      {!isLoading && (
+        <>
+          <br />
+          <br />
+          <br />
+          <br />
+          {loadedAnswers && (
+            <div style={{ textAlign: 'center' }}>
+              <h1>
+                You scored {loadedAnswers.grade}
+                {loadedAnswers.grade === 1 && <>point</>}
+                {loadedAnswers.grade !== 1 && <>points</>}
+              </h1>
+            </div>
+          )}
+          {!loadedAnswers && (
+            <div style={{ textAlign: 'center' }}>
+              <h1>You have successfully completed the quiz.</h1>
+              <h2>...</h2>
+              <h2>
+                Quiz end date did not expire yet... You will receive your grade on
+                your quiz results tab as soon as the quiz ends.
+              </h2>
+            </div>
+          )}
+        </>
       )}
     </>
   )
