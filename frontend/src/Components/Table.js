@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { useHttpClient } from '../shared/hooks/http-hook'
 import { Table, Input, Button, Space, Statistic, Card, Row, Col } from 'antd'
-import { ArrowUpOutlined, ArrowDownOutlined, SearchOutlined } from '@ant-design/icons'
+import {
+  ArrowUpOutlined,
+  ArrowDownOutlined,
+  SearchOutlined,
+} from '@ant-design/icons'
 import './Table.css'
 import 'antd/dist/antd.css'
 import Highlighter from 'react-highlight-words'
@@ -134,46 +138,52 @@ function TableComponent() {
   return (
     <>
       <div>
-        {tableDataSource && (
+        {tableDataSource.length !== 0 && (
           <>
             <Table columns={columns} dataSource={tableDataSource} />
           </>
         )}
       </div>
-      <div className='site-statistic-demo-card'>
-        {highest && lowest && (
-          <Row gutter={16}>
-            <Col span={12}>
-              <Card>
-                <Statistic
-                  title='Best'
-                  value={highest[0]}
-                  precision={2}
-                  valueStyle={{ color: '#3f8600' }}
-                  prefix={<ArrowUpOutlined />}
-                  suffix={`Correct Answers ${highest[1]} out of ${highest[2]}`}
-                />
-              </Card>
-            </Col>
-            <Col span={12}>
-              <Card>
-                <Statistic
-                  title='Worst'
-                  value={lowest[0]}
-                  precision={2}
-                  valueStyle={{ color: '#cf1322' }}
-                  prefix={<ArrowDownOutlined />}
-                  suffix={`Correct Answers ${lowest[1]} out of ${lowest[2]}`}
-                />
-              </Card>
-            </Col>
-          </Row>
+      <>
+        {tableDataSource.length !== 0 && (
+          <div className='site-statistic-demo-card'>
+            {highest && lowest && (
+              <Row gutter={16}>
+                <Col span={12}>
+                  <Card>
+                    <Statistic
+                      title='Best'
+                      value={highest[0]}
+                      precision={2}
+                      valueStyle={{ color: '#3f8600' }}
+                      prefix={<ArrowUpOutlined />}
+                      suffix={`Correct Answers ${highest[1]} out of ${highest[2]}`}
+                    />
+                  </Card>
+                </Col>
+                <Col span={12}>
+                  <Card>
+                    <Statistic
+                      title='Worst'
+                      value={lowest[0]}
+                      precision={2}
+                      valueStyle={{ color: '#cf1322' }}
+                      prefix={<ArrowDownOutlined />}
+                      suffix={`Correct Answers ${lowest[1]} out of ${lowest[2]}`}
+                    />
+                  </Card>
+                </Col>
+              </Row>
+            )}
+          </div>
         )}
-      </div>
+      </>
     </>
   )
 
   function TableData(responseData) {
+    if (!responseData.data) return
+
     let realAnswer = []
     let correctAnswer = []
     let tags = []
@@ -257,8 +267,10 @@ function TableComponent() {
       (a, b) => parseInt(a.successRate) - parseInt(b.successRate)
     )[0]
 
-    const nrCorrectAnswHigh = max.totalAnswers * (parseInt(max.successRate)/100)
-    const nrCorrectAnswLow = min.totalAnswers * (parseInt(min.successRate)/100)
+    const nrCorrectAnswHigh =
+      max.totalAnswers * (parseInt(max.successRate) / 100)
+    const nrCorrectAnswLow =
+      min.totalAnswers * (parseInt(min.successRate) / 100)
     setHighest([max.tag, nrCorrectAnswHigh, max.totalAnswers])
     setLowest([min.tag, nrCorrectAnswLow, min.totalAnswers])
   }
