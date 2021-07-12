@@ -184,7 +184,99 @@ function TableComponent() {
   function TableData(responseData) {
     if (!responseData.data) return
 
-    console.log(responseData.data)
+    let realAnswer = []
+    let correctAnswer = []
+    let tags = []
+    responseData.data.theQuiz.forEach((array) => {
+      array.answers.forEach((element) => {
+        realAnswer.push(element)
+      })
+      array.correctAnswers.forEach((element) => {
+        correctAnswer.push(element)
+      })
+      array.tags.forEach((element) => {
+        tags.push(element)
+      })
+    })
+
+    let rate = []
+
+    for (let i = 0; i < correctAnswer.length; i++) {
+      const filteredArray = correctAnswer[i].filter((value) =>
+        realAnswer[i].includes(value)
+      )
+      if (filteredArray.length === correctAnswer[i].length){
+        if (correctAnswer[i].length === realAnswer[i].length)
+          rate.push(100)
+        else 
+          rate.push(0)
+      }
+      else
+        rate.push(0)
+    }
+
+    const duplicates = tags.reduce(function (acc, el, i, arr) {
+      if (arr.indexOf(el) !== i && acc.indexOf(el) < 0) acc.push(el)
+      return acc
+    }, [])
+
+    let uniqueTags = [...new Set(tags)]
+    let indices = []
+    for (let i = 0; i < tags.length; i++) {
+      let indexes = []
+      for (let j = 0; j < uniqueTags.length; j++) {
+        if (tags[i] === uniqueTags[j]) {
+          let tag = uniqueTags[j]
+          let successRate = rate[i] + '%'
+          let totalAnswers = 1
+          let key = i
+          let index = { key, tag, successRate, totalAnswers }
+          indexes.push(index)
+        }
+      }
+      indices.push(indexes)
+    }
+
+    let data = []
+    indices.forEach((el) => {
+      if (!duplicates.includes(el[0].tag)) {
+        data.push(el[0])
+      }
+    })
+
+    duplicates.forEach((tag) => {
+      let successRate = 0
+      let total = 0
+      let duplicateEl
+      indices.forEach((el) => {
+        if (duplicates.includes(el[0].tag)) {
+          if (tag === el[0].tag) {
+            const nr = el[0].successRate.slice(0, -1)
+            successRate += parseInt(nr)
+            total += el.length
+            duplicateEl = el[0]
+          }
+        }
+      })
+      duplicateEl.successRate = (successRate / total) + '%'
+      duplicateEl.totalAnswers = total
+      data.push(duplicateEl)
+    })
+
+    setTableDataSource(data)
+    const max = data.sort(
+      (a, b) => parseInt(b.successRate) - parseInt(a.successRate)
+    )[0]
+    const min = data.sort(
+      (a, b) => parseInt(a.successRate) - parseInt(b.successRate)
+    )[0]
+
+    const nrCorrectAnswHigh =
+      max.totalAnswers * (parseInt(max.successRate) / 100)
+    const nrCorrectAnswLow =
+      min.totalAnswers * (parseInt(min.successRate) / 100)
+    setHighest([max.tag, nrCorrectAnswHigh, max.totalAnswers])
+    setLowest([min.tag, nrCorrectAnswLow, min.totalAnswers])
   }
 }
 
