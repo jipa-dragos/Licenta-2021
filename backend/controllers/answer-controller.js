@@ -91,7 +91,7 @@ const patchAnswer = async (req, res, next) => {
     const { answers, quiz } = req.body
 
     const quizTaken = await Quiz.findById(quiz)
-    
+
     let now = new Date()
     now.setHours(now.getHours() + 3)
 
@@ -154,8 +154,30 @@ const getAnswersForStats = async (req, res, next) => {
   try {
     const student = await Student.findById(req.userData.userId)
 
-    const answers = await Answer.find({ student: student._id })
+    const allAnswers = await Answer.find({ student: student._id })
 
+    let now = new Date()
+    now.setHours(now.getHours() + 3)
+
+    let allQuizzes = []
+    for (let index = 0; index < allAnswers.length; index++) {
+      allQuizzes.push(await Quiz.findById(allAnswers[index].quiz))
+    }
+
+    let quiz = []
+    for (const i of allQuizzes) {
+      if (now > i.endDate) quiz.push(i)
+    }
+
+    let answers = []
+    for (const i of quiz) {
+      for (const answer of allAnswers) {
+        if (answer.quiz.toString() === i._id.toString()) {
+          answers.push(answer)
+        }
+      }
+    }
+    console.log(answers)
     let ans = []
     let quizId = []
 
@@ -164,47 +186,52 @@ const getAnswersForStats = async (req, res, next) => {
       quizId.push(element.quiz)
     })
 
-    let quiz = []
-    for (let index = 0; index < answers.length; index++) {
-      quiz.push(await Quiz.findById(answers[index].quiz))
-    }
+    if (quiz.length === 0) {
+      res.status(200).json({
+        success: true,
+        data: null,
+      })
+    } else {
+      let tags = []
+      let correctAnswers = []
 
-    let tags = []
-    let correctAnswers = []
-
-    for (const i of quiz) {
-      let tagsPerQuiz = []
-      let correctAnsPerQuiz = []
-      for (const iterator of i.quiz) {
-        tagsPerQuiz.push(iterator.tag)
-        let answersPerQuestion = []
-        for (const k of iterator.answers) {
-          if (k.isCorrect) {
-            answersPerQuestion.push(k.text)
+      for (const i of quiz) {
+        let tagsPerQuiz = []
+        let correctAnsPerQuiz = []
+        for (const iterator of i.quiz) {
+          tagsPerQuiz.push(iterator.tag)
+          let answersPerQuestion = []
+          for (const k of iterator.answers) {
+            if (k.isCorrect) {
+              answersPerQuestion.push(k.text)
+            }
           }
+          correctAnsPerQuiz.push(answersPerQuestion)
         }
-        correctAnsPerQuiz.push(answersPerQuestion)
+        tags.push(tagsPerQuiz)
+        correctAnswers.push(correctAnsPerQuiz)
       }
-      tags.push(tagsPerQuiz)
-      correctAnswers.push(correctAnsPerQuiz)
-    }
 
-    let theQuiz = []
-    for (let i = 0; i < answers.length; i++) {
-      let data = {
-        tags: tags[i],
-        correctAnswers: correctAnswers[i],
-        answers: ans[i],
-        quiz: quizId[i],
+      console.log(tags)
+      console.log(correctAnswers)
+
+      let theQuiz = []
+      for (let i = 0; i < answers.length; i++) {
+        let data = {
+          tags: tags[i],
+          correctAnswers: correctAnswers[i],
+          answers: ans[i],
+          quiz: quizId[i],
+        }
+        theQuiz.push(data)
       }
-      theQuiz.push(data)
-    }
 
-    res.status(200).json({
-      success: true,
-      count: answers.length,
-      data: { theQuiz },
-    })
+      res.status(200).json({
+        success: true,
+        count: answers.length,
+        data: { theQuiz },
+      })
+    }
   } catch (err) {
     next(err)
   }
@@ -317,9 +344,21 @@ const getAnswerById = async (req, res, next) => {
       student: req.userData.userId,
     })
 
+    const quiz = await Quiz.findById(req.params.id)
+
+    let now = new Date()
+    now.setHours(now.getHours() + 3)
+
+    if (new Date(quiz.endDate).getTime() < now) {
+      res.status(200).json({
+        success: true,
+        data: answer,
+      })
+    }
+
     res.status(200).json({
       success: true,
-      data: answer,
+      data: null,
     })
   } catch (err) {
     next(err)
