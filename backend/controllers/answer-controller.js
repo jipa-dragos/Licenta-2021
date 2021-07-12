@@ -177,7 +177,7 @@ const getAnswersForStats = async (req, res, next) => {
         }
       }
     }
-    console.log(answers)
+
     let ans = []
     let quizId = []
 
@@ -212,9 +212,6 @@ const getAnswersForStats = async (req, res, next) => {
         correctAnswers.push(correctAnsPerQuiz)
       }
 
-      console.log(tags)
-      console.log(correctAnswers)
-
       let theQuiz = []
       for (let i = 0; i < answers.length; i++) {
         let data = {
@@ -241,12 +238,15 @@ const getAnswers = async (req, res, next) => {
   try {
     const student = await Student.findById(req.userData.userId)
 
-    const answers = await Answer.find({ student: student._id })
+    const allAnswers = await Answer.find({ student: student._id })
+
+    let now = new Date()
+    now.setHours(now.getHours() + 3)
 
     let course = []
-    for (const iterator of answers) {
+    for (const iterator of allAnswers) {
       let quiz = await Quiz.findById(iterator.quiz)
-      course.push(quiz.course)
+      if (now > quiz.endDate) course.push(quiz.course)
     }
 
     let courseName = []
@@ -255,8 +255,30 @@ const getAnswers = async (req, res, next) => {
       courseName.push(course.title)
     }
 
-    let grades = []
+    let allQuizzes = []
     let quizTitle = []
+    for (let index = 0; index < allAnswers.length; index++) {
+      allQuizzes.push(await Quiz.findById(allAnswers[index].quiz))
+      quizTitle.push(allQuizzes[index].title)
+    }
+
+    let quiz = []
+    for (const i of allQuizzes) {
+      if (now > i.endDate) quiz.push(i)
+    }
+
+    console.log(quiz)
+
+    let answers = []
+    for (const i of quiz) {
+      for (const answer of allAnswers) {
+        if (answer.quiz.toString() === i._id.toString()) {
+          answers.push(answer)
+        }
+      }
+    }
+
+    let grades = []
     let ans = []
     let quizId = []
 
@@ -265,12 +287,6 @@ const getAnswers = async (req, res, next) => {
       ans.push(element.answers)
       quizId.push(element.quiz)
     })
-
-    let quiz = []
-    for (let index = 0; index < answers.length; index++) {
-      quiz.push(await Quiz.findById(answers[index].quiz))
-      quizTitle.push(quiz[index].title)
-    }
 
     let questions = []
     let tags = []
@@ -354,12 +370,12 @@ const getAnswerById = async (req, res, next) => {
         success: true,
         data: answer,
       })
+    } else {
+      res.status(200).json({
+        success: true,
+        data: null,
+      })
     }
-
-    res.status(200).json({
-      success: true,
-      data: null,
-    })
   } catch (err) {
     next(err)
   }

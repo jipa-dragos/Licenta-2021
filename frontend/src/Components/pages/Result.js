@@ -43,8 +43,8 @@ function Result(props) {
             <div style={{ textAlign: 'center' }}>
               <h1>
                 You scored {loadedAnswers.grade}
-                {loadedAnswers.grade === 1 && <>point</>}
-                {loadedAnswers.grade !== 1 && <>points</>}
+                {loadedAnswers.grade === 1 && <> point</>}
+                {loadedAnswers.grade !== 1 && <> points</>}
               </h1>
             </div>
           )}
