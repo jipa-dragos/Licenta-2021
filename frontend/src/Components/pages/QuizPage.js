@@ -44,6 +44,7 @@ function QuizPage() {
   }, [sendRequest, auth.token, id])
 
   const handleAnswerButtonClick = (text) => {
+    console.log(text)
     setClickedAnswers([...clickedAnswers, text])
 
     if (clickedAnswers.includes(text)) {
@@ -55,44 +56,46 @@ function QuizPage() {
   }
 
   const handleNextButtonClick = () => {
-    if (firstQuestion) {
-      const sendAnswer = async () => {
-        try {
-          const constructArrayOfAnswers = [clickedAnswers]
+    if (clickedAnswers.length !== 0) {
+      if (firstQuestion) {
+        const sendAnswer = async () => {
+          try {
+            const constructArrayOfAnswers = [clickedAnswers]
 
-          await sendRequest(
-            'http://localhost:5005/api/answer/first/',
-            'POST',
-            JSON.stringify({
-              answers: constructArrayOfAnswers,
-              quiz: id,
-            })
-          )
-        } catch (err) {}
+            await sendRequest(
+              'http://localhost:5005/api/answer/first/',
+              'POST',
+              JSON.stringify({
+                answers: constructArrayOfAnswers,
+                quiz: id,
+              })
+            )
+          } catch (err) {}
+        }
+        sendAnswer()
+        setFirstQuestion(false)
+      } else {
+        const sendAnswer = async () => {
+          try {
+            const constructArrayOfAnswers = [clickedAnswers]
+            await sendRequest(
+              'http://localhost:5005/api/answer/',
+              'PATCH',
+              JSON.stringify({
+                answers: constructArrayOfAnswers,
+                quiz: id,
+              })
+            )
+          } catch (err) {}
+        }
+        sendAnswer()
       }
-      sendAnswer()
-      setFirstQuestion(false)
-    } else {
-      const sendAnswer = async () => {
-        try {
-          const constructArrayOfAnswers = [clickedAnswers]
-          await sendRequest(
-            'http://localhost:5005/api/answer/',
-            'PATCH',
-            JSON.stringify({
-              answers: constructArrayOfAnswers,
-              quiz: id,
-            })
-          )
-        } catch (err) {}
-      }
-      sendAnswer()
+      if (currentQuestion + 1 < loadedQuestions.quiz.length)
+        setCurrentQuestion(currentQuestion + 1)
+      else setLastQuestion(true)
+
+      setClickedAnswers([])
     }
-    if (currentQuestion + 1 < loadedQuestions.quiz.length)
-      setCurrentQuestion(currentQuestion + 1)
-    else setLastQuestion(true)
-
-    setClickedAnswers([])
   }
 
   const functionDate = (date) => {
@@ -115,8 +118,8 @@ function QuizPage() {
 
       {!isLoading && loadedQuestions && (
         <>
-          {new Date(loadedQuestions.quizExpirationDate).getTime() < Date.now() ||
-          lastQuestion ? (
+          {new Date(loadedQuestions.quizExpirationDate).getTime() <
+            Date.now() || lastQuestion ? (
             <Redirect to={{ pathname: path, state: { id: id } }} />
           ) : (
             <Cards>
