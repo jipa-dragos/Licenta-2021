@@ -1,7 +1,16 @@
 import React, { useContext, useState, useEffect } from 'react'
 import { Redirect, useParams } from 'react-router'
 import { useHistory } from 'react-router-dom'
-import { Button, Col, Row, Statistic, Progress, Checkbox } from 'antd'
+import {
+  Button,
+  Col,
+  Row,
+  Statistic,
+  Progress,
+  Checkbox,
+  Radio,
+  Space,
+} from 'antd'
 import 'antd/dist/antd.css'
 import LoadingSpinner from '../../shared/components/UI/LoadingSpinner'
 import { AuthContext } from '../../shared/context/auth-context'
@@ -21,6 +30,7 @@ function QuizPage() {
   const [clickedAnswers, setClickedAnswers] = useState([])
   const [firstQuestion, setFirstQuestion] = useState(true)
   const [redirect, setRedirect] = useState(false)
+  const [isMultipleChoice, setIsMultipleChoice] = useState()
   let history = useHistory()
 
   const path = `/quiz/${id}/result`
@@ -35,6 +45,9 @@ function QuizPage() {
         quizExpirationDate.setHours(quizExpirationDate.getHours() - 3)
 
         responseData.data.quizExpirationDate = quizExpirationDate
+        responseData.data.isMultipleChoice = responseData.isMultipleChoice
+
+        setIsMultipleChoice(responseData.isMultipleChoice[0])
         setLoadedQuestions(responseData.data)
       } catch (err) {
         setRedirect(true)
@@ -78,9 +91,12 @@ function QuizPage() {
         }
         sendAnswer()
       }
-      if (currentQuestion + 1 < loadedQuestions.quiz.length)
+      if (currentQuestion + 1 < loadedQuestions.quiz.length) {
+        setIsMultipleChoice(
+          loadedQuestions.isMultipleChoice[currentQuestion + 1]
+        )
         setCurrentQuestion(currentQuestion + 1)
-      else setLastQuestion(true)
+      } else setLastQuestion(true)
 
       setClickedAnswers([])
     }
@@ -96,7 +112,8 @@ function QuizPage() {
   }
 
   const onChange = (checkedValues) => {
-    setClickedAnswers(checkedValues)
+    if (isMultipleChoice) setClickedAnswers(checkedValues)
+    else setClickedAnswers(checkedValues.target.value)
   }
 
   return (
@@ -141,35 +158,52 @@ function QuizPage() {
                 {loadedQuestions.quiz[currentQuestion].question}
               </div>
               <br />
-              <Checkbox.Group style={{ width: '100%' }} onChange={onChange}>
-                <Row>
-                  {loadedQuestions.quiz[currentQuestion].answers.map(
-                    (answer) => (
-                      <React.Fragment key={answer._id}>
-                        <Col span={24}>
-                          <Checkbox value={`${answer.text}`}>
-                            {answer.text}
-                          </Checkbox>
-                        </Col>
-                      </React.Fragment>
-                    )
-                  )}
+              {isMultipleChoice && (
+                <Checkbox.Group style={{ width: '100%' }} onChange={onChange}>
+                  <Row>
+                    {loadedQuestions.quiz[currentQuestion].answers.map(
+                      (answer) => (
+                        <React.Fragment key={answer._id}>
+                          <Col span={24}>
+                            <Checkbox value={`${answer.text}`}>
+                              {answer.text}
+                            </Checkbox>
+                          </Col>
+                        </React.Fragment>
+                      )
+                    )}
+                  </Row>
+                </Checkbox.Group>
+              )}
+              {!isMultipleChoice && (
+                <Radio.Group onChange={onChange}>
+                  <Space direction='vertical'>
+                    {loadedQuestions.quiz[currentQuestion].answers.map(
+                      (answer) => (
+                        <React.Fragment key={answer._id}>
+                          <Radio value={`${answer.text}`}>{answer.text}</Radio>
+                        </React.Fragment>
+                      )
+                    )}
+                  </Space>
+                </Radio.Group>
+              )}
 
-                  <Col span={23}>
-                    <Button
-                      type='primary'
-                      style={{
-                        marginLeft: '90%',
-                        width: 80,
-                        backgroundColor: '#00FF00',
-                      }}
-                      onClick={() => handleNextButtonClick()}
-                    >
-                      Next
-                    </Button>
-                  </Col>
-                </Row>
-              </Checkbox.Group>
+              <Row>
+                <Col span={23}>
+                  <Button
+                    type='primary'
+                    style={{
+                      marginLeft: '90%',
+                      width: 80,
+                      backgroundColor: '#00FF00',
+                    }}
+                    onClick={() => handleNextButtonClick()}
+                  >
+                    Next
+                  </Button>
+                </Col>
+              </Row>
             </Cards>
           )}
         </>
