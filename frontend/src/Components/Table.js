@@ -119,7 +119,7 @@ function TableComponent() {
       dataIndex: 'successRate',
       key: 'successRate',
       sorter: (a, b) => {
-        return a.successRate.localeCompare(b.successRate)
+        return parseInt(a.successRate) - parseInt(b.successRate)
       },
       ...getColumnSearchProps('successRate'),
     },
@@ -258,7 +258,7 @@ function TableComponent() {
           }
         }
       })
-      duplicateEl.successRate = (successRate / total) + '%'
+      duplicateEl.successRate = Math.round((successRate / total)) + '%'
       duplicateEl.totalAnswers = total
       data.push(duplicateEl)
     })
@@ -266,11 +266,12 @@ function TableComponent() {
     setTableDataSource(data)
     const max = data.sort(
       (a, b) => parseInt(b.successRate) - parseInt(a.successRate)
-    )[0]
+    )
     const min = data.sort(
       (a, b) => parseInt(a.successRate) - parseInt(b.successRate)
     )[0]
-
+    
+    console.log(max)
     const nrCorrectAnswHigh =
       max.totalAnswers * (parseInt(max.successRate) / 100)
     const nrCorrectAnswLow =
