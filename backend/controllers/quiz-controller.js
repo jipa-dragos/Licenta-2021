@@ -363,6 +363,22 @@ const getQuizById = async (req, res, next) => {
       .select('-quiz.answers.points')
       .select('-quiz.answers.isCorrect')
 
+    const truQuiz = await Quiz.findById(req.params.id).select(
+      'quiz.answers.isCorrect'
+    )
+
+    let isMultipleChoice = []
+    let counter = 0
+    for (const i of truQuiz.quiz) {
+      for (const x of i.answers) {
+        if (x.isCorrect === true)
+          counter++
+      }
+      if (counter >= 2) isMultipleChoice.push(true)
+      else isMultipleChoice.push(false)
+      counter = 0
+    }
+
     const answer = await Answer.find({ student: req.userData.userId })
 
     for (const i of answer) {
@@ -395,6 +411,7 @@ const getQuizById = async (req, res, next) => {
     res.status(200).json({
       success: true,
       data: quiz,
+      isMultipleChoice,
     })
   } catch (err) {
     next(err)
