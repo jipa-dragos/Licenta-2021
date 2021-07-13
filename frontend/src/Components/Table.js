@@ -263,9 +263,6 @@ function TableComponent() {
     const max = data.sort(
       (a, b) => parseInt(b.successRate) - parseInt(a.successRate)
     )
-    const min = data.sort(
-      (a, b) => parseInt(a.successRate) - parseInt(b.successRate)
-    )[0]
 
     let maxNumber = -1
     let minNumber = 101
