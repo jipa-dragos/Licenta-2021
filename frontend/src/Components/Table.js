@@ -205,14 +205,10 @@ function TableComponent() {
       const filteredArray = correctAnswer[i].filter((value) =>
         realAnswer[i].includes(value)
       )
-      if (filteredArray.length === correctAnswer[i].length){
-        if (correctAnswer[i].length === realAnswer[i].length)
-          rate.push(100)
-        else 
-          rate.push(0)
-      }
-      else
-        rate.push(0)
+      if (filteredArray.length === correctAnswer[i].length) {
+        if (correctAnswer[i].length === realAnswer[i].length) rate.push(100)
+        else rate.push(0)
+      } else rate.push(0)
     }
 
     const duplicates = tags.reduce(function (acc, el, i, arr) {
@@ -258,7 +254,7 @@ function TableComponent() {
           }
         }
       })
-      duplicateEl.successRate = Math.round((successRate / total)) + '%'
+      duplicateEl.successRate = Math.round(successRate / total) + '%'
       duplicateEl.totalAnswers = total
       data.push(duplicateEl)
     })
@@ -270,14 +266,73 @@ function TableComponent() {
     const min = data.sort(
       (a, b) => parseInt(a.successRate) - parseInt(b.successRate)
     )[0]
-    
+
+    let maxNumber = -1
+    let minNumber = 101
+    for (const i of max) {
+      if (parseInt(i.successRate.slice(0, -1)) > maxNumber) {
+        maxNumber = parseInt(i.successRate)
+      }
+      if (parseInt(i.successRate.slice(0, -1)) < minNumber) {
+        minNumber = parseInt(i.successRate)
+      }
+    }
     console.log(max)
+
+    let trueMax = {
+      key: null,
+      tag: null,
+      successRate: null,
+      totalAnswers: null
+    }
+    
+    let trueMin = {
+      key: null,
+      tag: null,
+      successRate: null,
+      totalAnswers: null
+    }
+
+    trueMax.successRate = maxNumber
+    trueMin.successRate = minNumber
+
+    let maxTotalAnswers = -1
+    let maxTag 
+    let maxKey
+    let minTotalAnswers = -1
+    let minTag 
+    let minKey
+    for (const i of max) {
+      if (parseInt(i.successRate.slice(0, -1)) === maxNumber) {
+        if (i.totalAnswers > maxTotalAnswers) {
+          maxTotalAnswers = i.totalAnswers
+          maxTag = i.tag
+          maxKey = i.key
+        }
+      }
+
+      if (parseInt(i.successRate.slice(0, -1)) === minNumber) {
+        if (i.totalAnswers > minTotalAnswers) {
+          minTotalAnswers = i.totalAnswers
+          minTag = i.tag
+          minKey = i.key
+        }
+      }
+    }
+    trueMax.totalAnswers = maxTotalAnswers
+    trueMax.tag = maxTag
+    trueMax.key = maxKey
+
+    trueMin.totalAnswers = minTotalAnswers
+    trueMin.tag = minTag
+    trueMin.key = minKey
+
     const nrCorrectAnswHigh =
-      max.totalAnswers * (parseInt(max.successRate) / 100)
+    trueMax.totalAnswers * (parseInt(trueMax.successRate) / 100)
     const nrCorrectAnswLow =
-      min.totalAnswers * (parseInt(min.successRate) / 100)
-    setHighest([max.tag, nrCorrectAnswHigh, max.totalAnswers])
-    setLowest([min.tag, nrCorrectAnswLow, min.totalAnswers])
+    trueMin.totalAnswers * (parseInt(trueMin.successRate) / 100)
+    setHighest([trueMax.tag, nrCorrectAnswHigh, trueMax.totalAnswers])
+    setLowest([trueMin.tag, nrCorrectAnswLow, trueMin.totalAnswers])
   }
 }
 
