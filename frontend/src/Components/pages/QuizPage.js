@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react'
 import { Redirect, useParams } from 'react-router'
 import { useHistory } from 'react-router-dom'
-import { Button, Col, Row, Statistic, Progress } from 'antd'
+import { Button, Col, Row, Statistic, Progress, Checkbox } from 'antd'
 import 'antd/dist/antd.css'
 import LoadingSpinner from '../../shared/components/UI/LoadingSpinner'
 import { AuthContext } from '../../shared/context/auth-context'
@@ -42,18 +42,6 @@ function QuizPage() {
     }
     fetchQuiz()
   }, [sendRequest, auth.token, id])
-
-  const handleAnswerButtonClick = (text) => {
-    console.log(text)
-    setClickedAnswers([...clickedAnswers, text])
-
-    if (clickedAnswers.includes(text)) {
-      let newArr = clickedAnswers
-      newArr.splice(clickedAnswers.indexOf(text), 1)
-      setClickedAnswers([])
-      setClickedAnswers(newArr)
-    }
-  }
 
   const handleNextButtonClick = () => {
     if (clickedAnswers.length !== 0) {
@@ -107,6 +95,10 @@ function QuizPage() {
     return Math.round((currentQuestion / value) * 100)
   }
 
+  const onChange = (checkedValues) => {
+    setClickedAnswers(checkedValues)
+  }
+
   return (
     <>
       {redirect && <Redirect to={{ pathname: history.goBack() }} />}
@@ -149,33 +141,35 @@ function QuizPage() {
                 {loadedQuestions.quiz[currentQuestion].question}
               </div>
               <br />
-              <Row>
-                {loadedQuestions.quiz[currentQuestion].answers.map((answer) => (
-                  <React.Fragment key={answer._id}>
-                    <Col span={24}>
-                      <Button
-                        style={{ marginBottom: 10 }}
-                        onClick={() => handleAnswerButtonClick(answer.text)}
-                      >
-                        {answer.text}
-                      </Button>
-                    </Col>
-                  </React.Fragment>
-                ))}
-                <Col span={23}>
-                  <Button
-                    type='primary'
-                    style={{
-                      marginLeft: '90%',
-                      width: 80,
-                      backgroundColor: '#00FF00',
-                    }}
-                    onClick={() => handleNextButtonClick()}
-                  >
-                    Next
-                  </Button>
-                </Col>
-              </Row>
+              <Checkbox.Group style={{ width: '100%' }} onChange={onChange}>
+                <Row>
+                  {loadedQuestions.quiz[currentQuestion].answers.map(
+                    (answer) => (
+                      <React.Fragment key={answer._id}>
+                        <Col span={24}>
+                          <Checkbox value={`${answer.text}`}>
+                            {answer.text}
+                          </Checkbox>
+                        </Col>
+                      </React.Fragment>
+                    )
+                  )}
+
+                  <Col span={23}>
+                    <Button
+                      type='primary'
+                      style={{
+                        marginLeft: '90%',
+                        width: 80,
+                        backgroundColor: '#00FF00',
+                      }}
+                      onClick={() => handleNextButtonClick()}
+                    >
+                      Next
+                    </Button>
+                  </Col>
+                </Row>
+              </Checkbox.Group>
             </Cards>
           )}
         </>

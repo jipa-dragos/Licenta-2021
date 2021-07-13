@@ -51,16 +51,15 @@ function CoursePage() {
           <p>Quizzes for this course:</p>
           {loadedCourse.quiz.map((quiz, index) => (
             <React.Fragment key={index}>
-              {
-                !loadedIds.includes(quiz._id) &&
-                !auth.role &&
-                (
-                  <Link to={`/quiz/${quiz._id}`} key={index}>
-                    <h3 key={quiz._id}>{quiz.title}</h3>
-                  </Link>
-                )}
+              {!loadedIds.includes(quiz._id) && !auth.role && (
+                <Link to={`/quiz/${quiz._id}`} key={index}>
+                  <h3 key={quiz._id}>{quiz.title}</h3>
+                </Link>
+              )}
 
-              {auth.role && !loadedIds.includes(quiz._id) && <h3 key={quiz._id}>{quiz.title}</h3>}
+              {auth.role && !loadedIds.includes(quiz._id) && (
+                <h3 key={quiz._id}>{quiz.title}</h3>
+              )}
             </React.Fragment>
           ))}
         </div>
