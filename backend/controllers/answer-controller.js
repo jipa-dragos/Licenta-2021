@@ -53,7 +53,13 @@ const sendFirstAnswer = async (req, res, next) => {
     let grade = 0
     quizTaken.quiz[0].answers.forEach((element) => {
       if (answers[0].includes(element.text)) grade += element.points
+      else {
+        grade = 0
+        return
+      }
     })
+
+    console.log(grade)
 
     const answer = await Answer.create({
       answers,
