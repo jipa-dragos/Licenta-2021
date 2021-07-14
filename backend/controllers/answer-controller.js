@@ -51,11 +51,18 @@ const sendFirstAnswer = async (req, res, next) => {
     }
 
     let grade = 0
+    let returned = false
     quizTaken.quiz[0].answers.forEach((element) => {
-      if (answers[0].includes(element.text)) grade += element.points
-      else {
+      if (returned) return
+      if (element.isCorrect === false && answers[0].includes(element.text)) {
         grade = 0
+        returned = true
         return
+      } else if (
+        element.isCorrect === true &&
+        answers[0].includes(element.text)
+      ) {
+        grade += element.points
       }
     })
 
@@ -120,14 +127,18 @@ const patchAnswer = async (req, res, next) => {
     try {
       quizTaken.quiz[publishedAnswer.answers.length].answers.forEach(
         (element) => {
-          if (returned)
-            return
-          if (element.isCorrect === false && answers[0].includes(element.text)) {
+          if (returned) return
+          if (
+            element.isCorrect === false &&
+            answers[0].includes(element.text)
+          ) {
             grade = publishedAnswer.grade
             returned = true
             return
-          } 
-          else if (element.isCorrect === true && answers[0].includes(element.text)){
+          } else if (
+            element.isCorrect === true &&
+            answers[0].includes(element.text)
+          ) {
             grade += element.points
           }
         }
@@ -137,7 +148,6 @@ const patchAnswer = async (req, res, next) => {
         new HttpError('Cannot add answer if the question does not exist.', 400)
       )
     }
-    console.log(grade)
 
     const newAnswers = publishedAnswer.answers.concat(answers)
     const fieldsToUpdate = {
@@ -145,18 +155,18 @@ const patchAnswer = async (req, res, next) => {
       grade: grade,
     }
 
-    // const nextAnswer = await Answer.findByIdAndUpdate(
-    //   publishedAnswer._id,
-    //   fieldsToUpdate,
-    //   {
-    //     new: true,
-    //   }
-    // )
+    const nextAnswer = await Answer.findByIdAndUpdate(
+      publishedAnswer._id,
+      fieldsToUpdate,
+      {
+        new: true,
+      }
+    )
 
-    // res.status(200).json({
-    //   success: true,
-    //   data: nextAnswer,
-    // })
+    res.status(200).json({
+      success: true,
+      data: nextAnswer,
+    })
   } catch (err) {
     next(err)
   }
@@ -278,8 +288,6 @@ const getAnswers = async (req, res, next) => {
     for (const i of allQuizzes) {
       if (now > i.endDate) quiz.push(i)
     }
-
-    console.log(quiz)
 
     let answers = []
     for (const i of quiz) {
