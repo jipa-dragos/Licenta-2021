@@ -59,8 +59,6 @@ const sendFirstAnswer = async (req, res, next) => {
       }
     })
 
-    console.log(grade)
-
     const answer = await Answer.create({
       answers,
       grade,
@@ -116,13 +114,21 @@ const patchAnswer = async (req, res, next) => {
       )
     }
 
-    let grader = publishedAnswer.grade
+    let grade = publishedAnswer.grade
 
+    let returned = false
     try {
       quizTaken.quiz[publishedAnswer.answers.length].answers.forEach(
         (element) => {
-          if (answers[0].includes(element.text)) {
-            grader += element.points
+          if (returned)
+            return
+          if (element.isCorrect === false && answers[0].includes(element.text)) {
+            grade = publishedAnswer.grade
+            returned = true
+            return
+          } 
+          else if (element.isCorrect === true && answers[0].includes(element.text)){
+            grade += element.points
           }
         }
       )
@@ -131,26 +137,26 @@ const patchAnswer = async (req, res, next) => {
         new HttpError('Cannot add answer if the question does not exist.', 400)
       )
     }
+    console.log(grade)
 
     const newAnswers = publishedAnswer.answers.concat(answers)
-    console.log(newAnswers)
     const fieldsToUpdate = {
       answers: newAnswers,
-      grade: grader,
+      grade: grade,
     }
 
-    const nextAnswer = await Answer.findByIdAndUpdate(
-      publishedAnswer._id,
-      fieldsToUpdate,
-      {
-        new: true,
-      }
-    )
+    // const nextAnswer = await Answer.findByIdAndUpdate(
+    //   publishedAnswer._id,
+    //   fieldsToUpdate,
+    //   {
+    //     new: true,
+    //   }
+    // )
 
-    res.status(200).json({
-      success: true,
-      data: nextAnswer,
-    })
+    // res.status(200).json({
+    //   success: true,
+    //   data: nextAnswer,
+    // })
   } catch (err) {
     next(err)
   }
