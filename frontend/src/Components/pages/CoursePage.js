@@ -3,7 +3,8 @@ import { useParams } from 'react-router'
 import { AuthContext } from '../../shared/context/auth-context'
 import { useHttpClient } from '../../shared/hooks/http-hook'
 import { Link } from 'react-router-dom'
-import { Col, Row, Card, Divider, Tag } from 'antd'
+import { Col, Row, Card, Divider, Tag, Empty } from 'antd'
+import LoadingSpinner from '../../shared/components/UI/LoadingSpinner'
 
 function CoursePage() {
   const course = useParams()
@@ -45,6 +46,12 @@ function CoursePage() {
 
   return (
     <>
+      {isLoading && (
+        <div className='center'>
+          <LoadingSpinner asOverlay />
+        </div>
+      )}
+
       {!isLoading && loadedCourse && loadedIds && (
         <Row>
           <Col span={24}>
@@ -100,6 +107,10 @@ function CoursePage() {
               )}
             </React.Fragment>
           ))}
+
+          {loadedCourse.quiz.length === 0 && (
+            <Empty description='No quiz' style={{ margin: 'auto' }} />
+          )}
         </Row>
       )}
     </>
