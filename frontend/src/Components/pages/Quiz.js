@@ -126,7 +126,11 @@ function Quiz() {
                   </Link>
                   <Row>
                     <Col>
-                      <MinusCircleOutlined onClick={showModal} id={item._id} title={item.title}/>
+                      <MinusCircleOutlined
+                        onClick={showModal}
+                        id={item._id}
+                        title={item.title}
+                      />
                     </Col>
                     <Col push={23}>
                       <Link to={`/update/quiz/${item._id}`}>
@@ -150,10 +154,9 @@ function Quiz() {
                 </Button>
               </>
             }
+            onCancel={handleCancel}
           >
-            <h3>
-              All the answers related to this quiz will be deleted
-            </h3>
+            <h3>All the answers related to this quiz will be deleted</h3>
             <p>To delete the quiz, type the title of the quiz to confirm.</p>
             <Input onChange={inputEl} />
           </Modal>
