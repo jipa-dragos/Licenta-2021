@@ -7,8 +7,8 @@ function Canvas() {
   const drawCanvas = useRef(null)
   const [color, setColor] = useState('#ff0000')
   const [width, setWidth] = useState(window.innerWidth)
-  const [height, setHeight] = useState(479)
-  const [brushRadius, setBrushRadius] = useState(10)
+  const [height, setHeight] = useState(545)
+  const [brushRadius, setBrushRadius] = useState(1)
 
   const handleClear = () => {
     drawCanvas.current.clear()
