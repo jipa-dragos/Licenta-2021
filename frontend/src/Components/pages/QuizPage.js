@@ -17,6 +17,7 @@ import { AuthContext } from '../../shared/context/auth-context'
 import { useHttpClient } from '../../shared/hooks/http-hook'
 import Cards from '../../shared/components/UI/Cards'
 import moment from 'moment'
+import Canvas from './Canvas'
 
 const { Countdown } = Statistic
 
@@ -131,6 +132,7 @@ function QuizPage() {
             Date.now() || lastQuestion ? (
             <Redirect to={{ pathname: path, state: { id: id } }} />
           ) : (
+            <>
             <div>
               <Cards>
                 <Row>
@@ -209,6 +211,10 @@ function QuizPage() {
                 </Row>
               </Cards>
             </div>
+            <div>
+              <Canvas />
+            </div>
+            </>
           )}
         </>
       )}
