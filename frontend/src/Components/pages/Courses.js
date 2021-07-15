@@ -155,6 +155,7 @@ export default function Courses() {
                 </Button>
               </>
             }
+            onCancel={handleCancel}
           >
             <h3>
               All the quizzes related to this course, and also the respective
