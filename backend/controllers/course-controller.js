@@ -13,10 +13,6 @@ const getCourses = async (req, res, next) => {
       user = await Student.findById(req.userData.userId)
       const courses = await Course.find({ students: { $in: user._id } })
 
-      for (const i of courses) {
-        console.log(i.students)
-      }
-
       return res.status(200).json({
         success: true,
         count: courses.length,
@@ -60,10 +56,22 @@ const getCourseByTitle = async (req, res, next) => {
         .select('startDate')
         .select('endDate')
 
+      const quiz2 = await Quiz.find({
+        course: { $in: course._id },
+        startDate: { $lte: now.toISOString() },
+        endDate: { $gte: now.toISOString() },
+      })
+
+      let questionsNo = []
+      for (const i of quiz2) {
+        questionsNo.push(i.quiz.length)
+      }
+
       res.status(200).json({
         success: true,
         data: course,
         quiz,
+        questionsNo
       })
     } else {
       const quiz = await Quiz.find({ course: { $in: course._id } })
@@ -216,7 +224,6 @@ const joinCourse = async (req, res, next) => {
       students: Array.from(set),
     }
 
-    console.log(fieldToUpdate)
     const course = await Course.findByIdAndUpdate(
       courseFound._id,
       fieldToUpdate,
