@@ -15,6 +15,10 @@ function Canvas() {
     drawCanvas.current.clear()
   }
 
+  const handleUndo = () => {
+    drawCanvas.current.undo()
+  }
+
   const handleWidth = (values) => {
     setWidth(values)
   }
@@ -27,7 +31,9 @@ function Canvas() {
     setBrushRadius(values)
   }
 
-  const toggleDrawingBoard = () => {setDrawingBoardON(!drawingBoardON)}
+  const toggleDrawingBoard = () => {
+    setDrawingBoardON(!drawingBoardON)
+  }
 
   return (
     <>
@@ -43,6 +49,9 @@ function Canvas() {
           <Row gutter={16}>
             <Col style={{ marginLeft: '10%' }}>
               <Button onClick={toggleDrawingBoard}>Toggle Drawing Board</Button>
+            </Col>
+            <Col>
+              <Button onClick={handleUndo}>Undo</Button>
             </Col>
             <Col>
               <Button onClick={handleClear}>Clear Drawing Board</Button>
