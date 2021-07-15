@@ -7,8 +7,9 @@ function Canvas() {
   const drawCanvas = useRef(null)
   const [color, setColor] = useState('#ff0000')
   const [width, setWidth] = useState(window.innerWidth)
-  const [height, setHeight] = useState(545)
+  const [height, setHeight] = useState(534)
   const [brushRadius, setBrushRadius] = useState(1)
+  const [drawingBoardON, setDrawingBoardON] = useState(false)
 
   const handleClear = () => {
     drawCanvas.current.clear()
@@ -26,68 +27,85 @@ function Canvas() {
     setBrushRadius(values)
   }
 
+  const toggleOn = () => {setDrawingBoardON(true)}
+  const toggleOf = () => {setDrawingBoardON(false)}
+
   return (
     <>
-      <Row gutter={16}>
-        <Col style={{ marginLeft: '10%'}}>
-          <Button onClick={handleClear}>Clear Drawing Board</Button>
-        </Col>
-        <Col style={{ paddingTop: '.2%' }}>
-          <label>width:</label>
-        </Col>
-        <Col>
-          <InputNumber
-            defaultValue={width}
-            style={{ width: 60 }}
-            min={1}
-            onChange={handleWidth}
-          />
-        </Col>
-        <Col style={{ paddingTop: '.2%' }}>
-          <label>height:</label>
-        </Col>
-        <Col>
-          <InputNumber
-            defaultValue={height}
-            style={{ width: 60 }}
-            min={1}
-            onChange={handleHeight}
-          />
-        </Col>
-        <Col style={{ paddingTop: '.2%' }}>
-          <label>Brush-Radius:</label>
-        </Col>
-        <Col>
-          <InputNumber
-            defaultValue={brushRadius}
-            style={{ width: 60 }}
-            min={0.1}
-            onChange={handleBrush}
-          />
-        </Col>
-        <Col style={{ paddingTop: '.2%' }}>
-          <label>Brush-Color:</label>
-        </Col>
-        <Col style={{ paddingTop: '.5%' }}>
-          <HuePicker
-            color={color}
-            onChangeComplete={(color) => {
-              setColor(color.hex)
-            }}
-          />
-        </Col>
-      </Row>
+      {!drawingBoardON && (
+        <Row gutter={16}>
+          <Col style={{ marginLeft: '10%' }}>
+            <Button onClick={toggleOn}>Toggle Drawing Board</Button>
+          </Col>
+        </Row>
+      )}
+      {drawingBoardON && (
+        <>
+          <Row gutter={16}>
+            <Col style={{ marginLeft: '10%' }}>
+              <Button onClick={toggleOf}>Toggle Drawing Board</Button>
+            </Col>
+            <Col>
+              <Button onClick={handleClear}>Clear Drawing Board</Button>
+            </Col>
+            <Col style={{ paddingTop: '.2%' }}>
+              <label>width:</label>
+            </Col>
+            <Col>
+              <InputNumber
+                defaultValue={width}
+                style={{ width: 60 }}
+                min={1}
+                onChange={handleWidth}
+              />
+            </Col>
+            <Col style={{ paddingTop: '.2%' }}>
+              <label>height:</label>
+            </Col>
+            <Col>
+              <InputNumber
+                defaultValue={height}
+                style={{ width: 60 }}
+                min={1}
+                onChange={handleHeight}
+              />
+            </Col>
+            <Col style={{ paddingTop: '.2%' }}>
+              <label>Brush-Radius:</label>
+            </Col>
+            <Col>
+              <InputNumber
+                defaultValue={brushRadius}
+                style={{ width: 60 }}
+                min={0.1}
+                onChange={handleBrush}
+              />
+            </Col>
+            <Col style={{ paddingTop: '.2%' }}>
+              <label>Brush-Color:</label>
+            </Col>
+            <Col style={{ paddingTop: '.5%' }}>
+              <HuePicker
+                color={color}
+                onChangeComplete={(color) => {
+                  setColor(color.hex)
+                }}
+              />
+            </Col>
+          </Row>
 
-      <CanvasDraw
-        brushRadius={brushRadius}
-        brushColor={color}
-        canvasWidth={width}
-        canvasHeight={height}
-        hideGrid={true}
-        backgroundColor='grey'
-        catenaryColor={color}
-        ref={drawCanvas}
-      />
+          <CanvasDraw
+            brushRadius={brushRadius}
+            brushColor={color}
+            canvasWidth={width}
+            canvasHeight={height}
+            hideGrid={true}
+            backgroundColor='grey'
+            catenaryColor={color}
+            ref={drawCanvas}
+          />
+        </>
+      )}
     </>
   )
 }
