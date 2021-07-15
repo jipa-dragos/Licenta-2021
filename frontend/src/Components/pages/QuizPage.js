@@ -131,80 +131,84 @@ function QuizPage() {
             Date.now() || lastQuestion ? (
             <Redirect to={{ pathname: path, state: { id: id } }} />
           ) : (
-            <Cards>
-              <Row>
-                <Col span={6}>{loadedQuestions.title}</Col>
+            <div>
+              <Cards>
+                <Row>
+                  <Col span={6}>{loadedQuestions.title}</Col>
 
-                <Col style={{ marginLeft: '50%' }}>
-                  <Progress
-                    type='circle'
-                    strokeColor={{
-                      '0%': '#108ee9',
-                      '100%': '#87d068',
-                    }}
-                    percent={calculatePercentage(loadedQuestions.quiz.length)}
-                  />
-                </Col>
-                <Col style={{ marginLeft: '5%' }}>
-                  <Countdown
-                    title='Remaining Time'
-                    value={functionDate(new Date(loadedQuestions.endDate))}
-                  />
-                </Col>
-              </Row>
+                  <Col style={{ marginLeft: '50%' }}>
+                    <Progress
+                      type='circle'
+                      strokeColor={{
+                        '0%': '#108ee9',
+                        '100%': '#87d068',
+                      }}
+                      percent={calculatePercentage(loadedQuestions.quiz.length)}
+                    />
+                  </Col>
+                  <Col style={{ marginLeft: '5%' }}>
+                    <Countdown
+                      title='Remaining Time'
+                      value={functionDate(new Date(loadedQuestions.endDate))}
+                    />
+                  </Col>
+                </Row>
 
-              <div>
-                <label>Question: </label>
-                {loadedQuestions.quiz[currentQuestion].question}
-              </div>
-              <br />
-              {isMultipleChoice && (
-                <Checkbox.Group style={{ width: '100%' }} onChange={onChange}>
-                  <Row>
-                    {loadedQuestions.quiz[currentQuestion].answers.map(
-                      (answer) => (
-                        <React.Fragment key={answer._id}>
-                          <Col span={24}>
-                            <Checkbox value={`${answer.text}`}>
+                <div>
+                  <label>Question: </label>
+                  {loadedQuestions.quiz[currentQuestion].question}
+                </div>
+                <br />
+                {isMultipleChoice && (
+                  <Checkbox.Group style={{ width: '100%' }} onChange={onChange}>
+                    <Row>
+                      {loadedQuestions.quiz[currentQuestion].answers.map(
+                        (answer) => (
+                          <React.Fragment key={answer._id}>
+                            <Col span={24}>
+                              <Checkbox value={`${answer.text}`}>
+                                {answer.text}
+                              </Checkbox>
+                            </Col>
+                          </React.Fragment>
+                        )
+                      )}
+                    </Row>
+                  </Checkbox.Group>
+                )}
+                {!isMultipleChoice && (
+                  <Radio.Group onChange={onChange}>
+                    <Space direction='vertical'>
+                      {loadedQuestions.quiz[currentQuestion].answers.map(
+                        (answer) => (
+                          <React.Fragment key={answer._id}>
+                            <Radio value={`${answer.text}`}>
                               {answer.text}
-                            </Checkbox>
-                          </Col>
-                        </React.Fragment>
-                      )
-                    )}
-                  </Row>
-                </Checkbox.Group>
-              )}
-              {!isMultipleChoice && (
-                <Radio.Group onChange={onChange}>
-                  <Space direction='vertical'>
-                    {loadedQuestions.quiz[currentQuestion].answers.map(
-                      (answer) => (
-                        <React.Fragment key={answer._id}>
-                          <Radio value={`${answer.text}`}>{answer.text}</Radio>
-                        </React.Fragment>
-                      )
-                    )}
-                  </Space>
-                </Radio.Group>
-              )}
+                            </Radio>
+                          </React.Fragment>
+                        )
+                      )}
+                    </Space>
+                  </Radio.Group>
+                )}
 
-              <Row>
-                <Col span={23}>
-                  <Button
-                    type='primary'
-                    style={{
-                      marginLeft: '90%',
-                      width: 80,
-                      backgroundColor: '#00FF00',
-                    }}
-                    onClick={() => handleNextButtonClick()}
-                  >
-                    Next
-                  </Button>
-                </Col>
-              </Row>
-            </Cards>
+                <Row>
+                  <Col span={23}>
+                    <Button
+                      type='primary'
+                      style={{
+                        marginLeft: '90%',
+                        width: 80,
+                        backgroundColor: '#00FF00',
+                      }}
+                      onClick={() => handleNextButtonClick()}
+                    >
+                      Next
+                    </Button>
+                  </Col>
+                </Row>
+              </Cards>
+            </div>
           )}
         </>
       )}

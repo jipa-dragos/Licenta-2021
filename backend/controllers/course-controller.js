@@ -48,7 +48,6 @@ const getCourseByTitle = async (req, res, next) => {
     if (student) {
       const quiz = await Quiz.find({
         course: { $in: course._id },
-        startDate: { $lte: now.toISOString() },
         endDate: { $gte: now.toISOString() },
       })
         .select('_id')
@@ -58,7 +57,6 @@ const getCourseByTitle = async (req, res, next) => {
 
       const quiz2 = await Quiz.find({
         course: { $in: course._id },
-        startDate: { $lte: now.toISOString() },
         endDate: { $gte: now.toISOString() },
       })
 
