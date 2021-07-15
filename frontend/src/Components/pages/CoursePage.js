@@ -64,14 +64,15 @@ function CoursePage() {
             <label style={{ textDecoration: 'underline' }}>Description:</label>
             <p style={{ fontSize: 18 }}>{loadedCourse.data.description}</p>
           </Col>
-          <Col span={24}>
-            <p>Quizzes for this course:</p>
+          <Col span={24} style={{ marginTop: '2%', textAlign: 'center' }}>
+            {auth.role && <p>Quizzes for this course:</p>}
+            {!auth.role && <p>Available quizzes:</p>}
           </Col>
           {loadedCourse.quiz.map((quiz, index) => (
             <React.Fragment key={index}>
               {!loadedIds.includes(quiz._id) && !auth.role && (
-                <Link to={`/quiz/${quiz._id}`} key={index}>
-                  <Col span={6}>
+                <Col span={6}>
+                  <Link to={`/quiz/${quiz._id}`} key={index}>
                     <Card
                       hoverable
                       title={quiz.title}
@@ -81,8 +82,8 @@ function CoursePage() {
                       <p>Finish: {quiz.endDate}</p>
                       <p>Questions: {loadedCourse.questionsNo[index]}</p>
                     </Card>
-                  </Col>
-                </Link>
+                  </Link>
+                </Col>
               )}
 
               {auth.role && !loadedIds.includes(quiz._id) && (
