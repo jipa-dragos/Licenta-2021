@@ -27,15 +27,14 @@ function Canvas() {
     setBrushRadius(values)
   }
 
-  const toggleOn = () => {setDrawingBoardON(true)}
-  const toggleOf = () => {setDrawingBoardON(false)}
+  const toggleDrawingBoard = () => {setDrawingBoardON(!drawingBoardON)}
 
   return (
     <>
       {!drawingBoardON && (
         <Row gutter={16}>
           <Col style={{ marginLeft: '10%' }}>
-            <Button onClick={toggleOn}>Toggle Drawing Board</Button>
+            <Button onClick={toggleDrawingBoard}>Toggle Drawing Board</Button>
           </Col>
         </Row>
       )}
@@ -43,7 +42,7 @@ function Canvas() {
         <>
           <Row gutter={16}>
             <Col style={{ marginLeft: '10%' }}>
-              <Button onClick={toggleOf}>Toggle Drawing Board</Button>
+              <Button onClick={toggleDrawingBoard}>Toggle Drawing Board</Button>
             </Col>
             <Col>
               <Button onClick={handleClear}>Clear Drawing Board</Button>
