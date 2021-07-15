@@ -12,7 +12,6 @@ function CoursePage() {
   const [loadedCourse, setLoadedCourse] = useState()
   const [loadedIds, setLoadedIds] = useState()
   const { isLoading, sendRequest } = useHttpClient()
-
   useEffect(() => {
     const fetchCourse = async () => {
       try {
@@ -75,13 +74,28 @@ function CoursePage() {
             {auth.role && <p>Quizzes for this course:</p>}
             {!auth.role && <p>Available quizzes:</p>}
           </Col>
+
           {loadedCourse.quiz.map((quiz, index) => (
             <React.Fragment key={index}>
               {!loadedIds.includes(quiz._id) && !auth.role && (
                 <Col span={6}>
-                  <Link to={`/quiz/${quiz._id}`} key={index}>
+                  {new Date().toISOString() >=
+                    new Date(quiz.startDate).toISOString() && (
+                    <Link to={`/quiz/${quiz._id}`} key={index}>
+                      <Card
+                        hoverable
+                        title={quiz.title}
+                        style={{ width: 300, marginLeft: '10%' }}
+                      >
+                        <p>Start: {quiz.startDate}</p>
+                        <p>Finish: {quiz.endDate}</p>
+                        <p>Questions: {loadedCourse.questionsNo[index]}</p>
+                      </Card>
+                    </Link>
+                  )}
+                  {new Date().toISOString() <
+                    new Date(quiz.startDate).toISOString() && (
                     <Card
-                      hoverable
                       title={quiz.title}
                       style={{ width: 300, marginLeft: '10%' }}
                     >
@@ -89,7 +103,7 @@ function CoursePage() {
                       <p>Finish: {quiz.endDate}</p>
                       <p>Questions: {loadedCourse.questionsNo[index]}</p>
                     </Card>
-                  </Link>
+                  )}
                 </Col>
               )}
 
