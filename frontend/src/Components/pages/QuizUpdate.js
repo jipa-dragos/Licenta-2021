@@ -194,7 +194,7 @@ function QuizUpdate() {
                           ]}
                         >
                           <TextArea
-                            style={{ width: 1000 }}
+                            style={{ width: 500 }}
                             rows={1}
                             size='large'
                             placeholder='q/a'
@@ -219,6 +219,24 @@ function QuizUpdate() {
                         >
                           <Input size='small' placeholder='TAG' />
                         </Form.Item>
+
+                        <Form.Item
+                        {...field2}
+                        hasFeedback
+                        wrapperCol={{
+                          span: 20,
+                          offset: 6,
+                        }}
+                        name={[field2.name, 'feedback']}
+                        fieldKey={[field2.fieldKey, 'feedback']}
+                        style={{
+                          width: '544px',
+                          bottom: 5,
+                          position: 'relative',
+                        }}
+                      >
+                        <Input size='middle' placeholder='feedback' />
+                      </Form.Item>
 
                         <MinusCircleOutlined
                           style={{ marginLeft: 10 }}
