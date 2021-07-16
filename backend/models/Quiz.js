@@ -24,6 +24,7 @@ const QuizSchema = new Schema({
           },
         },
       ],
+      feedback: { type: String, required: false },
     },
   ],
   accessCode: { type: String, required: true, unique: true },
