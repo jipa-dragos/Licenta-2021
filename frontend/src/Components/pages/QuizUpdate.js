@@ -174,7 +174,7 @@ function QuizUpdate() {
                         style={{
                           display: 'flex',
                           marginBottom: 8,
-                          marginLeft: 330,
+                          marginLeft: 175,
                         }}
                         align='baseline'
                       >
