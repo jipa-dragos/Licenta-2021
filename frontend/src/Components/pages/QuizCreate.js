@@ -8,8 +8,6 @@ import {
   Input,
   Button,
   DatePicker,
-  Row,
-  Col,
   Space,
   Checkbox,
   Select,
@@ -45,9 +43,12 @@ export default function QuizCreate(props) {
   const onFinish = async (values) => {
     let newData = values
 
-    let startDate = (values.rangeTime[0]._d.setHours(values.rangeTime[0]._d.getHours() + 3)).toString()
-    let endDate = (values.rangeTime[1]._d.setHours(values.rangeTime[1]._d.getHours() + 3)).toString()
-
+    let startDate = values.rangeTime[0]._d
+      .setHours(values.rangeTime[0]._d.getHours() + 3)
+      .toString()
+    let endDate = values.rangeTime[1]._d
+      .setHours(values.rangeTime[1]._d.getHours() + 3)
+      .toString()
 
     let isFinal = false
     if (isFinalQuiz) {
@@ -137,24 +138,20 @@ export default function QuizCreate(props) {
   }, [sendRequest, props])
 
   const setQuizDate = () => (
-    <Row>
-      <Col md={{ span: 12, offset: 8 }}>
-        <Form.Item name='rangeTime'>
-          <RangePicker
-            disabledDate={disabledDate}
-            showTime={{ format: 'HH:mm' }}
-            format='YYYY-MM-DD HH:mm'
-            onFinish={onFinish}
-            rules={[
-              {
-                required: true,
-                message: 'Please input your range!',
-              },
-            ]}
-          />
-        </Form.Item>
-      </Col>
-    </Row>
+    <Form.Item name='rangeTime' label='Time'>
+      <RangePicker
+        disabledDate={disabledDate}
+        showTime={{ format: 'HH:mm' }}
+        format='YYYY-MM-DD HH:mm'
+        onFinish={onFinish}
+        rules={[
+          {
+            required: true,
+            message: 'Please input your range!',
+          },
+        ]}
+      />
+    </Form.Item>
   )
 
   const quizTitle = () => (
@@ -313,8 +310,7 @@ export default function QuizCreate(props) {
                     <Space
                       style={{
                         display: 'flex',
-                        marginBottom: 8,
-                        marginLeft: 330,
+                        marginLeft: 200,
                       }}
                       align='baseline'
                     >
@@ -333,12 +329,12 @@ export default function QuizCreate(props) {
                             message: 'Missing question',
                           },
                         ]}
+                        style={{ width: '500px', marginLeft: '25%' }}
                       >
                         <TextArea
-                          style={{ width: 1000 }}
                           rows={1}
                           size='large'
-                          placeholder='q/a'
+                          placeholder='Question'
                         />
                       </Form.Item>
 
@@ -349,7 +345,6 @@ export default function QuizCreate(props) {
                           span: 23,
                           offset: 16,
                         }}
-                        style={{ width: 400, marginLeft: -150 }}
                         name={[field2.name, 'tag']}
                         fieldKey={[field2.fieldKey, 'tag']}
                         rules={[
@@ -358,14 +353,37 @@ export default function QuizCreate(props) {
                             message: 'Missing tag',
                           },
                         ]}
+                        style={{
+                          marginLeft: 10,
+                          width: 200,
+                          bottom: 5,
+                          position: 'relative',
+                        }}
                       >
-                        <Input size='small' placeholder='TAG' />
+                        <Input size='middle' placeholder='TAG' />
                       </Form.Item>
 
                       <MinusCircleOutlined
                         style={{ marginLeft: 10 }}
                         onClick={() => remove(field2.name)}
                       />
+                      <Form.Item
+                        {...field2}
+                        hasFeedback
+                        wrapperCol={{
+                          span: 20,
+                          offset: 6,
+                        }}
+                        name={[field2.name, 'feedback']}
+                        fieldKey={[field2.fieldKey, 'feedback']}
+                        style={{
+                          width: '544px',
+                          bottom: 5,
+                          position: 'relative',
+                        }}
+                      >
+                        <Input size='middle' placeholder='feedback' />
+                      </Form.Item>
                     </Space>
                     <Form.List name={[field2.name, 'answers']}>
                       {(answers, { add, remove }) => {
@@ -402,7 +420,9 @@ export default function QuizCreate(props) {
                                   <Checkbox>Correct</Checkbox>
                                 </Form.Item>
 
-                                <p style={{ marginLeft: 40, marginRight: -40}}>Points</p>
+                                <p style={{ marginLeft: 40, marginRight: -40 }}>
+                                  Points
+                                </p>
                                 <Form.Item
                                   {...answer}
                                   wrapperCol={{
@@ -428,7 +448,6 @@ export default function QuizCreate(props) {
                                     remove(answer.name)
                                   }}
                                 />
-
                               </Space>
                             ))}
 
