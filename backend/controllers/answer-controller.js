@@ -289,6 +289,17 @@ const getAnswers = async (req, res, next) => {
       if (now > i.endDate) quiz.push(i)
     }
 
+    let feedback = []
+    for (const Quiz of quiz) {
+      let feedbackPerQuiz = []
+      for (const iterator of Quiz.quiz) {
+        feedbackPerQuiz.push(iterator.feedback)
+      }
+      feedback.push(feedbackPerQuiz)
+    }
+
+    console.log(feedback)
+
     let answers = []
     for (const i of quiz) {
       for (const answer of allAnswers) {
@@ -359,6 +370,7 @@ const getAnswers = async (req, res, next) => {
         correctAnswers: correctAnswers[i],
         answers: ans[i],
         quiz: quizId[i],
+        feedback: feedback[i]
       }
       theQuiz.push(data)
     }

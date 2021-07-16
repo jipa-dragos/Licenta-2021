@@ -274,7 +274,6 @@ function TableComponent() {
         minNumber = parseInt(i.successRate)
       }
     }
-    console.log(max)
 
     let trueMax = {
       key: null,
@@ -328,8 +327,8 @@ function TableComponent() {
     trueMax.totalAnswers * (parseInt(trueMax.successRate) / 100)
     const nrCorrectAnswLow =
     trueMin.totalAnswers * (parseInt(trueMin.successRate) / 100)
-    setHighest([trueMax.tag, nrCorrectAnswHigh, trueMax.totalAnswers])
-    setLowest([trueMin.tag, nrCorrectAnswLow, trueMin.totalAnswers])
+    setHighest([trueMax.tag, Math.round(nrCorrectAnswHigh), trueMax.totalAnswers])
+    setLowest([trueMin.tag, Math.round(nrCorrectAnswLow), trueMin.totalAnswers])
   }
 }
 

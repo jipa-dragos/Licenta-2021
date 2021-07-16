@@ -63,6 +63,20 @@ function Answers() {
                         )}
                       />
                       <Divider orientation='left'>
+                        <Tag color='magenta'>Feedback</Tag>
+                      </Divider>
+
+                      <List
+                        size='default'
+                        bordered
+                        dataSource={item.feedback}
+                        renderItem={(item, index) => (
+                          <List.Item>
+                            {index + 1}. {item}
+                          </List.Item>
+                        )}
+                      />
+                      <Divider orientation='left'>
                         <Tag color='#f50'>Tags</Tag>
                       </Divider>
 
