@@ -40,7 +40,9 @@ function Canvas() {
       {!drawingBoardON && (
         <Row gutter={16}>
           <Col style={{ marginLeft: '10%' }}>
-            <Button onClick={toggleDrawingBoard}>Toggle Drawing Board</Button>
+            <Button onClick={toggleDrawingBoard} type='primary'>
+              Toggle Drawing Board
+            </Button>
           </Col>
         </Row>
       )}
