@@ -89,17 +89,22 @@ function Quiz() {
 
       {!isLoading && LoadedQuizzes && (
         <>
-          <Popover content={content} title='Select the type of quiz to create'>
-            <Button
-              shape='round'
-              type='primary'
-              size='large'
-              style={{ marginLeft: '46%', marginTop: '3%' }}
+          <div
+            style={{
+              marginTop: '3%',
+              textAlign: 'center'
+            }}
+          >
+            <Popover
+              content={content}
+              title='Select the type of quiz to create'
             >
-              Create Quiz
-            </Button>
-          </Popover>
-          <div style={{ textAlign: 'center'}}>
+              <Button shape='round' type='primary' size='large'>
+                Create Quiz
+              </Button>
+            </Popover>{' '}
+          </div>
+          <div style={{ textAlign: 'center' }}>
             <h2>List of Quizzes</h2>
             <p>These are all the quizzes that you created!</p>
           </div>
