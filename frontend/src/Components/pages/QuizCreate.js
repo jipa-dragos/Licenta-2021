@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import '../../App.css'
 import './QuizCreate.css'
 import LoadingSpinner from '../../shared/components/UI/LoadingSpinner'
+import { Redirect, useHistory } from 'react-router-dom'
 import { useHttpClient } from '../../shared/hooks/http-hook'
 import {
   Form,
@@ -39,6 +40,8 @@ export default function QuizCreate(props) {
   const [loadedCourses, setLoadedCourses] = useState()
   const [loadedQuizzes, setLoadedQuizzes] = useState()
   const [isFinalQuiz, setisFinalQuiz] = useState()
+  const [redirect, setRedirect] = useState(false)
+  let history = useHistory()
 
   const onFinish = async (values) => {
     let newData = values
@@ -93,6 +96,7 @@ export default function QuizCreate(props) {
       }
     }
     createQuiz()
+    setRedirect(true)
   }
 
   useEffect(() => {
@@ -130,8 +134,7 @@ export default function QuizCreate(props) {
           count[i] = (count[i] || 0) + 1
         })
         setLoadedQuizzes(count)
-      } catch (err) {
-      }
+      } catch (err) {}
     }
     fetchQuizzes()
   }, [sendRequest, props])
@@ -212,7 +215,12 @@ export default function QuizCreate(props) {
         </div>
       )}
       {!isLoading && loadedCourses && (
-        <Form name='dynamic_form_item' {...formItemLayout} onFinish={onFinish}>
+        <Form
+          name='dynamic_form_item'
+          {...formItemLayout}
+          onFinish={onFinish}
+          style={{ marginTop: '5%' }}
+        >
           {quizTitle()}
           {courseName()}
           {setQuizDate()}
@@ -309,13 +317,13 @@ export default function QuizCreate(props) {
                     <Space
                       style={{
                         display: 'flex',
-                        marginLeft: 200,
+                        marginBottom: 8,
+                        marginLeft: 175,
                       }}
                       align='baseline'
                     >
                       <Form.Item
                         {...field2}
-                        hasFeedback
                         wrapperCol={{
                           span: 20,
                           offset: 6,
@@ -328,22 +336,22 @@ export default function QuizCreate(props) {
                             message: 'Missing question',
                           },
                         ]}
-                        style={{ width: '500px', marginLeft: '25%' }}
                       >
                         <TextArea
+                          style={{ width: 500 }}
                           rows={1}
                           size='large'
-                          placeholder='Question'
+                          placeholder='q/a'
                         />
                       </Form.Item>
 
                       <Form.Item
                         {...field2}
-                        hasFeedback
                         wrapperCol={{
                           span: 23,
                           offset: 16,
                         }}
+                        style={{ width: 400, marginLeft: -150 }}
                         name={[field2.name, 'tag']}
                         fieldKey={[field2.fieldKey, 'tag']}
                         rules={[
@@ -352,20 +360,10 @@ export default function QuizCreate(props) {
                             message: 'Missing tag',
                           },
                         ]}
-                        style={{
-                          marginLeft: 10,
-                          width: 200,
-                          bottom: 5,
-                          position: 'relative',
-                        }}
                       >
-                        <Input size='middle' placeholder='TAG' />
+                        <Input size='small' placeholder='TAG' />
                       </Form.Item>
 
-                      <MinusCircleOutlined
-                        style={{ marginLeft: 10 }}
-                        onClick={() => remove(field2.name)}
-                      />
                       <Form.Item
                         {...field2}
                         hasFeedback
@@ -383,6 +381,11 @@ export default function QuizCreate(props) {
                       >
                         <Input size='middle' placeholder='feedback' />
                       </Form.Item>
+
+                      <MinusCircleOutlined
+                        style={{ marginLeft: 10 }}
+                        onClick={() => remove(field2.name)}
+                      />
                     </Space>
                     <Form.List name={[field2.name, 'answers']}>
                       {(answers, { add, remove }) => {
@@ -397,7 +400,6 @@ export default function QuizCreate(props) {
                                     offset: 11,
                                   }}
                                   style={{ width: 1000, marginLeft: 30 }}
-                                  hasFeedback
                                   name={[answer.name, 'text']}
                                   fieldKey={[answer.fieldKey, 'text']}
                                   rules={[
@@ -493,6 +495,7 @@ export default function QuizCreate(props) {
           {button()}
         </Form>
       )}
+      {redirect && <Redirect to={{ pathname: history.goBack() }} />}
     </>
   )
 }
