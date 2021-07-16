@@ -79,8 +79,8 @@ function CoursePage() {
             <React.Fragment key={index}>
               {!loadedIds.includes(quiz._id) && !auth.role && (
                 <Col span={6}>
-                  {new Date().toISOString() >=
-                    new Date(quiz.startDate).toISOString() && (
+                  {new Date().getTime() >=
+                    new Date(quiz.startDate).setHours(new Date(quiz.startDate).getHours() - 3) && (
                     <Link to={`/quiz/${quiz._id}`} key={index}>
                       <Card
                         hoverable
@@ -93,8 +93,8 @@ function CoursePage() {
                       </Card>
                     </Link>
                   )}
-                  {new Date().toISOString() <
-                    new Date(quiz.startDate).toISOString() && (
+                  {new Date().getTime() <
+                    new Date(quiz.startDate).setHours(new Date(quiz.startDate).getHours() - 3) && (
                     <Card
                       title={quiz.title}
                       style={{ width: 300, marginLeft: '10%' }}
@@ -128,7 +128,7 @@ function CoursePage() {
         </Row>
       )}
     </>
-  )
-}
+  )   
+}     
 
 export default CoursePage
