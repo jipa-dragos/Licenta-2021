@@ -298,8 +298,6 @@ const getAnswers = async (req, res, next) => {
       feedback.push(feedbackPerQuiz)
     }
 
-    console.log(feedback)
-
     let answers = []
     for (const i of quiz) {
       for (const answer of allAnswers) {
