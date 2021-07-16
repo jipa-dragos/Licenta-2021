@@ -131,7 +131,6 @@ export default function QuizCreate(props) {
         })
         setLoadedQuizzes(count)
       } catch (err) {
-        console.log(err)
       }
     }
     fetchQuizzes()

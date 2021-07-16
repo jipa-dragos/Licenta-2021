@@ -117,7 +117,7 @@ const createFinalQuiz = async (req, res, next) => {
     }, {})
 
     function popRandom(array, number, total) {
-      let i = Math.floor(Math.random() * array.length) | 0
+      const i = Math.floor(Math.random() * array.length) | 0
       const remainingQuestions = total - number
       if (number === total) return array
       else if (number > total) {
@@ -371,8 +371,7 @@ const getQuizById = async (req, res, next) => {
     let counter = 0
     for (const i of truQuiz.quiz) {
       for (const x of i.answers) {
-        if (x.isCorrect === true)
-          counter++
+        if (x.isCorrect === true) counter++
       }
       if (counter >= 2) isMultipleChoice.push(true)
       else isMultipleChoice.push(false)

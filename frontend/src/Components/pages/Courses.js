@@ -74,20 +74,22 @@ export default function Courses() {
           <LoadingSpinner asOverlay />
         </div>
       )}
+      {auth.role && (
+        <div
+          style={{
+            marginTop: '3%',
+            textAlign: 'center',
+          }}
+        >
+          <Link to='/create/course'>
+            <Button shape='round' type='primary' size='large'>
+              Create a course
+            </Button>
+          </Link>
+        </div>
+      )}
       {!isLoading && loadedCourses && (
         <>
-          {auth.role && (
-            <Link to='/create/course'>
-              <Button
-                shape='round'
-                type='primary'
-                size='large'
-                style={{ marginLeft: '46%', marginTop: '3%' }}
-              >
-                Create a course
-              </Button>
-            </Link>
-          )}
           <div id='feature' className='block featureBlock bgGray'>
             <div className='container-fluid'>
               <div className='titleHolder'>
