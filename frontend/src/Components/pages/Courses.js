@@ -4,7 +4,7 @@ import LoadingSpinner from '../../shared/components/UI/LoadingSpinner'
 import { AuthContext } from '../../shared/context/auth-context'
 import { useHttpClient } from '../../shared/hooks/http-hook'
 import { Link } from 'react-router-dom'
-import { Row, Col, Card, Button, Input } from 'antd'
+import { Row, Col, Card, Button, Input, notification } from 'antd'
 import { MinusCircleOutlined, EditOutlined } from '@ant-design/icons'
 import Modal from 'antd/lib/modal/Modal'
 
@@ -76,10 +76,17 @@ export default function Courses() {
   useEffect(() => {
     if (accessCode != null) {
       setTimeout(function () {
-        window.prompt('Copy to clipboard: Ctrl+C, Enter', accessCode)
+        openNotificationWithIcon('success')
       }, 2000)
     }
-  }, [accessCode])
+  })
+
+  const openNotificationWithIcon = (type) => {
+    notification[type]({
+      message: accessCode,
+      description: 'Copy to clipboard: Ctrl+C',
+    })
+  }
 
   return (
     <>
