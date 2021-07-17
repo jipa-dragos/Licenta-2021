@@ -134,7 +134,31 @@ export default function Courses() {
                           </Col>
                         </Row>
                       )}
-                      <Popover content={content}>
+
+                      {auth.role && (
+                        <Popover content={content}>
+                          <Link to={`/courses/${course.title}`}>
+                            <Card
+                              hoverable
+                              cover={
+                                <img
+                                  alt={course.title}
+                                  src='/images/bgcourses.png'
+                                />
+                              }
+                              id={course.accessCode}
+                              onMouseEnter={handleMouseEnter}
+                            >
+                              <Meta
+                                title={course.title}
+                                description={course.accessCode}
+                              />
+                            </Card>
+                          </Link>
+                        </Popover>
+                      )}
+
+                      {!auth.role && (
                         <Link to={`/courses/${course.title}`}>
                           <Card
                             hoverable
@@ -147,13 +171,10 @@ export default function Courses() {
                             id={course.accessCode}
                             onMouseEnter={handleMouseEnter}
                           >
-                            <Meta
-                              title={course.title}
-                              description={course.accessCode}
-                            />
+                            <Meta title={course.title} />
                           </Card>
                         </Link>
-                      </Popover>
+                      )}
                     </Col>
                   )
                 })}
