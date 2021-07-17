@@ -18,7 +18,7 @@ export default function Courses() {
   const [disabled, setDisabled] = useState(true)
   const [id, setId] = useState()
   const [courseTitle, setCourseTitle] = useState()
-
+  const [accessCode, setAccessCode] = useState(null)
   useEffect(() => {
     const fetchCourses = async () => {
       try {
@@ -67,6 +67,20 @@ export default function Courses() {
 
     deleteCourse()
   }
+
+  const handleMouseEnter = (e) => {
+    const el = e.currentTarget.getAttribute('id')
+    setAccessCode(el)
+  }
+
+  useEffect(() => {
+    if (accessCode != null) {
+      setTimeout(function () {
+        window.prompt('Copy to clipboard: Ctrl+C, Enter', accessCode)
+      }, 2000)
+    }
+  }, [accessCode])
+
   return (
     <>
       {isLoading && (
@@ -135,8 +149,13 @@ export default function Courses() {
                               src='/images/bgcourses.png'
                             />
                           }
+                          id={course.accessCode}
+                          onMouseEnter={handleMouseEnter}
                         >
-                          <Meta title={course.title} />
+                          <Meta
+                            title={course.title}
+                            description={course.accessCode}
+                          />
                         </Card>
                       </Link>
                     </Col>
