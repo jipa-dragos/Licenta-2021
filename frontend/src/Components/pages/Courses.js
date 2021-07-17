@@ -4,7 +4,7 @@ import LoadingSpinner from '../../shared/components/UI/LoadingSpinner'
 import { AuthContext } from '../../shared/context/auth-context'
 import { useHttpClient } from '../../shared/hooks/http-hook'
 import { Link } from 'react-router-dom'
-import { Row, Col, Card, Button, Input, notification } from 'antd'
+import { Row, Col, Card, Button, Input, Popover } from 'antd'
 import { MinusCircleOutlined, EditOutlined } from '@ant-design/icons'
 import Modal from 'antd/lib/modal/Modal'
 
@@ -73,21 +73,7 @@ export default function Courses() {
     setAccessCode(el)
   }
 
-  useEffect(() => {
-    if (accessCode != null) {
-      setTimeout(function () {
-        openNotificationWithIcon('success')
-      }, 2000)
-    }
-  })
-
-  const openNotificationWithIcon = (type) => {
-    notification[type]({
-      message: accessCode,
-      description: 'Copy to clipboard: Ctrl+C',
-    })
-  }
-
+  const content = <div>{accessCode}</div>
   return (
     <>
       {isLoading && (
@@ -96,18 +82,20 @@ export default function Courses() {
         </div>
       )}
       {auth.role && (
-        <div
-          style={{
-            marginTop: '3%',
-            textAlign: 'center',
-          }}
-        >
-          <Link to='/create/course'>
-            <Button shape='round' type='primary' size='large'>
-              Create a course
-            </Button>
-          </Link>
-        </div>
+        <>
+          <div
+            style={{
+              marginTop: '3%',
+              textAlign: 'center',
+            }}
+          >
+            <Link to='/create/course'>
+              <Button shape='round' type='primary' size='large'>
+                Create a course
+              </Button>
+            </Link>
+          </div>
+        </>
       )}
       {!isLoading && loadedCourses && (
         <>
@@ -146,25 +134,26 @@ export default function Courses() {
                           </Col>
                         </Row>
                       )}
-
-                      <Link to={`/courses/${course.title}`}>
-                        <Card
-                          hoverable
-                          cover={
-                            <img
-                              alt={course.title}
-                              src='/images/bgcourses.png'
+                      <Popover content={content}>
+                        <Link to={`/courses/${course.title}`}>
+                          <Card
+                            hoverable
+                            cover={
+                              <img
+                                alt={course.title}
+                                src='/images/bgcourses.png'
+                              />
+                            }
+                            id={course.accessCode}
+                            onMouseEnter={handleMouseEnter}
+                          >
+                            <Meta
+                              title={course.title}
+                              description={course.accessCode}
                             />
-                          }
-                          id={course.accessCode}
-                          onMouseEnter={handleMouseEnter}
-                        >
-                          <Meta
-                            title={course.title}
-                            description={course.accessCode}
-                          />
-                        </Card>
-                      </Link>
+                          </Card>
+                        </Link>
+                      </Popover>
                     </Col>
                   )
                 })}
