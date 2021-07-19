@@ -99,7 +99,6 @@ export default function SignUp() {
           responseData.role
         )
 
-        console.log(responseData)
       } catch (err) {
         console.log(err)
       }
