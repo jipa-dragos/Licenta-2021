@@ -74,7 +74,7 @@ export default function QuizCreate(props) {
 
     newData.startDate = startDate
     newData.endDate = endDate
-    console.log(newData)
+
     try {
       if (isFinal) {
         await sendRequest(

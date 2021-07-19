@@ -115,16 +115,15 @@ const createFinalQuiz = async (req, res, next) => {
       r[a.tag] = [...(r[a.tag] || []), a]
       return r
     }, {})
-
     function popRandom(array, number, total) {
-      const i = Math.floor(Math.random() * array.length) | 0
-      const remainingQuestions = total - number
-      if (number === total) return array
-      else if (number > total) {
-        return array.splice(i, 1)[0]
+      if (number < 1 ) return
+      if (number >= total) return array
+      let result = [];
+      for (let i = 0; i < number; i++) {
+          result.push(array[Math.floor(Math.random()*array.length)]);
       }
-      return array.splice(i, remainingQuestions)[0]
-    }
+      return result;
+      }
 
     let pair = []
     for (let i = 0; i < tags.length; i++) {
