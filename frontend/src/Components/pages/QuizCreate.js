@@ -74,8 +74,6 @@ export default function QuizCreate(props) {
     newData.startDate = startDate
     newData.endDate = endDate
 
-    console.log('newData', newData)
-
     const createQuiz = async () => {
       try {
         if (isFinal) {

@@ -74,7 +74,7 @@ export default function SignUp() {
             password: values.password,
           })
         )
-        console.log(responseData.role)
+
         auth.login(
           responseData.professorId,
           responseData.token,

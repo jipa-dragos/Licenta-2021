@@ -116,8 +116,6 @@ export default function SignUp() {
           }
         )
         auth.login(responseData.studentId, responseData.token)
-
-        console.log(responseData)
       } catch (err) {
         console.log(err)
       }
