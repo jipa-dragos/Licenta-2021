@@ -3,7 +3,6 @@ const Schema = mongoose.Schema
 
 const AnswerSchema = new Schema({
   answers: { type: [[String]], required: true},
-  questionId: { type: [[String]], required: true},
   grade: { type: Number, required: true },
   quiz: { type: mongoose.Types.ObjectId, required: true, ref: 'Quiz'},
   student: { type: mongoose.Types.ObjectId, required: true, ref: 'Student'},

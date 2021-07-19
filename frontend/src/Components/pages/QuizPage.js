@@ -40,14 +40,14 @@ function QuizPage() {
     const fetchQuiz = async () => {
       try {
         const responseData = await sendRequest(
-          'http://localhost:5005/api/quiz/random/' + id
+          'http://localhost:5005/api/quiz/course/' + id
         )
         let quizExpirationDate = new Date(responseData.data.endDate)
         quizExpirationDate.setHours(quizExpirationDate.getHours() - 3)
 
         responseData.data.quizExpirationDate = quizExpirationDate
         responseData.data.isMultipleChoice = responseData.isMultipleChoice
-        responseData.data.randomQuizArray = responseData.randomQuizArray
+
         setIsMultipleChoice(responseData.isMultipleChoice[0])
         setLoadedQuestions(responseData.data)
       } catch (err) {
@@ -63,7 +63,6 @@ function QuizPage() {
         const sendAnswer = async () => {
           try {
             const constructArrayOfAnswers = [clickedAnswers]
-            console.log(loadedQuestions.randomQuizArray[currentQuestion]._id)
 
             await sendRequest(
               'http://localhost:5005/api/answer/first/',
@@ -71,7 +70,6 @@ function QuizPage() {
               JSON.stringify({
                 answers: constructArrayOfAnswers,
                 quiz: id,
-                questionId: [loadedQuestions.randomQuizArray[currentQuestion]._id]
               })
             )
           } catch (err) {}
@@ -81,15 +79,14 @@ function QuizPage() {
       } else {
         const sendAnswer = async () => {
           try {
-            console.log(loadedQuestions.randomQuizArray[currentQuestion]._id)
             const constructArrayOfAnswers = [clickedAnswers]
+
             await sendRequest(
               'http://localhost:5005/api/answer/',
               'PATCH',
               JSON.stringify({
                 answers: constructArrayOfAnswers,
                 quiz: id,
-                questionId: [loadedQuestions.randomQuizArray[currentQuestion]._id]
               })
             )
           } catch (err) {}
@@ -164,7 +161,7 @@ function QuizPage() {
 
                   <div>
                     <label>Question: </label>
-                    {loadedQuestions.randomQuizArray[currentQuestion].question}
+                    {loadedQuestions.quiz[currentQuestion].question}
                   </div>
                   <br />
                   {isMultipleChoice && (
@@ -173,7 +170,7 @@ function QuizPage() {
                       onChange={onChange}
                     >
                       <Row>
-                        {loadedQuestions.randomQuizArray[currentQuestion].answers.map(
+                        {loadedQuestions.quiz[currentQuestion].answers.map(
                           (answer) => (
                             <React.Fragment key={answer._id}>
                               <Col span={24}>
@@ -190,7 +187,7 @@ function QuizPage() {
                   {!isMultipleChoice && (
                     <Radio.Group onChange={onChange}>
                       <Space direction='vertical'>
-                        {loadedQuestions.randomQuizArray[currentQuestion].answers.map(
+                        {loadedQuestions.quiz[currentQuestion].answers.map(
                           (answer) => (
                             <React.Fragment key={answer._id}>
                               <Radio value={`${answer.text}`}>
