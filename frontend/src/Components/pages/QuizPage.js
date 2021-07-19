@@ -40,14 +40,14 @@ function QuizPage() {
     const fetchQuiz = async () => {
       try {
         const responseData = await sendRequest(
-          'http://localhost:5005/api/quiz/course/' + id
+          'http://localhost:5005/api/quiz/random/' + id
         )
         let quizExpirationDate = new Date(responseData.data.endDate)
         quizExpirationDate.setHours(quizExpirationDate.getHours() - 3)
 
         responseData.data.quizExpirationDate = quizExpirationDate
         responseData.data.isMultipleChoice = responseData.isMultipleChoice
-
+        responseData.data.randomQuizArray = responseData.randomQuizArray
         setIsMultipleChoice(responseData.isMultipleChoice[0])
         setLoadedQuestions(responseData.data)
       } catch (err) {
@@ -63,6 +63,7 @@ function QuizPage() {
         const sendAnswer = async () => {
           try {
             const constructArrayOfAnswers = [clickedAnswers]
+            console.log(loadedQuestions.randomQuizArray[currentQuestion]._id)
 
             await sendRequest(
               'http://localhost:5005/api/answer/first/',
@@ -70,6 +71,7 @@ function QuizPage() {
               JSON.stringify({
                 answers: constructArrayOfAnswers,
                 quiz: id,
+                questionId: [loadedQuestions.randomQuizArray[currentQuestion]._id]
               })
             )
           } catch (err) {}
@@ -79,6 +81,7 @@ function QuizPage() {
       } else {
         const sendAnswer = async () => {
           try {
+            console.log(loadedQuestions.randomQuizArray[currentQuestion]._id)
             const constructArrayOfAnswers = [clickedAnswers]
             await sendRequest(
               'http://localhost:5005/api/answer/',
@@ -86,6 +89,7 @@ function QuizPage() {
               JSON.stringify({
                 answers: constructArrayOfAnswers,
                 quiz: id,
+                questionId: [loadedQuestions.randomQuizArray[currentQuestion]._id]
               })
             )
           } catch (err) {}
@@ -133,87 +137,92 @@ function QuizPage() {
             <Redirect to={{ pathname: path, state: { id: id } }} />
           ) : (
             <>
-            <div>
-              <Cards>
-                <Row>
-                  <Col span={6}>{loadedQuestions.title}</Col>
+              <div>
+                <Cards>
+                  <Row>
+                    <Col span={6}>{loadedQuestions.title}</Col>
 
-                  <Col style={{ marginLeft: '50%' }}>
-                    <Progress
-                      type='circle'
-                      strokeColor={{
-                        '0%': '#108ee9',
-                        '100%': '#87d068',
-                      }}
-                      percent={calculatePercentage(loadedQuestions.quiz.length)}
-                    />
-                  </Col>
-                  <Col style={{ marginLeft: '5%' }}>
-                    <Countdown
-                      title='Remaining Time'
-                      value={functionDate(new Date(loadedQuestions.endDate))}
-                    />
-                  </Col>
-                </Row>
+                    <Col style={{ marginLeft: '50%' }}>
+                      <Progress
+                        type='circle'
+                        strokeColor={{
+                          '0%': '#108ee9',
+                          '100%': '#87d068',
+                        }}
+                        percent={calculatePercentage(
+                          loadedQuestions.quiz.length
+                        )}
+                      />
+                    </Col>
+                    <Col style={{ marginLeft: '5%' }}>
+                      <Countdown
+                        title='Remaining Time'
+                        value={functionDate(new Date(loadedQuestions.endDate))}
+                      />
+                    </Col>
+                  </Row>
 
-                <div>
-                  <label>Question: </label>
-                  {loadedQuestions.quiz[currentQuestion].question}
-                </div>
-                <br />
-                {isMultipleChoice && (
-                  <Checkbox.Group style={{ width: '100%' }} onChange={onChange}>
-                    <Row>
-                      {loadedQuestions.quiz[currentQuestion].answers.map(
-                        (answer) => (
-                          <React.Fragment key={answer._id}>
-                            <Col span={24}>
-                              <Checkbox value={`${answer.text}`}>
-                                {answer.text}
-                              </Checkbox>
-                            </Col>
-                          </React.Fragment>
-                        )
-                      )}
-                    </Row>
-                  </Checkbox.Group>
-                )}
-                {!isMultipleChoice && (
-                  <Radio.Group onChange={onChange}>
-                    <Space direction='vertical'>
-                      {loadedQuestions.quiz[currentQuestion].answers.map(
-                        (answer) => (
-                          <React.Fragment key={answer._id}>
-                            <Radio value={`${answer.text}`}>
-                              {answer.text}
-                            </Radio>
-                          </React.Fragment>
-                        )
-                      )}
-                    </Space>
-                  </Radio.Group>
-                )}
-
-                <Row>
-                  <Col span={23}>
-                    <Button
-                      type='primary'
-                      style={{
-                        marginLeft: '90%',
-                        width: 80,
-                        backgroundColor: '#00FF00',
-                      }}
-                      onClick={() => handleNextButtonClick()}
+                  <div>
+                    <label>Question: </label>
+                    {loadedQuestions.randomQuizArray[currentQuestion].question}
+                  </div>
+                  <br />
+                  {isMultipleChoice && (
+                    <Checkbox.Group
+                      style={{ width: '100%' }}
+                      onChange={onChange}
                     >
-                      Next
-                    </Button>
-                  </Col>
-                </Row>
-              </Cards>
-            </div>
-            <div>
-              <Canvas />
-            </div>
+                      <Row>
+                        {loadedQuestions.randomQuizArray[currentQuestion].answers.map(
+                          (answer) => (
+                            <React.Fragment key={answer._id}>
+                              <Col span={24}>
+                                <Checkbox value={`${answer.text}`}>
+                                  {answer.text}
+                                </Checkbox>
+                              </Col>
+                            </React.Fragment>
+                          )
+                        )}
+                      </Row>
+                    </Checkbox.Group>
+                  )}
+                  {!isMultipleChoice && (
+                    <Radio.Group onChange={onChange}>
+                      <Space direction='vertical'>
+                        {loadedQuestions.randomQuizArray[currentQuestion].answers.map(
+                          (answer) => (
+                            <React.Fragment key={answer._id}>
+                              <Radio value={`${answer.text}`}>
+                                {answer.text}
+                              </Radio>
+                            </React.Fragment>
+                          )
+                        )}
+                      </Space>
+                    </Radio.Group>
+                  )}
+
+                  <Row>
+                    <Col span={23}>
+                      <Button
+                        type='primary'
+                        style={{
+                          marginLeft: '90%',
+                          width: 80,
+                          backgroundColor: '#00FF00',
+                        }}
+                        onClick={() => handleNextButtonClick()}
+                      >
+                        Next
+                      </Button>
+                    </Col>
+                  </Row>
+                </Cards>
+              </div>
+              <div>
+                <Canvas />
+              </div>
             </>
           )}
         </>

@@ -6,7 +6,7 @@ import './Auth.css'
 import { useForm } from '../../shared/hooks/form-hook'
 import { AuthContext } from '../../shared/context/auth-context'
 import { useHttpClient } from '../../shared/hooks/http-hook'
-import { Form, Input, Card, Button as Buttonski } from 'antd'
+import { Form, Input, Card, Button as Buttonski, Select } from 'antd'
 import {
   UserOutlined,
   LockOutlined,
@@ -194,7 +194,7 @@ export default function SignUp() {
 
               <Form.Item
                 name='year'
-                hasFeedback
+                label=''
                 rules={[
                   {
                     required: true,
@@ -202,10 +202,17 @@ export default function SignUp() {
                   },
                 ]}
               >
-                <Input
-                  prefix={<ItalicOutlined className='site-form-item-icon' />}
-                  placeholder='year'
-                />
+                <Select
+                  placeholder={
+                    <>
+                      <ItalicOutlined className='site-form-item-icon' /> year
+                    </>
+                  }
+                >
+                  <Select.Option value='I'>I</Select.Option>
+                  <Select.Option value='II'>II</Select.Option>
+                  <Select.Option value='III'>III</Select.Option>
+                </Select>
               </Form.Item>
 
               <Form.Item

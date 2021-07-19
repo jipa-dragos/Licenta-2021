@@ -45,6 +45,13 @@ function QuizUpdate() {
         const responseData = await sendRequest(
           `http://localhost:5005/api/quiz/update/${id}`
         )
+        const startDateRaw = new Date(responseData.data.startDate)
+        const endDateRaw = new Date(responseData.data.endDate)
+        const startDate = startDateRaw.setHours(startDateRaw.getHours() - 3)
+        const endDate = endDateRaw.setHours(endDateRaw.getHours() - 3)
+
+        responseData.startDate = startDate
+        responseData.endDate = endDate
         setLoadedQuiz(responseData)
       } catch (err) {
         console.log(err)
@@ -144,8 +151,8 @@ function QuizUpdate() {
               name={['quiz', 'rangeTime']}
               label='time'
               initialValue={[
-                moment(loadedQuiz.data.startDate),
-                moment(loadedQuiz.data.endDate),
+                moment(loadedQuiz.startDate),
+                moment(loadedQuiz.endDate),
               ]}
             >
               <RangePicker

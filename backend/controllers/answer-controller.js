@@ -20,7 +20,7 @@ const sendFirstAnswer = async (req, res, next) => {
     if (!student) {
       return next(new HttpError('Only a student can send answers!', 403))
     }
-    const { answers, quiz } = req.body
+    const { answers, quiz, questionId } = req.body
 
     const quizTaken = await Quiz.findById(quiz)
 
@@ -50,9 +50,16 @@ const sendFirstAnswer = async (req, res, next) => {
       }
     }
 
+    let calculateIndex = 0
+    for (let i = 0; i < quizTaken.quiz.length; i++) {
+      if (quizTaken.quiz[i]._id.toString() === questionId[0])
+        calculateIndex = i
+    }
+
+    console.log(calculateIndex)
     let grade = 0
     let returned = false
-    quizTaken.quiz[0].answers.forEach((element) => {
+    quizTaken.quiz[calculateIndex].answers.forEach((element) => {
       if (returned) return
       if (element.isCorrect === false && answers[0].includes(element.text)) {
         grade = 0
@@ -65,9 +72,11 @@ const sendFirstAnswer = async (req, res, next) => {
         grade += element.points
       }
     })
+    console.log(grade)
 
     const answer = await Answer.create({
       answers,
+      questionId,
       grade,
       quiz,
       student,
@@ -99,7 +108,7 @@ const patchAnswer = async (req, res, next) => {
       return next(new HttpError('Only a student can send answers!', 403))
     }
 
-    const { answers, quiz } = req.body
+    const { answers, quiz, questionId } = req.body
 
     const quizTaken = await Quiz.findById(quiz)
 
@@ -120,12 +129,18 @@ const patchAnswer = async (req, res, next) => {
         new HttpError('Can only add answers to your own answers', 403)
       )
     }
+    let calculateIndex
+    for (let i = 0; i < quizTaken.quiz.length; i++) {
+      if (quizTaken.quiz[i]._id.toString() === questionId[0])
+        calculateIndex = i
+    }
+    console.log(calculateIndex)
 
     let grade = publishedAnswer.grade
 
     let returned = false
     try {
-      quizTaken.quiz[publishedAnswer.answers.length].answers.forEach(
+      quizTaken.quiz[calculateIndex].answers.forEach(
         (element) => {
           if (returned) return
           if (
@@ -149,12 +164,17 @@ const patchAnswer = async (req, res, next) => {
       )
     }
 
+    let ids = publishedAnswer.questionId
+    ids[0].push(questionId[0])
+    console.log(grade)
     const newAnswers = publishedAnswer.answers.concat(answers)
     const fieldsToUpdate = {
       answers: newAnswers,
       grade: grade,
+      questionId: ids
     }
 
+    console.log(answers[0])
     const nextAnswer = await Answer.findByIdAndUpdate(
       publishedAnswer._id,
       fieldsToUpdate,

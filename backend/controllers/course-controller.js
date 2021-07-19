@@ -19,11 +19,10 @@ const getCourses = async (req, res, next) => {
         data: courses,
       })
     }
-
     const courses = await Course.find({ _id: { $in: user.course } })
 
     if (courses.length === 0) {
-      return res.status(204).json({ success: true, data: courses })
+      return res.status(200).json({ success: true, data: courses })
     }
 
     res.status(200).json({

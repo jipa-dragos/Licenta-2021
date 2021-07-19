@@ -145,12 +145,13 @@ const createFinalQuiz = async (req, res, next) => {
       }
     }
 
-    console.log(newQuestionsRandomized)
     let structuredQuestions = []
     for (const i of newQuestionsRandomized) {
-      if (i.length === null || i.length === undefined)
+      if (i.length === null || i.length === undefined) {
         structuredQuestions.push(i)
-      else if (i.length > 1) {
+      } else if (i.length === 1) {
+        structuredQuestions.push(i[0])
+      } else if (i.length > 1) {
         for (const j of i) {
           structuredQuestions.push(j)
         }
@@ -312,7 +313,14 @@ const getQuizzesForProf = async (req, res, next) => {
   try {
     const prof = await Professor.findById(req.userData.userId)
 
-    console.log(prof._id)
+    if (prof._id.toString() !== req.userData.userId.toString()) {
+      return next(
+        new HttpError(
+          `User ${req.userData.userId} is not authorized to access the quizzes`,
+          401
+        )
+      )
+    }
 
     const quizzes = await Quiz.find({ creator: req.userData.userId })
 
@@ -417,6 +425,74 @@ const getQuizById = async (req, res, next) => {
   }
 }
 
+const getRandomQuiz = async (req, res, next) => {
+  try {
+    const quiz = await Quiz.findById(req.params.id)
+      .select('-quiz.answers.points')
+      .select('-quiz.answers.isCorrect')
+
+    const truQuiz = await Quiz.findById(req.params.id).select(
+      'quiz.answers.isCorrect'
+    )
+
+    let isMultipleChoice = []
+    let counter = 0
+    for (const i of truQuiz.quiz) {
+      for (const x of i.answers) {
+        if (x.isCorrect === true) counter++
+      }
+      if (counter >= 2) isMultipleChoice.push(true)
+      else isMultipleChoice.push(false)
+      counter = 0
+    }
+
+    let randomQuizArray = []
+    for (let i = 0; i < quiz.quiz.length; i++) {
+      randomQuizArray.push(quiz.quiz[i])
+    }
+
+    randomQuizArray.sort(() => Math.random() - Math.random()).slice(0, randomQuizArray.length)
+
+    const answer = await Answer.find({ student: req.userData.userId })
+
+    for (const i of answer) {
+      if (i.quiz.toString() === quiz._id.toString()) {
+        return next(
+          new HttpError(
+            `Student ${req.userData.userId} Already answered this quiz`,
+            403
+          )
+        )
+      }
+    }
+
+    let now = new Date()
+    now.setHours(now.getHours() + 3)
+
+    if (new Date(quiz.startDate).toISOString() > now.toISOString()) {
+      return next(
+        new HttpError(
+          `User ${req.userData.userId} is too early to start the quiz`,
+          403
+        )
+      )
+    }
+
+    if (new Date(quiz.endDate).toISOString() < now.toISOString()) {
+      return next(new HttpError(`Time expired for the quiz`, 403))
+    }
+
+    res.status(200).json({
+      success: true,
+      data: quiz,
+      isMultipleChoice,
+      randomQuizArray
+    })
+  } catch (err) {
+    next(err)
+  }
+}
+
 const getQuizforUpdate = async (req, res, next) => {
   try {
     const quiz = await Quiz.findById(req.params.id)
@@ -498,5 +574,6 @@ exports.getQuizzesForProf = getQuizzesForProf
 exports.getAllQuizzes = getAllQuizzes
 exports.getQuizzesForCourse = getQuizzesForCourse
 exports.getQuizById = getQuizById
+exports.getRandomQuiz = getRandomQuiz
 exports.getQuizforUpdate = getQuizforUpdate
 exports.getQuizByAccessCode = getQuizByAccessCode

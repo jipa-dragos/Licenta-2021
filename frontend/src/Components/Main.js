@@ -29,18 +29,24 @@ function Main() {
     setIsAccessModalVisible(false)
   }
 
-  const onFinishQuiz = (values) => {
-    const fetchQuiz = async () => {
-      try {
-        const responseData = await sendRequest(
-          `http://localhost:5005/api/quiz/access/${values.accessCode}`
-        )
-        setFoundQuiz(responseData)
-      } catch (err) {
-        console.log(err)
-      }
+  const onFinishQuiz = async (values) => {
+    console.log(values.accessCode)
+
+    try {
+      const responseData = await sendRequest(
+        `http://localhost:5005/api/quiz/access/${values.accessCode}`
+      )
+      const startDateRaw = new Date(responseData.data.startDate)
+      const endDateRaw = new Date(responseData.data.endDate)
+      const startDate = startDateRaw.setHours(startDateRaw.getHours() - 3)
+      const endDate = endDateRaw.setHours(endDateRaw.getHours() - 3)
+
+      responseData.startDate = startDate
+      responseData.endDate = endDate
+      setFoundQuiz(responseData)
+    } catch (err) {
+      console.log(err)
     }
-    fetchQuiz()
   }
 
   const onFinishCourse = (values) => {
@@ -64,7 +70,7 @@ function Main() {
   return (
     <div className='hero-container'>
       <h1>ASE QUIZ</h1>
-      
+
       <div className='hero-btns'>
         {!auth.isLoggedIn && (
           <Button
@@ -178,9 +184,10 @@ function Main() {
       </div>
       {foundQuiz && (
         <>
-          {new Date(foundQuiz.data.startDate).getTime() < Date.now() && (
-            <Redirect to={{ pathname: `/quiz/${foundQuiz.data._id}` }} />
-          )}
+          {foundQuiz.startDate < Date.now() &&
+            foundQuiz.endDate > Date.now() && (
+              <Redirect to={{ pathname: `/quiz/${foundQuiz.data._id}` }} />
+            )}
         </>
       )}
       {joinCourse && (

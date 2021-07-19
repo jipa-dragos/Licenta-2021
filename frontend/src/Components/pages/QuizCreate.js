@@ -49,6 +49,7 @@ export default function QuizCreate(props) {
     let startDate = values.rangeTime[0]._d
       .setHours(values.rangeTime[0]._d.getHours() + 3)
       .toString()
+
     let endDate = values.rangeTime[1]._d
       .setHours(values.rangeTime[1]._d.getHours() + 3)
       .toString()
@@ -73,27 +74,24 @@ export default function QuizCreate(props) {
 
     newData.startDate = startDate
     newData.endDate = endDate
-
-    const createQuiz = async () => {
-      try {
-        if (isFinal) {
-          await sendRequest(
-            'http://localhost:5005/api/quiz/final',
-            'POST',
-            JSON.stringify(newData)
-          )
-        } else {
-          await sendRequest(
-            'http://localhost:5005/api/quiz/',
-            'POST',
-            JSON.stringify(newData)
-          )
-        }
-      } catch (err) {
-        console.log(err)
+    console.log(newData)
+    try {
+      if (isFinal) {
+        await sendRequest(
+          'http://localhost:5005/api/quiz/final',
+          'POST',
+          JSON.stringify(newData)
+        )
+      } else {
+        await sendRequest(
+          'http://localhost:5005/api/quiz/',
+          'POST',
+          JSON.stringify(newData)
+        )
       }
+    } catch (err) {
+      console.log(err)
     }
-    createQuiz()
     setRedirect(true)
   }
 

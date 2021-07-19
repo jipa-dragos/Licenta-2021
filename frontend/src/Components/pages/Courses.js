@@ -25,6 +25,7 @@ export default function Courses() {
         const responseData = await sendRequest(
           'http://localhost:5005/api/course/'
         )
+        
         setLoadedCourses(responseData)
       } catch (err) {
         console.log(err)
